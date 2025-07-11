@@ -4,6 +4,12 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
+import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.collectAsState
@@ -36,55 +42,104 @@ class MainActivity : ComponentActivity() {
                 val navController = rememberNavController()
                 val startCast by castVm.startCasting.collectAsState(initial = false)
                 
-                // Estado para controlar si ya se navegó
+                // Estados para controlar la transición
                 val hasNavigated = remember { mutableStateOf(false) }
+                val showLoading = remember { mutableStateOf(false) }
 
                 Surface(Modifier.fillMaxSize()) {
-                    // Efecto para navegar solo una vez cuando se inicia el cast
+                    // Manejo del estado de carga
                     LaunchedEffect(startCast) {
                         if (startCast && !hasNavigated.value) {
-                            hasNavigated.value = true
+                            showLoading.value = true
                         }
                     }
 
-                    // Reset del estado cuando se vuelve al home
+                    // Reset cuando vuelve al home
                     LaunchedEffect(navController.currentBackStackEntry?.destination?.route) {
                         if (navController.currentBackStackEntry?.destination?.route == "home") {
                             hasNavigated.value = false
+                            showLoading.value = false
                         }
                     }
 
-                    if (startCast && !hasNavigated.value) {
+                    // Mostrar loading screen cuando se activa el cast
+                    if (showLoading.value && !hasNavigated.value) {
                         LoadingScreen {
+                            // Cuando termina el loading, navega con transición
+                            showLoading.value = false
+                            hasNavigated.value = true
                             navController.navigate("management") {
                                 popUpTo("home") { inclusive = false }
                             }
-                            hasNavigated.value = true
                         }
                     }
                 }
 
                 NavHost(
                     navController = navController,
-                    startDestination = "home"
+                    startDestination = "home",
+                    // Animaciones de transición entre pantallas
+                    enterTransition = {
+                        when (targetState.destination.route) {
+                            "management" -> fadeIn(
+                                animationSpec = tween(600)
+                            ) + slideInHorizontally(
+                                initialOffsetX = { it },
+                                animationSpec = tween(600)
+                            )
+                            else -> fadeIn(animationSpec = tween(300))
+                        }
+                    },
+                    exitTransition = {
+                        when (targetState.destination.route) {
+                            "management" -> fadeOut(
+                                animationSpec = tween(300)
+                            )
+                            else -> slideOutHorizontally(
+                                targetOffsetX = { -it },
+                                animationSpec = tween(300)
+                            )
+                        }
+                    },
+                    popEnterTransition = {
+                        slideInHorizontally(
+                            initialOffsetX = { -it },
+                            animationSpec = tween(300)
+                        )
+                    },
+                    popExitTransition = {
+                        slideOutHorizontally(
+                            targetOffsetX = { it },
+                            animationSpec = tween(300)
+                        )
+                    }
                 ) {
                     composable("home") {
                         CastPlaceholderScreen(onCastClick = { castVm.triggerCast() })
                     }
 
-                    // 1) Gestión de obras (página 1)
-                    composable("management") {
+                    composable(
+                        "management",
+                        enterTransition = {
+                            fadeIn(
+                                animationSpec = tween(800)
+                            ) + slideInHorizontally(
+                                initialOffsetX = { it / 2 },
+                                animationSpec = tween(800)
+                            )
+                        }
+                    ) {
                         ManagementScreen(
                             projectName = "Proyecto 2",
-                            status      = "En Proceso",
-                            onNext      = { navController.navigate("cronograma") }
+                            status = "En Proceso",
+                            onNext = { navController.navigate("cronograma") }
                         )
                     }
 
                     // 2) Cronograma (página 2)
                     composable("cronograma") {
                         CronogramaScreen(
-                            title  = "Proyecto 2",
+                            title = "Proyecto 2",
                             status = "En Proceso",
                             onNext = { navController.navigate("planos") },
                             onBack = { 
