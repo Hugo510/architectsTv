@@ -26,27 +26,29 @@ fun LogoHeader(
     companyName: String,
     modifier: Modifier = Modifier
 ) {
+    val screenConfig = rememberScreenConfig()
+    
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .padding(16.dp),
+            .padding(screenConfig.contentPadding),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        // Logo circular pequeño
+        // Logo circular responsivo
         AsyncImage(
             model = logoUrl,
             contentDescription = "Logo de la empresa",
             modifier = Modifier
-                .size(32.dp)
+                .size(if (screenConfig.isSmallScreen) 24.dp else 32.dp)
                 .clip(CircleShape)
         )
 
-        Spacer(modifier = Modifier.width(8.dp))
+        Spacer(modifier = Modifier.width(if (screenConfig.isSmallScreen) 6.dp else 8.dp))
 
-        // Nombre de la empresa
+        // Nombre de empresa responsivo
         Text(
             text = companyName,
-            fontSize = 18.sp,
+            fontSize = (18 * screenConfig.textScale).sp,
             color = MaterialTheme.colorScheme.onBackground
         )
     }

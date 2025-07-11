@@ -8,6 +8,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -31,30 +34,40 @@ class MainActivity : ComponentActivity() {
         setContent {
             ArchitectsTvTheme {
                 val navController = rememberNavController()
-
-                // 1) Observamos el flujo que dispara la proyección
                 val startCast by castVm.startCasting.collectAsState(initial = false)
+                
+                // Estado para controlar si ya se navegó
+                val hasNavigated = remember { mutableStateOf(false) }
 
                 Surface(Modifier.fillMaxSize()) {
-                    // 2) Cuando el móvil dispara, mostramos loader; al completar, navegamos a gestión
-                    if (startCast) {
+                    // Efecto para navegar solo una vez cuando se inicia el cast
+                    LaunchedEffect(startCast) {
+                        if (startCast && !hasNavigated.value) {
+                            hasNavigated.value = true
+                        }
+                    }
+
+                    // Reset del estado cuando se vuelve al home
+                    LaunchedEffect(navController.currentBackStackEntry?.destination?.route) {
+                        if (navController.currentBackStackEntry?.destination?.route == "home") {
+                            hasNavigated.value = false
+                        }
+                    }
+
+                    if (startCast && !hasNavigated.value) {
                         LoadingScreen {
                             navController.navigate("management") {
                                 popUpTo("home") { inclusive = false }
                             }
+                            hasNavigated.value = true
                         }
-                    } else {
-                        // 3) Mientras no disparen, placeholder con botón de cast
-                        CastPlaceholderScreen(onCastClick = { castVm.triggerCast() })
                     }
                 }
 
-                // 4) Definimos nuestras rutas
                 NavHost(
-                    navController    = navController,
+                    navController = navController,
                     startDestination = "home"
                 ) {
-                    // Ruta inicial: placeholder (sin proyección)
                     composable("home") {
                         CastPlaceholderScreen(onCastClick = { castVm.triggerCast() })
                     }
@@ -74,7 +87,11 @@ class MainActivity : ComponentActivity() {
                             title  = "Proyecto 2",
                             status = "En Proceso",
                             onNext = { navController.navigate("planos") },
-                            onBack = { navController.popBackStack() }
+                            onBack = { 
+                                if (navController.previousBackStackEntry != null) {
+                                    navController.popBackStack()
+                                }
+                            }
                         )
                     }
 
@@ -91,7 +108,11 @@ class MainActivity : ComponentActivity() {
                             landArea     = "180.00 m²",
                             scale        = "1 : 200",
                             onNext = { navController.navigate("evidence") },
-                            onBack = { navController.popBackStack() }
+                            onBack = { 
+                                if (navController.previousBackStackEntry != null) {
+                                    navController.popBackStack()
+                                }
+                            }
                         )
                     }
 
@@ -100,7 +121,15 @@ class MainActivity : ComponentActivity() {
                         EvidenceScreen(
                             projectName = "Proyecto 2",
                             status      = "En Proceso",
-                            onBack = { navController.popBackStack() }
+                            onBack = { 
+                                if (navController.previousBackStackEntry != null) {
+                                    navController.popBackStack()
+                                } else {
+                                    navController.navigate("home") {
+                                        popUpTo(0) { inclusive = true }
+                                    }
+                                }
+                            }
                         )
                     }
                 }

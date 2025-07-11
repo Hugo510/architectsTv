@@ -19,6 +19,8 @@ import coil.compose.AsyncImage
 import com.example.feature_ui_tv.ui.components.ClockDate
 import com.example.feature_ui_tv.ui.components.LogoHeader
 import com.example.feature_ui_tv.ui.components.PageIndicator
+import com.example.feature_ui_tv.ui.components.rememberScreenConfig
+import com.example.feature_ui_tv.ui.components.ScreenConfig
 
 @Composable
 fun PlanosScreen(
@@ -34,57 +36,60 @@ fun PlanosScreen(
     onNext: () -> Unit,
     onBack: () -> Unit
 ) {
+    val screenConfig = rememberScreenConfig()
+    
     Box(
         modifier = Modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
     ) {
-        // Logo + nombre empresa
         LogoHeader(
-            logoUrl     = "https://tu.cdn.com/logo_pequeño.png",
+            logoUrl = "https://tu.cdn.com/logo_pequeño.png",
             companyName = "Nombre Empresa",
-            modifier    = Modifier
+            modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp)
+                .padding(screenConfig.contentPadding)
                 .wrapContentSize(Alignment.TopStart)
         )
 
-        // Reloj arriba a la derecha
         ClockDate(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp)
+                .padding(screenConfig.contentPadding)
                 .wrapContentSize(Alignment.TopEnd)
         )
 
-        // Indicador de página (tercer punto de 4)
         PageIndicator(
-            totalPages  = 4,
+            totalPages = 4,
             currentPage = 2,
-            modifier    = Modifier
+            modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = 56.dp)
+                .padding(top = screenConfig.contentPadding * 3.5f)
                 .wrapContentSize(Alignment.TopCenter)
         )
 
-        // Contenido principal
+        // Contenido principal adaptativo
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(top = 88.dp, start = 16.dp, end = 16.dp)
+                .padding(
+                    top = 88.dp, 
+                    start = screenConfig.contentPadding, 
+                    end = screenConfig.contentPadding
+                )
         ) {
             Text(
                 text = "Planos Arquitectónicos",
-                fontSize = 28.sp,
+                fontSize = (28 * screenConfig.textScale).sp,
                 color = MaterialTheme.colorScheme.onBackground
             )
             Spacer(Modifier.height(4.dp))
             Text(
                 text = "Consulta las fechas clave y próximas entregas del proyecto",
-                fontSize = 16.sp,
+                fontSize = (16 * screenConfig.textScale).sp,
                 color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f)
             )
-            Spacer(Modifier.height(16.dp))
+            Spacer(Modifier.height(screenConfig.cardSpacing))
 
             Card(
                 modifier = Modifier
@@ -92,89 +97,144 @@ fun PlanosScreen(
                     .weight(1f),
                 shape = RoundedCornerShape(12.dp)
             ) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(16.dp)
-                ) {
-                    AsyncImage(
-                        model = planUrl,
-                        contentDescription = "Plano arquitectónico de $projectName",
-                        modifier = Modifier
-                            .weight(1f)
-                            .aspectRatio(1.8f)
-                            .clip(RoundedCornerShape(8.dp))
-                    )
-                    Spacer(Modifier.width(16.dp))
+                if (screenConfig.isSmallScreen) {
                     Column(
-                        verticalArrangement = Arrangement.spacedBy(12.dp),
-                        modifier = Modifier.weight(1f)
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(screenConfig.contentPadding)
                     ) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Text(
-                                text = projectName,
-                                fontSize = 20.sp,
-                                color = MaterialTheme.colorScheme.onBackground
-                            )
-                            Spacer(Modifier.width(8.dp))
-                            Card(shape = RoundedCornerShape(4.dp)) {
-                                Box(
-                                    modifier = Modifier
-                                        .background(MaterialTheme.colorScheme.secondaryContainer)
-                                        .padding(horizontal = 8.dp, vertical = 2.dp)
-                                ) {
-                                    Text(
-                                        text = status,
-                                        fontSize = 14.sp,
-                                        color = MaterialTheme.colorScheme.onSecondaryContainer
-                                    )
-                                }
-                            }
-                        }
-                        // Filas de info
-                        InfoRow(label = "Última Revisión", value = lastRevision)
-                        InfoRow(label = "Versión",           value = version)
-                        InfoRow(label = "Tipo de Plano",     value = planType)
-                        InfoRow(label = "Superficie Construida", value = builtArea)
-                        InfoRow(label = "Superficie Terreno",    value = landArea)
-                        InfoRow(label = "Escala",                value = scale)
+                        AsyncImage(
+                            model = planUrl,
+                            contentDescription = "Plano arquitectónico de $projectName",
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .aspectRatio(screenConfig.imageAspectRatio)
+                                .clip(RoundedCornerShape(8.dp))
+                        )
+                        Spacer(Modifier.height(screenConfig.cardSpacing))
+                        PlanInfoColumn(
+                            projectName = projectName,
+                            status = status,
+                            lastRevision = lastRevision,
+                            version = version,
+                            planType = planType,
+                            builtArea = builtArea,
+                            landArea = landArea,
+                            scale = scale,
+                            screenConfig = screenConfig
+                        )
+                    }
+                } else {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(screenConfig.contentPadding)
+                    ) {
+                        AsyncImage(
+                            model = planUrl,
+                            contentDescription = "Plano arquitectónico de $projectName",
+                            modifier = Modifier
+                                .weight(1f)
+                                .aspectRatio(screenConfig.imageAspectRatio)
+                                .clip(RoundedCornerShape(8.dp))
+                        )
+                        Spacer(Modifier.width(screenConfig.cardSpacing))
+                        PlanInfoColumn(
+                            modifier = Modifier.weight(1f),
+                            projectName = projectName,
+                            status = status,
+                            lastRevision = lastRevision,
+                            version = version,
+                            planType = planType,
+                            builtArea = builtArea,
+                            landArea = landArea,
+                            scale = scale,
+                            screenConfig = screenConfig
+                        )
                     }
                 }
             }
         }
 
-        // Botones de navegación abajo
+        // Botones de navegación
         Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .align(Alignment.BottomCenter)
-                .padding(16.dp),
+                .padding(screenConfig.contentPadding),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Button(onClick = onBack) {
-                Text("Atrás")
+                Text("Atrás", fontSize = (16 * screenConfig.textScale).sp)
             }
             Button(onClick = onNext) {
-                Text("Siguiente")
+                Text("Siguiente", fontSize = (16 * screenConfig.textScale).sp)
             }
         }
     }
 }
 
 @Composable
-private fun InfoRow(label: String, value: String) {
+private fun PlanInfoColumn(
+    modifier: Modifier = Modifier,
+    projectName: String,
+    status: String,
+    lastRevision: String,
+    version: String,
+    planType: String,
+    builtArea: String,
+    landArea: String,
+    scale: String,
+    screenConfig: ScreenConfig
+) {
+    Column(
+        verticalArrangement = Arrangement.spacedBy(screenConfig.cardSpacing),
+        modifier = modifier
+    ) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Text(
+                text = projectName,
+                fontSize = (20 * screenConfig.textScale).sp,
+                color = MaterialTheme.colorScheme.onBackground
+            )
+            Spacer(Modifier.width(8.dp))
+            Card(shape = RoundedCornerShape(4.dp)) {
+                Box(
+                    modifier = Modifier
+                        .background(MaterialTheme.colorScheme.secondaryContainer)
+                        .padding(horizontal = 8.dp, vertical = 2.dp)
+                ) {
+                    Text(
+                        text = status,
+                        fontSize = (14 * screenConfig.textScale).sp,
+                        color = MaterialTheme.colorScheme.onSecondaryContainer
+                    )
+                }
+            }
+        }
+        InfoRow(label = "Última Revisión", value = lastRevision, screenConfig = screenConfig)
+        InfoRow(label = "Versión", value = version, screenConfig = screenConfig)
+        InfoRow(label = "Tipo de Plano", value = planType, screenConfig = screenConfig)
+        InfoRow(label = "Superficie Construida", value = builtArea, screenConfig = screenConfig)
+        InfoRow(label = "Superficie Terreno", value = landArea, screenConfig = screenConfig)
+        InfoRow(label = "Escala", value = scale, screenConfig = screenConfig)
+    }
+}
+
+@Composable
+private fun InfoRow(label: String, value: String, screenConfig: ScreenConfig) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         Text(
             text = label,
-            fontSize = 16.sp,
+            fontSize = (16 * screenConfig.textScale).sp,
             color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.8f)
         )
         Text(
             text = value,
-            fontSize = 16.sp,
+            fontSize = (16 * screenConfig.textScale).sp,
             color = MaterialTheme.colorScheme.onBackground
         )
     }

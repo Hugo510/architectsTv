@@ -24,6 +24,8 @@ import androidx.compose.ui.unit.sp
 import com.example.feature_ui_tv.ui.components.ClockDate
 import com.example.feature_ui_tv.ui.components.LogoHeader
 import com.example.feature_ui_tv.ui.components.PageIndicator
+import com.example.feature_ui_tv.ui.components.rememberScreenConfig
+import com.example.feature_ui_tv.ui.components.ScreenConfig
 
 
 // Datos de ejemplo
@@ -50,50 +52,58 @@ fun CronogramaScreen(
     onNext: () -> Unit,
     onBack: () -> Unit
 ) {
+    val screenConfig = rememberScreenConfig()
+    
     Box(
         modifier = Modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
     ) {
-        // LogoHeader en la esquina superior izquierda
         LogoHeader(
-            logoUrl     = "https://tu.cdn.com/logo_pequeño.png",
+            logoUrl = "https://tu.cdn.com/logo_pequeño.png",
             companyName = "Nombre Empresa",
-            modifier    = Modifier
+            modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp)
+                .padding(screenConfig.contentPadding)
                 .wrapContentSize(Alignment.TopStart)
         )
 
-        // ClockDate en la esquina superior derecha
         ClockDate(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp)
+                .padding(screenConfig.contentPadding)
                 .wrapContentSize(Alignment.TopEnd)
         )
 
         PageIndicator(
-            totalPages   = 4,
-            currentPage  = 1,
-            modifier     = Modifier
+            totalPages = 4,
+            currentPage = 1,
+            modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = 56.dp)
+                .padding(top = screenConfig.contentPadding * 3.5f)
                 .wrapContentSize(Alignment.TopCenter)
         )
 
-        // Contenido principal desplazado hacia abajo
+        // Contenido adaptativo
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(top = 72.dp, start = 16.dp, end = 16.dp)
+                .padding(
+                    top = 88.dp, 
+                    start = screenConfig.contentPadding, 
+                    end = screenConfig.contentPadding
+                )
         ) {
-            // Encabezado con título y estado
+            // Encabezado responsivo
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text(text = title, fontSize = 24.sp, color = MaterialTheme.colorScheme.onBackground)
+                Text(
+                    text = title, 
+                    fontSize = (24 * screenConfig.textScale).sp, 
+                    color = MaterialTheme.colorScheme.onBackground
+                )
                 Spacer(modifier = Modifier.width(8.dp))
                 Card(shape = RoundedCornerShape(4.dp)) {
                     Box(
@@ -101,25 +111,46 @@ fun CronogramaScreen(
                             .background(Color(0xFFFFE082))
                             .padding(horizontal = 8.dp, vertical = 2.dp)
                     ) {
-                        Text(text = status, fontSize = 14.sp, color = Color.Black)
+                        Text(
+                            text = status, 
+                            fontSize = (14 * screenConfig.textScale).sp, 
+                            color = Color.Black
+                        )
                     }
                 }
             }
 
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(screenConfig.cardSpacing))
 
-            // Subtítulo
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Text("\u23F0 Cronograma", fontSize = 28.sp)
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(
-                    "Realiza el seguimiento de proyectos y próximas etapas",
-                    fontSize = 16.sp,
-                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f)
-                )
+            // Subtítulo responsivo
+            if (screenConfig.isLargeScreen) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(
+                        "\u23F0 Cronograma", 
+                        fontSize = (28 * screenConfig.textScale).sp
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        "Realiza el seguimiento de proyectos y próximas etapas",
+                        fontSize = (16 * screenConfig.textScale).sp,
+                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f)
+                    )
+                }
+            } else {
+                Column {
+                    Text(
+                        "\u23F0 Cronograma", 
+                        fontSize = (28 * screenConfig.textScale).sp
+                    )
+                    Text(
+                        "Seguimiento de proyectos",
+                        fontSize = (16 * screenConfig.textScale).sp,
+                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f)
+                    )
+                }
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(screenConfig.cardSpacing))
 
             // Tarjeta del gráfico
             Card(
@@ -131,48 +162,76 @@ fun CronogramaScreen(
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(16.dp)
+                        .padding(screenConfig.contentPadding)
                 ) {
-                    GanttChart(tasks = tasks)
+                    GanttChart(tasks = tasks, screenConfig = screenConfig)
                 }
             }
         }
-    }
-    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-        Button(onClick = onBack) { Text("Atrás") }
-        Button(onClick = onNext) { Text("Planos") }
+
+        // Botones responsivos
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .align(Alignment.BottomCenter)
+                .padding(screenConfig.contentPadding),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Button(onClick = onBack) { 
+                Text("Atrás", fontSize = (16 * screenConfig.textScale).sp) 
+            }
+            Button(onClick = onNext) { 
+                Text("Planos", fontSize = (16 * screenConfig.textScale).sp) 
+            }
+        }
     }
 }
 
 @Composable
 private fun GanttChart(
     tasks: List<Task>,
-    days: Int = 11,
-    rowHeight: Float = 32f,
-    spacing: Float = 16f
+    screenConfig: ScreenConfig,
+    days: Int = 11
 ) {
+    val rowHeight = if (screenConfig.isSmallScreen) 28f else 32f
+    val spacing = screenConfig.contentPadding.value
+    val textSize = 20f * screenConfig.textScale
+
     Canvas(modifier = Modifier.fillMaxSize()) {
         val totalWidth = size.width - spacing * 2
         val dayWidth = totalWidth / days
 
-        // Líneas y etiquetas de días
+        // Líneas y etiquetas de días con texto escalable
         for (i in 0..days) {
             val x = spacing + i * dayWidth
-            drawLine(color = Color.LightGray, start = Offset(x, 0f), end = Offset(x, size.height), strokeWidth = 1f)
+            drawLine(
+                color = Color.LightGray, 
+                start = Offset(x, 0f), 
+                end = Offset(x, size.height), 
+                strokeWidth = 1f
+            )
             if (i < days) {
                 drawContext.canvas.nativeCanvas.apply {
+                    val dayLabel = when (i) {
+                        0 -> if (screenConfig.isSmallScreen) "L6" else "Lun 6"
+                        1 -> if (screenConfig.isSmallScreen) "M7" else "Mar 7"
+                        2 -> if (screenConfig.isSmallScreen) "X8" else "Mié 8"
+                        3 -> if (screenConfig.isSmallScreen) "J9" else "Jue 9"
+                        4 -> if (screenConfig.isSmallScreen) "V10" else "Vie 10"
+                        5 -> if (screenConfig.isSmallScreen) "S11" else "Sáb 11"
+                        6 -> if (screenConfig.isSmallScreen) "D12" else "Dom 12"
+                        7 -> if (screenConfig.isSmallScreen) "L13" else "Lun 13"
+                        8 -> if (screenConfig.isSmallScreen) "M14" else "Mar 14"
+                        9 -> if (screenConfig.isSmallScreen) "X15" else "Mié 15"
+                        else -> if (screenConfig.isSmallScreen) "J16" else "Jue 16"
+                    }
                     drawText(
-                        when (i) {
-                            0 -> "Lun 6"; 1 -> "Mar 7"; 2 -> "Mié 8"
-                            3 -> "Jue 9"; 4 -> "Vie 10";5 -> "Sáb 11"
-                            6 -> "Dom 12";7 -> "Lun 13";8 -> "Mar 14"
-                            9 -> "Mié 15";else -> "Jue 16"
-                        },
+                        dayLabel,
                         spacing + i * dayWidth + dayWidth / 2,
                         24f,
                         Paint().apply {
-                            textAlign = Align.CENTER
-                            textSize = 24f
+                            textAlign = Paint.Align.CENTER
+                            this.textSize = textSize
                             color = android.graphics.Color.DKGRAY
                         }
                     )
@@ -180,12 +239,17 @@ private fun GanttChart(
             }
         }
 
-        // Barras de tareas
+        // Barras de tareas con altura responsiva
         tasks.forEachIndexed { idx, task ->
             val top = 32f + idx * (rowHeight + 8f)
             val left = spacing + task.startDay * dayWidth
             val right = spacing + (task.endDay + 1) * dayWidth
-            drawRoundRect(color = task.color, topLeft = Offset(left, top), size = Size(right - left, rowHeight), cornerRadius = CornerRadius(8f, 8f))
+            drawRoundRect(
+                color = task.color, 
+                topLeft = Offset(left, top), 
+                size = Size(right - left, rowHeight), 
+                cornerRadius = CornerRadius(8f, 8f)
+            )
         }
     }
 }

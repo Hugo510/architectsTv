@@ -19,20 +19,24 @@ fun PageIndicator(
     totalPages: Int,
     currentPage: Int,
     modifier: Modifier = Modifier,
-    dotSize: Dp = 8.dp,
-    spacing: Dp = 8.dp,
+    dotSize: Dp? = null,
+    spacing: Dp? = null,
     activeColor: Color = MaterialTheme.colorScheme.primary,
     inactiveColor: Color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.3f)
 ) {
+    val screenConfig = rememberScreenConfig()
+    val responsiveDotSize = dotSize ?: if (screenConfig.isSmallScreen) 6.dp else 8.dp
+    val responsiveSpacing = spacing ?: if (screenConfig.isSmallScreen) 6.dp else 8.dp
+    
     Row(
         modifier = modifier,
-        horizontalArrangement = Arrangement.spacedBy(spacing)
+        horizontalArrangement = Arrangement.spacedBy(responsiveSpacing)
     ) {
         for (i in 0 until totalPages) {
             val color = if (i == currentPage) activeColor else inactiveColor
-            Box(                                      // ← ya funciona
+            Box(
                 modifier = Modifier
-                    .size(dotSize)
+                    .size(responsiveDotSize)
                     .clip(CircleShape)
                     .background(color)
             )

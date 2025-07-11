@@ -21,7 +21,8 @@ import coil.compose.AsyncImage
 import com.example.feature_ui_tv.ui.components.ClockDate
 import com.example.feature_ui_tv.ui.components.LogoHeader
 import com.example.feature_ui_tv.ui.components.PageIndicator
-
+import com.example.feature_ui_tv.ui.components.rememberScreenConfig
+import com.example.feature_ui_tv.ui.components.ScreenConfig
 
 data class EvidenceItem(val title: String, val imageUrl: String)
 
@@ -38,65 +39,83 @@ fun EvidenceScreen(
     evidences: List<EvidenceItem> = sampleEvidence,
     onBack: () -> Unit
 ) {
+    val screenConfig = rememberScreenConfig()
+    
     Box(
         modifier = Modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
     ) {
-        // 1) Logo + nombre empresa
         LogoHeader(
-            logoUrl     = "https://tu.cdn.com/logo_pequeño.png",
+            logoUrl = "https://tu.cdn.com/logo_pequeño.png",
             companyName = "Nombre Empresa",
-            modifier    = Modifier
+            modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp)
+                .padding(screenConfig.contentPadding)
                 .wrapContentSize(Alignment.TopStart)
         )
 
-        // 2) Reloj
         ClockDate(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp)
+                .padding(screenConfig.contentPadding)
                 .wrapContentSize(Alignment.TopEnd)
         )
 
-        // 3) Page indicator (4 de 4)
         PageIndicator(
-            totalPages  = 4,
+            totalPages = 4,
             currentPage = 3,
-            modifier    = Modifier
+            modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = 56.dp)
+                .padding(top = screenConfig.contentPadding * 3.5f)
                 .wrapContentSize(Alignment.TopCenter)
         )
 
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(top = 88.dp, start = 16.dp, end = 16.dp)
-        ) {
-            // 4) Encabezado con icono + título + subtítulo
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text(
-                    text     = "\uD83D\uDDBC Evidencia",
-                    fontSize = 32.sp,
-                    color    = MaterialTheme.colorScheme.onBackground
+                .padding(
+                    top = 88.dp, 
+                    start = screenConfig.contentPadding, 
+                    end = screenConfig.contentPadding
                 )
+        ) {
+            // Encabezado responsivo
+            if (screenConfig.isLargeScreen) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(
+                        text = "\uD83D\uDDBC Evidencia",
+                        fontSize = (32 * screenConfig.textScale).sp,
+                        color = MaterialTheme.colorScheme.onBackground
+                    )
+                }
+                Spacer(Modifier.height(4.dp))
+                Text(
+                    text = "Explora la evidencia del proyecto para darle seguimiento",
+                    fontSize = (16 * screenConfig.textScale).sp,
+                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f)
+                )
+            } else {
+                Column {
+                    Text(
+                        text = "\uD83D\uDDBC Evidencia",
+                        fontSize = (28 * screenConfig.textScale).sp,
+                        color = MaterialTheme.colorScheme.onBackground
+                    )
+                    Text(
+                        text = "Evidencia del proyecto",
+                        fontSize = (16 * screenConfig.textScale).sp,
+                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f)
+                    )
+                }
             }
-            Spacer(Modifier.height(4.dp))
-            Text(
-                text = "Explora la evidencia del proyecto para darle seguimiento",
-                fontSize = 16.sp,
-                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f)
-            )
 
-            Spacer(Modifier.height(16.dp))
+            Spacer(Modifier.height(screenConfig.cardSpacing))
 
-            // 5) Card con lista de evidencias
+            // Card responsiva
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -106,17 +125,17 @@ fun EvidenceScreen(
                 Column(
                     Modifier
                         .fillMaxSize()
-                        .padding(16.dp)
+                        .padding(screenConfig.contentPadding)
                 ) {
-                    // Título del proyecto + estado
+                    // Título del proyecto responsivo
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         Text(
-                            text     = projectName,
-                            fontSize = 20.sp,
-                            color    = MaterialTheme.colorScheme.onBackground
+                            text = projectName,
+                            fontSize = (20 * screenConfig.textScale).sp,
+                            color = MaterialTheme.colorScheme.onBackground
                         )
                         Spacer(Modifier.width(8.dp))
                         Card(shape = RoundedCornerShape(4.dp)) {
@@ -126,47 +145,79 @@ fun EvidenceScreen(
                                     .padding(horizontal = 8.dp, vertical = 2.dp)
                             ) {
                                 Text(
-                                    text     = status,
-                                    fontSize = 14.sp,
-                                    color    = MaterialTheme.colorScheme.onSecondaryContainer
+                                    text = status,
+                                    fontSize = (14 * screenConfig.textScale).sp,
+                                    color = MaterialTheme.colorScheme.onSecondaryContainer
                                 )
                             }
                         }
                     }
 
-                    Spacer(Modifier.height(16.dp))
+                    Spacer(Modifier.height(screenConfig.cardSpacing))
 
-                    // **Fila horizontal de evidencias** usando LazyRow
+                    // LazyRow responsiva
                     LazyRow(
-                        contentPadding        = PaddingValues(horizontal = 16.dp),
-                        horizontalArrangement = Arrangement.spacedBy(24.dp)
+                        contentPadding = PaddingValues(horizontal = screenConfig.contentPadding),
+                        horizontalArrangement = Arrangement.spacedBy(screenConfig.cardSpacing * 1.5f)
                     ) {
                         items(evidences) { item ->
-                            Column(
-                                horizontalAlignment = Alignment.CenterHorizontally
-                            ) {
-                                AsyncImage(
-                                    model               = item.imageUrl,
-                                    contentDescription  = item.title,
-                                    modifier            = Modifier
-                                        .size(width = 280.dp, height = 160.dp)
-                                        .clip(RoundedCornerShape(8.dp))
-                                )
-                                Spacer(Modifier.height(8.dp))
-                                Text(
-                                    text     = item.title,
-                                    fontSize = 18.sp,
-                                    color    = MaterialTheme.colorScheme.onBackground
-                                )
-                            }
+                            EvidenceCard(
+                                item = item,
+                                screenConfig = screenConfig
+                            )
                         }
                     }
                 }
             }
         }
+
+        // Botón responsivo
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .align(Alignment.BottomCenter)
+                .padding(screenConfig.contentPadding),
+            horizontalArrangement = Arrangement.Start
+        ) {
+            Button(onClick = onBack) { 
+                Text("Atrás", fontSize = (16 * screenConfig.textScale).sp) 
+            }
+        }
     }
-    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-        Button(onClick = onBack) { Text("Atrás") }
+}
+
+@Composable
+private fun EvidenceCard(
+    item: EvidenceItem,
+    screenConfig: ScreenConfig
+) {
+    val cardWidth = when {
+        screenConfig.isSmallScreen -> 200.dp
+        screenConfig.isMediumScreen -> 280.dp
+        else -> 320.dp
+    }
+    val cardHeight = when {
+        screenConfig.isSmallScreen -> 120.dp
+        screenConfig.isMediumScreen -> 160.dp
+        else -> 180.dp
+    }
+
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        AsyncImage(
+            model = item.imageUrl,
+            contentDescription = item.title,
+            modifier = Modifier
+                .size(width = cardWidth, height = cardHeight)
+                .clip(RoundedCornerShape(8.dp))
+        )
+        Spacer(Modifier.height(8.dp))
+        Text(
+            text = item.title,
+            fontSize = (18 * screenConfig.textScale).sp,
+            color = MaterialTheme.colorScheme.onBackground
+        )
     }
 }
 
