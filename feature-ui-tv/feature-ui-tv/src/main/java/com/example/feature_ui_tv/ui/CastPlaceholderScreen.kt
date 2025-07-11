@@ -1,6 +1,5 @@
 package com.example.feature_ui_tv.ui
 
-import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
@@ -55,13 +54,8 @@ fun CastPlaceholderScreen(onCastClick: () -> Unit = {}) {
 
             Spacer(Modifier.height(if (screenConfig.isSmallScreen) 16.dp else 24.dp))
 
-            // Botón responsivo con debug
-            Button(
-                onClick = { 
-                    Log.d("CastPlaceholderScreen", "Button clicked!")
-                    onCastClick() 
-                }
-            ) {
+            // Botón responsivo
+            Button(onClick = onCastClick) {
                 Text(
                     "Proyectar", 
                     fontSize = (18 * screenConfig.textScale).sp
