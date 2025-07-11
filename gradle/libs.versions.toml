@@ -66,7 +66,7 @@ hilt-compiler                = { group = "com.google.dagger",              name 
 hilt-navigation-compose = { group = "androidx.hilt", name  = "hilt-navigation-compose", version.ref = "hiltNavigationCompose" }
 androidx-material-icons-extended = { group = "androidx.compose.material", name  = "material-icons-extended", version.ref = "materialIcons" }
 androidx-lifecycle-viewmodel-ktx = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-ktx", version.ref = "lifecycleViewModelKtx" }
-android-desugar-jdk-libs = { module = "com.android.tools:desugar_jdk_libs", version.ref = "desugar" }
+android-desugar-jdk-libs = { module = "com.android.tools:desugar_jdk_libs", version.ref = "desugar_jdk_libs" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
