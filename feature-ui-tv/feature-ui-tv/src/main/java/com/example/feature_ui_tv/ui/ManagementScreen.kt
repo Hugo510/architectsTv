@@ -5,6 +5,8 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -93,6 +95,40 @@ fun ManagementScreen(
                 screenConfig = screenConfig,
                 onNext = onNext
             )
+        }
+
+        // Añadir un botón grande y llamativo en la parte inferior derecha
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .align(Alignment.BottomEnd)
+                .padding(24.dp)
+        ) {
+            Button(
+                onClick = onNext,
+                modifier = Modifier
+                    .align(Alignment.BottomEnd)
+                    .height(64.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color(0xFF43A047) // Verde más llamativo
+                ),
+                elevation = ButtonDefaults.buttonElevation(
+                    defaultElevation = 8.dp,
+                    pressedElevation = 12.dp
+                )
+            ) {
+                Text(
+                    "Cronograma", 
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Icon(
+                    imageVector = Icons.Default.ArrowForward,
+                    contentDescription = "Siguiente",
+                    modifier = Modifier.size(28.dp)
+                )
+            }
         }
     }
 }

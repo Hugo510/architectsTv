@@ -5,14 +5,15 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
-import androidx.compose.material3.Card
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
@@ -171,17 +172,42 @@ fun EvidenceScreen(
             }
         }
 
-        // Botón responsivo
+        // Botón responsivo - ahora más grande y llamativo
         Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .align(Alignment.BottomCenter)
-                .padding(screenConfig.contentPadding),
-            horizontalArrangement = Arrangement.Start
+                .padding(24.dp),
+            horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Button(onClick = onBack) { 
-                Text("Atrás", fontSize = (16 * screenConfig.textScale).sp) 
+            Button(
+                onClick = onBack,
+                modifier = Modifier
+                    .height(64.dp)
+                    .padding(end = 16.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color(0xFF1E88E5) // Azul más llamativo
+                ),
+                elevation = ButtonDefaults.buttonElevation(
+                    defaultElevation = 8.dp,
+                    pressedElevation = 12.dp
+                )
+            ) { 
+                Icon(
+                    imageVector = Icons.Default.ArrowBack,
+                    contentDescription = "Atrás",
+                    modifier = Modifier.size(28.dp)
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(
+                    "Atrás", 
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold
+                ) 
             }
+            
+            // Espacio vacío donde iría el botón "Siguiente" en otras pantallas
+            Spacer(modifier = Modifier.width(120.dp))
         }
     }
 }
