@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -25,16 +26,17 @@ import com.example.feature_ui_tv.ui.components.PageIndicator
 data class EvidenceItem(val title: String, val imageUrl: String)
 
 private val sampleEvidence = listOf(
-    EvidenceItem("Evidencia 1", "https://tu.cdn.com/evidencia1.jpg"),
-    EvidenceItem("Evidencia 2", "https://tu.cdn.com/evidencia2.jpg"),
-    EvidenceItem("Evidencia 3", "https://tu.cdn.com/evidencia3.jpg")
+    EvidenceItem("Evidencia 1", "https://cmpcmaderas.com/assets/uploads/2024/05/minecraft-portada.jpg"),
+    EvidenceItem("Evidencia 2", "https://minecraftfullhd.weebly.com/uploads/5/2/9/9/52994245/3180102_orig.jpg"),
+    EvidenceItem("Evidencia 3", "https://static.planetminecraft.com/files/image/minecraft/project/2023/389/17216741_xl.webp")
 )
 
 @Composable
 fun EvidenceScreen(
     projectName: String = "Proyecto 1",
     status: String = "En Proceso",
-    evidences: List<EvidenceItem> = sampleEvidence
+    evidences: List<EvidenceItem> = sampleEvidence,
+    onBack: () -> Unit
 ) {
     Box(
         modifier = Modifier
@@ -162,6 +164,9 @@ fun EvidenceScreen(
                 }
             }
         }
+    }
+    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+        Button(onClick = onBack) { Text("Atrás") }
     }
 }
 

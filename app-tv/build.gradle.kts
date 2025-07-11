@@ -80,4 +80,5 @@ dependencies {
     implementation(libs.play.services.cast.framework)
 
     implementation(project(":feature-ui-tv:feature-ui-tv"))
+    implementation(project(":feature-projection:feature-projection"))
 }

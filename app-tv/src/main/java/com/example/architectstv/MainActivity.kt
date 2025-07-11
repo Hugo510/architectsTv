@@ -12,7 +12,8 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.featureprojection.CastViewModel
+import com.example.architectstv.ui.theme.ArchitectsTvTheme
+import com.example.feature_projection.CastViewModel
 import com.example.feature_ui_tv.ui.CastPlaceholderScreen
 import com.example.feature_ui_tv.ui.LoadingScreen
 import com.example.feature_ui_tv.ui.ManagementScreen
@@ -71,7 +72,9 @@ class MainActivity : ComponentActivity() {
                     composable("cronograma") {
                         CronogramaScreen(
                             title  = "Proyecto 2",
-                            status = "En Proceso"
+                            status = "En Proceso",
+                            onNext = { navController.navigate("planos") },
+                            onBack = { navController.popBackStack() }
                         )
                     }
 
@@ -80,13 +83,15 @@ class MainActivity : ComponentActivity() {
                         PlanosScreen(
                             projectName  = "Proyecto 2",
                             status       = "En Proceso",
-                            planUrl      = "https://tu.cdn.com/plano2.jpg",
+                            planUrl      = "https://i.redd.it/dyv0kopwbxe31.png",
                             lastRevision = "15/Junio/2025",
                             version      = "V.02",
                             planType     = "Planta Alta / Estructural",
                             builtArea    = "120.00 m²",
                             landArea     = "180.00 m²",
-                            scale        = "1 : 200"
+                            scale        = "1 : 200",
+                            onNext = { navController.navigate("evidence") },
+                            onBack = { navController.popBackStack() }
                         )
                     }
 
@@ -94,7 +99,8 @@ class MainActivity : ComponentActivity() {
                     composable("evidence") {
                         EvidenceScreen(
                             projectName = "Proyecto 2",
-                            status      = "En Proceso"
+                            status      = "En Proceso",
+                            onBack = { navController.popBackStack() }
                         )
                     }
                 }

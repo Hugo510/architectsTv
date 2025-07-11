@@ -102,7 +102,7 @@ fun ManagementScreen(
                 ) {
                     // Izquierda: foto de la obra
                     AsyncImage(
-                        model               = "https://tu.cdn.com/obra.jpg",
+                        model               = "https://www.xtrafondos.com/wallpapers/construccion-en-minecraft-12384.jpg",
                         contentDescription  = "Obra ejemplo",
                         contentScale        = ContentScale.Crop,
                         modifier            = Modifier

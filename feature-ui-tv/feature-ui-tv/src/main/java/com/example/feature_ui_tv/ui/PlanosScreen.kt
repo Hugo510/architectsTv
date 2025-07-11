@@ -1,9 +1,9 @@
-// feature-ui-tv/src/main/java/com/example/feature_ui_tv/ui/PlanosScreen.kt
 package com.example.feature_ui_tv.ui
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -18,7 +18,7 @@ import coil.compose.AsyncImage
 // 1) Importa los componentes reutilizables
 import com.example.feature_ui_tv.ui.components.ClockDate
 import com.example.feature_ui_tv.ui.components.LogoHeader
-import com.example.feature_ui_tv.ui.components.PageIndicator  // ← NUEVO
+import com.example.feature_ui_tv.ui.components.PageIndicator
 
 @Composable
 fun PlanosScreen(
@@ -30,14 +30,16 @@ fun PlanosScreen(
     planType: String = "Planta Baja / Arquitectónica",
     builtArea: String = "150.00 m² (P.B. 80 m² / P.A. 70 m²)",
     landArea: String = "200.00 m²",
-    scale: String = "1 : 100"
+    scale: String = "1 : 100",
+    onNext: () -> Unit,
+    onBack: () -> Unit
 ) {
     Box(
         modifier = Modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
     ) {
-        // --- LogoHeader arriba a la izq. ---
+        // Logo + nombre empresa
         LogoHeader(
             logoUrl     = "https://tu.cdn.com/logo_pequeño.png",
             companyName = "Nombre Empresa",
@@ -47,7 +49,7 @@ fun PlanosScreen(
                 .wrapContentSize(Alignment.TopStart)
         )
 
-        // --- ClockDate arriba a la derecha ---
+        // Reloj arriba a la derecha
         ClockDate(
             modifier = Modifier
                 .fillMaxWidth()
@@ -55,7 +57,7 @@ fun PlanosScreen(
                 .wrapContentSize(Alignment.TopEnd)
         )
 
-        // --- PageIndicator centrado (tercer punto) ---
+        // Indicador de página (tercer punto de 4)
         PageIndicator(
             totalPages  = 4,
             currentPage = 2,
@@ -65,33 +67,25 @@ fun PlanosScreen(
                 .wrapContentSize(Alignment.TopCenter)
         )
 
+        // Contenido principal
         Column(
             modifier = Modifier
-                // Empuja el contenido principal hacia abajo para no solaparse
                 .fillMaxSize()
                 .padding(top = 88.dp, start = 16.dp, end = 16.dp)
         ) {
-            // --- Encabezado: título y subtítulo ---
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text(
-                    text = "Planos Arquitectónicos",
-                    fontSize = 28.sp,
-                    color = MaterialTheme.colorScheme.onBackground
-                )
-            }
-            Spacer(modifier = Modifier.height(4.dp))
+            Text(
+                text = "Planos Arquitectónicos",
+                fontSize = 28.sp,
+                color = MaterialTheme.colorScheme.onBackground
+            )
+            Spacer(Modifier.height(4.dp))
             Text(
                 text = "Consulta las fechas clave y próximas entregas del proyecto",
                 fontSize = 16.sp,
                 color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f)
             )
+            Spacer(Modifier.height(16.dp))
 
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // --- Card con contenido principal ---
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -103,7 +97,6 @@ fun PlanosScreen(
                         .fillMaxSize()
                         .padding(16.dp)
                 ) {
-                    // Izquierda: imagen del plano
                     AsyncImage(
                         model = planUrl,
                         contentDescription = "Plano arquitectónico de $projectName",
@@ -112,22 +105,18 @@ fun PlanosScreen(
                             .aspectRatio(1.8f)
                             .clip(RoundedCornerShape(8.dp))
                     )
-
-                    Spacer(modifier = Modifier.width(16.dp))
-
-                    // Derecha: info general
+                    Spacer(Modifier.width(16.dp))
                     Column(
                         verticalArrangement = Arrangement.spacedBy(12.dp),
                         modifier = Modifier.weight(1f)
                     ) {
-                        // Título del proyecto + estado
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Text(
                                 text = projectName,
                                 fontSize = 20.sp,
                                 color = MaterialTheme.colorScheme.onBackground
                             )
-                            Spacer(modifier = Modifier.width(8.dp))
+                            Spacer(Modifier.width(8.dp))
                             Card(shape = RoundedCornerShape(4.dp)) {
                                 Box(
                                     modifier = Modifier
@@ -142,16 +131,31 @@ fun PlanosScreen(
                                 }
                             }
                         }
-
-                        // Filas de información
-                        InfoRow(label = "Última Revisión",      value = lastRevision)
-                        InfoRow(label = "Versión",               value = version)
-                        InfoRow(label = "Tipo de Plano",         value = planType)
+                        // Filas de info
+                        InfoRow(label = "Última Revisión", value = lastRevision)
+                        InfoRow(label = "Versión",           value = version)
+                        InfoRow(label = "Tipo de Plano",     value = planType)
                         InfoRow(label = "Superficie Construida", value = builtArea)
                         InfoRow(label = "Superficie Terreno",    value = landArea)
                         InfoRow(label = "Escala",                value = scale)
                     }
                 }
+            }
+        }
+
+        // Botones de navegación abajo
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .align(Alignment.BottomCenter)
+                .padding(16.dp),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Button(onClick = onBack) {
+                Text("Atrás")
+            }
+            Button(onClick = onNext) {
+                Text("Siguiente")
             }
         }
     }
@@ -160,8 +164,8 @@ fun PlanosScreen(
 @Composable
 private fun InfoRow(label: String, value: String) {
     Row(
-        horizontalArrangement = Arrangement.SpaceBetween,
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween
     ) {
         Text(
             text = label,

@@ -1,10 +1,11 @@
-// feature-ui-tv/src/main/java/com/example/feature_ui_tv/ui/CastPlaceholderScreen.kt
 package com.example.feature_ui_tv.ui
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.IconButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Cast
 import androidx.compose.runtime.Composable
@@ -36,15 +37,23 @@ fun CastPlaceholderScreen(onCastClick: () -> Unit = {}) {
 
             Spacer(Modifier.height(48.dp))
 
+            // 2. Icono grande para “Cast”
             Icon(
                 imageVector        = Icons.Default.Cast,
                 contentDescription = "Cast icon",
                 modifier          = Modifier.size(96.dp),
                 tint               = MaterialTheme.colorScheme.primary
             )
+
+            Spacer(Modifier.height(24.dp))
+
+            // 3. Botón “Proyectar”
+            Button(onClick = onCastClick) {
+                Text("Proyectar", fontSize = 18.sp)
+            }
         }
 
-        // 2. LogoHeader arriba a la izquierda
+        // 4. LogoHeader arriba a la izquierda
         LogoHeader(
             logoUrl     = "https://tu.cdn.com/logo_pequeño.png",
             companyName = "Nombre Empresa",
@@ -53,7 +62,7 @@ fun CastPlaceholderScreen(onCastClick: () -> Unit = {}) {
                 .wrapContentSize(Alignment.TopStart)
         )
 
-        // 3. ClockDate arriba a la derecha
+        // 5. ClockDate arriba a la derecha
         ClockDate(
             modifier = Modifier
                 .padding(16.dp)
