@@ -25,13 +25,14 @@ navCompose         = "2.5.3"
 materialIcons = "1.4.0"
 lifecycleViewModelKtx = "2.5.1"
 desugar = "1.1.8"
-
+desugar_jdk_libs = "2.1.5"
 hilt               = "2.44"
 castFramework      = "21.1.0"
 hiltNavigationCompose = "1.0.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
+
 # Navegación Compose (móvil)
 androidx-hilt-navigation-compose-v120 = { module = "androidx.hilt:hilt-navigation-compose", version.ref = "hiltNavigationComposeVersion" }
 androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigationCompose" }
@@ -60,7 +61,7 @@ material3 = { module = "androidx.compose.material3:material3", version.ref = "ma
 play-services-cast-framework = { module = "com.google.android.gms:play-services-cast-framework", version.ref = "playServicesCastFramework" }
 androidx-tv-foundation    = { group = "androidx.tv", name = "tv-foundation", version.ref = "tvFoundation" }
 androidx-tv-material      = { group = "androidx.tv", name = "tv-material",   version.ref = "tvMaterial" }
-
+desugar-jdk-libs = { module = "com.android.tools:desugar_jdk_libs", version.ref = "desugar_jdk_libs" }
 androidx-compose-foundation = { group = "androidx.compose.foundation", name = "foundation", version.ref = "foundation" }
 # Hilt
 hilt-compiler                = { group = "com.google.dagger",              name = "hilt-compiler",               version.ref = "hilt" }
