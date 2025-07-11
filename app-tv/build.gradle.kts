@@ -31,6 +31,7 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
+        isCoreLibraryDesugaringEnabled = true
     }
     kotlinOptions {
         jvmTarget = "11"
@@ -57,6 +58,7 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+    coreLibraryDesugaring(libs.desugar.jdk.libs)
 
     // Compose TV
     implementation(libs.androidx.tv.foundation)
@@ -77,5 +79,5 @@ dependencies {
 // Google Cast (opcional)
     implementation(libs.play.services.cast.framework)
 
-    implementation(project(":feature-ui-tv"))
+    implementation(project(":feature-ui-tv:feature-ui-tv"))
 }
