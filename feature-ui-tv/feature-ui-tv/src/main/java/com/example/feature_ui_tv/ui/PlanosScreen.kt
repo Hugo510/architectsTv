@@ -11,6 +11,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
@@ -26,11 +28,11 @@ import com.example.feature_ui_tv.ui.components.ScreenConfig
 fun PlanosScreen(
     projectName: String = "Proyecto 1",
     status: String = "En Proceso",
-    planUrl: String,
+    planUrl: String = "https://www.xtrafondos.com/wallpapers/construccion-en-minecraft-12384.jpg",
     lastRevision: String = "01/Junio/2025",
     version: String = "V.01",
     planType: String = "Planta Baja / Arquitectónica",
-    builtArea: String = "150.00 m² (P.B. 80 m² / P.A. 70 m²)",
+    builtArea: String = "150.00 m² (P.B. 80m² / P.A. 70m²)",
     landArea: String = "200.00 m²",
     scale: String = "1 : 100",
     onNext: () -> Unit,
@@ -41,7 +43,7 @@ fun PlanosScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
+            .background(Color(0xFFF5F5F5))
     ) {
         LogoHeader(
             logoUrl = "https://tu.cdn.com/logo_pequeño.png",
@@ -78,78 +80,125 @@ fun PlanosScreen(
                     end = screenConfig.contentPadding
                 )
         ) {
-            Text(
-                text = "Planos Arquitectónicos",
-                fontSize = (28 * screenConfig.textScale).sp,
-                color = MaterialTheme.colorScheme.onBackground
-            )
-            Spacer(Modifier.height(4.dp))
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(
+                    text = projectName,
+                    fontSize = (24 * screenConfig.textScale).sp,
+                    color = Color(0xFF2D3748),
+                    fontWeight = FontWeight.Bold
+                )
+                Spacer(modifier = Modifier.width(12.dp))
+                androidx.compose.material3.Surface(
+                    shape = RoundedCornerShape(6.dp),
+                    color = Color(0xFFFFE082)
+                ) {
+                    Text(
+                        text = status,
+                        fontSize = (14 * screenConfig.textScale).sp,
+                        color = Color(0xFF744210),
+                        fontWeight = FontWeight.Medium,
+                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp)
+                    )
+                }
+            }
+            
+            Spacer(Modifier.height(24.dp))
+            
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(
+                    text = "🏗️ Planos Arquitectónicos",
+                    fontSize = (32 * screenConfig.textScale).sp,
+                    color = Color(0xFF2D3748),
+                    fontWeight = FontWeight.Bold
+                )
+            }
             Text(
                 text = "Consulta las fechas clave y próximas entregas del proyecto",
                 fontSize = (16 * screenConfig.textScale).sp,
-                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f)
+                color = Color(0xFF718096),
+                modifier = Modifier.padding(top = 4.dp)
             )
-            Spacer(Modifier.height(screenConfig.cardSpacing))
+            
+            Spacer(Modifier.height(24.dp))
 
-            Card(
+            Row(
                 modifier = Modifier
                     .fillMaxWidth()
                     .weight(1f),
-                shape = RoundedCornerShape(12.dp)
+                horizontalArrangement = Arrangement.spacedBy(24.dp)
             ) {
-                if (screenConfig.isSmallScreen) {
-                    Column(
+                // Plano arquitectónico
+                Card(
+                    modifier = Modifier.weight(2f),
+                    shape = RoundedCornerShape(12.dp),
+                    colors = androidx.compose.material3.CardDefaults.cardColors(
+                        containerColor = Color.White
+                    )
+                ) {
+                    AsyncImage(
+                        model = planUrl,
+                        contentDescription = "Plano arquitectónico de $projectName",
                         modifier = Modifier
                             .fillMaxSize()
-                            .padding(screenConfig.contentPadding)
-                    ) {
-                        AsyncImage(
-                            model = planUrl,
-                            contentDescription = "Plano arquitectónico de $projectName",
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .aspectRatio(screenConfig.imageAspectRatio)
-                                .clip(RoundedCornerShape(8.dp))
-                        )
-                        Spacer(Modifier.height(screenConfig.cardSpacing))
-                        PlanInfoColumn(
-                            projectName = projectName,
-                            status = status,
-                            lastRevision = lastRevision,
-                            version = version,
-                            planType = planType,
-                            builtArea = builtArea,
-                            landArea = landArea,
-                            scale = scale,
-                            screenConfig = screenConfig
-                        )
-                    }
-                } else {
+                            .padding(16.dp)
+                            .clip(RoundedCornerShape(8.dp))
+                    )
+                }
+                
+                // Información General
+                Column(
+                    modifier = Modifier.weight(1f),
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    Text(
+                        text = "Información General",
+                        fontSize = (20 * screenConfig.textScale).sp,
+                        color = Color(0xFF2D3748),
+                        fontWeight = FontWeight.Bold
+                    )
+                    
+                    InfoSection(
+                        title = "Última Revisión",
+                        content = lastRevision,
+                        screenConfig = screenConfig
+                    )
+                    
+                    InfoSection(
+                        title = "Vesión",
+                        content = version,
+                        screenConfig = screenConfig
+                    )
+                    
+                    InfoSection(
+                        title = "Tipo de Plano",
+                        content = planType,
+                        screenConfig = screenConfig
+                    )
+                    
+                    InfoSection(
+                        title = "Superficie Construida",
+                        content = builtArea,
+                        screenConfig = screenConfig
+                    )
+                    
                     Row(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(screenConfig.contentPadding)
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-                        AsyncImage(
-                            model = planUrl,
-                            contentDescription = "Plano arquitectónico de $projectName",
-                            modifier = Modifier
-                                .weight(1f)
-                                .aspectRatio(screenConfig.imageAspectRatio)
-                                .clip(RoundedCornerShape(8.dp))
+                        InfoSection(
+                            title = "Superficie Terreno",
+                            content = landArea,
+                            screenConfig = screenConfig,
+                            modifier = Modifier.weight(1f)
                         )
-                        Spacer(Modifier.width(screenConfig.cardSpacing))
-                        PlanInfoColumn(
-                            modifier = Modifier.weight(1f),
-                            projectName = projectName,
-                            status = status,
-                            lastRevision = lastRevision,
-                            version = version,
-                            planType = planType,
-                            builtArea = builtArea,
-                            landArea = landArea,
-                            scale = scale,
-                            screenConfig = screenConfig
+                        InfoSection(
+                            title = "Escala",
+                            content = scale,
+                            screenConfig = screenConfig,
+                            modifier = Modifier.weight(1f)
                         )
                     }
                 }
@@ -171,6 +220,30 @@ fun PlanosScreen(
                 Text("Siguiente", fontSize = (16 * screenConfig.textScale).sp)
             }
         }
+    }
+}
+
+@Composable
+private fun InfoSection(
+    title: String,
+    content: String,
+    screenConfig: ScreenConfig,
+    modifier: Modifier = Modifier
+) {
+    Column(modifier = modifier) {
+        Text(
+            text = title,
+            fontSize = (14 * screenConfig.textScale).sp,
+            color = Color(0xFF4A5568),
+            fontWeight = FontWeight.Medium
+        )
+        Spacer(Modifier.height(4.dp))
+        Text(
+            text = content,
+            fontSize = (16 * screenConfig.textScale).sp,
+            color = Color(0xFF2D3748),
+            fontWeight = FontWeight.Normal
+        )
     }
 }
 

@@ -12,6 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.draw.clip
@@ -46,7 +47,7 @@ fun ManagementScreen(
     Box(
         Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
+            .background(Color(0xFFF5F5F5))
             .graphicsLayer { alpha = contentAlpha }
     ) {
         // 1) Logo + nombre empresa (esquina superior izquierda)
@@ -181,51 +182,170 @@ private fun LargeScreenManagementContent(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = "\uD83D\uDEE0 Gestión de Obras",
+                text = "👥 Gestión de Obras",
                 fontSize = (32 * screenConfig.textScale).sp,
-                color = MaterialTheme.colorScheme.onBackground
+                color = Color(0xFF4A5568),
+                fontWeight = FontWeight.Bold
             )
         }
         Text(
             text = "Supervisa el avance y la información clave de la obra",
             fontSize = (16 * screenConfig.textScale).sp,
-            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f)
+            color = Color(0xFF718096)
         )
 
         Spacer(Modifier.height(screenConfig.cardSpacing))
 
-        Card(
-            modifier = Modifier
+        Row(
+            Modifier
                 .fillMaxWidth()
                 .weight(1f),
-            shape = RoundedCornerShape(12.dp)
+            horizontalArrangement = Arrangement.spacedBy(24.dp)
         ) {
-            Row(
-                Modifier
-                    .fillMaxSize()
-                    .padding(screenConfig.contentPadding)
+            // Columna izquierda - Proyecto e imagen
+            Column(
+                modifier = Modifier.weight(1f)
             ) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(
+                        text = projectName,
+                        fontSize = (24 * screenConfig.textScale).sp,
+                        color = Color(0xFF2D3748),
+                        fontWeight = FontWeight.Bold
+                    )
+                    Spacer(Modifier.width(12.dp))
+                    Surface(
+                        shape = RoundedCornerShape(6.dp),
+                        color = Color(0xFFFFE082)
+                    ) {
+                        Text(
+                            text = status,
+                            fontSize = (14 * screenConfig.textScale).sp,
+                            color = Color(0xFF744210),
+                            fontWeight = FontWeight.Medium,
+                            modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp)
+                        )
+                    }
+                }
+                
+                Spacer(Modifier.height(16.dp))
+                
                 AsyncImage(
                     model = "https://www.xtrafondos.com/wallpapers/construccion-en-minecraft-12384.jpg",
                     contentDescription = "Obra ejemplo",
                     contentScale = ContentScale.Crop,
                     modifier = Modifier
-                        .weight(1f)
-                        .aspectRatio(screenConfig.imageAspectRatio)
-                        .clip(RoundedCornerShape(8.dp))
-                )
-
-                Spacer(Modifier.width(screenConfig.cardSpacing))
-
-                ProjectInfoColumn(
-                    modifier = Modifier.weight(1f),
-                    projectName = projectName,
-                    status = status,
-                    screenConfig = screenConfig,
-                    onNext = onNext
+                        .fillMaxWidth()
+                        .aspectRatio(1.3f)
+                        .clip(RoundedCornerShape(12.dp))
                 )
             }
+            
+            // Columna derecha - Información general
+            Column(
+                modifier = Modifier.weight(1f),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                Text(
+                    text = "Información General",
+                    fontSize = (20 * screenConfig.textScale).sp,
+                    color = Color(0xFF2D3748),
+                    fontWeight = FontWeight.Bold
+                )
+                
+                InfoSection(
+                    title = "Ubicación",
+                    content = "Calle [Nombre] # [Número]\nCol. [Colonia], Durango, Dgo.,\nMéxico",
+                    screenConfig = screenConfig
+                )
+                
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    InfoSection(
+                        title = "Presupuesto",
+                        content = "$2,250,000 MXN",
+                        screenConfig = screenConfig,
+                        modifier = Modifier.weight(1f)
+                    )
+                    InfoSection(
+                        title = "Cliente",
+                        content = "John Doe",
+                        screenConfig = screenConfig,
+                        modifier = Modifier.weight(1f)
+                    )
+                }
+                
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    InfoSection(
+                        title = "Director de Obra",
+                        content = "Arq. Steve",
+                        screenConfig = screenConfig,
+                        modifier = Modifier.weight(1f)
+                    )
+                    InfoSection(
+                        title = "Ayudantes",
+                        content = "20 personas",
+                        screenConfig = screenConfig,
+                        modifier = Modifier.weight(1f)
+                    )
+                }
+                
+                Spacer(Modifier.height(8.dp))
+                
+                // Barra de progreso
+                Column {
+                    Text(
+                        text = "Progreso - 50%",
+                        fontSize = (16 * screenConfig.textScale).sp,
+                        color = Color(0xFF2D3748),
+                        fontWeight = FontWeight.Medium
+                    )
+                    Spacer(Modifier.height(8.dp))
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(8.dp)
+                            .background(Color(0xFFE2E8F0), RoundedCornerShape(4.dp))
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth(0.5f)
+                                .fillMaxHeight()
+                                .background(Color(0xFF3182CE), RoundedCornerShape(4.dp))
+                        )
+                    }
+                }
+            }
         }
+    }
+}
+
+@Composable
+private fun InfoSection(
+    title: String,
+    content: String,
+    screenConfig: ScreenConfig,
+    modifier: Modifier = Modifier
+) {
+    Column(modifier = modifier) {
+        Text(
+            text = title,
+            fontSize = (14 * screenConfig.textScale).sp,
+            color = Color(0xFF4A5568),
+            fontWeight = FontWeight.Medium
+        )
+        Spacer(Modifier.height(4.dp))
+        Text(
+            text = content,
+            fontSize = (16 * screenConfig.textScale).sp,
+            color = Color(0xFF2D3748),
+            fontWeight = FontWeight.Normal
+        )
     }
 }
 

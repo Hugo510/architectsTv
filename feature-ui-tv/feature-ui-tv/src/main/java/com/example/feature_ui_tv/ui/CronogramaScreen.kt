@@ -28,7 +28,7 @@ import com.example.feature_ui_tv.ui.components.rememberScreenConfig
 import com.example.feature_ui_tv.ui.components.ScreenConfig
 
 
-// Datos de ejemplo
+// Datos de ejemplo actualizados para coincidir con la imagen
 data class Task(
     val name: String,
     val startDay: Int,
@@ -37,11 +37,13 @@ data class Task(
 )
 
 private val sampleTasks = listOf(
-    Task("Diseño",            0, 4,  Color(0xFF8888FF)),
-    Task("Construcción",      0, 8,  Color(0xFF88FF88)),
-    Task("Entrega parcial",   0, 2,  Color(0xFFBBBBBB)),
-    Task("Revisión permisos", 3, 7,  Color(0xFFFFCCAA)),
-    Task("Entrega final",     2, 5,  Color(0xFFCCCCCC)),
+    Task("Diseño",            0, 4,  Color(0xFF9CA3FF)),
+    Task("Construcción",      0, 8,  Color(0xFF68D391)),
+    Task("Entrega",           0, 2,  Color(0xFFA0AEC0)),
+    Task("Revisión de Permisos", 3, 7,  Color(0xFFFBB6CE)),
+    Task("Entrega",           2, 5,  Color(0xFFA0AEC0)),
+    Task("Diseño",            8, 10, Color(0xFF9CA3FF)),
+    Task("Construcción",      5, 10, Color(0xFF68D391))
 )
 
 @Composable
@@ -57,7 +59,7 @@ fun CronogramaScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
+            .background(Color(0xFFF5F5F5))
     ) {
         LogoHeader(
             logoUrl = "https://tu.cdn.com/logo_pequeño.png",
@@ -94,7 +96,7 @@ fun CronogramaScreen(
                     end = screenConfig.contentPadding
                 )
         ) {
-            // Encabezado responsivo
+            // Encabezado con título del proyecto
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.fillMaxWidth()
@@ -102,67 +104,71 @@ fun CronogramaScreen(
                 Text(
                     text = title, 
                     fontSize = (24 * screenConfig.textScale).sp, 
-                    color = MaterialTheme.colorScheme.onBackground
+                    color = Color(0xFF2D3748),
+                    fontWeight = androidx.compose.ui.text.font.FontWeight.Bold
                 )
-                Spacer(modifier = Modifier.width(8.dp))
-                Card(shape = RoundedCornerShape(4.dp)) {
-                    Box(
-                        modifier = Modifier
-                            .background(Color(0xFFFFE082))
-                            .padding(horizontal = 8.dp, vertical = 2.dp)
-                    ) {
-                        Text(
-                            text = status, 
-                            fontSize = (14 * screenConfig.textScale).sp, 
-                            color = Color.Black
-                        )
-                    }
-                }
-            }
-
-            Spacer(modifier = Modifier.height(screenConfig.cardSpacing))
-
-            // Subtítulo responsivo
-            if (screenConfig.isLargeScreen) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
+                Spacer(modifier = Modifier.width(12.dp))
+                androidx.compose.material3.Surface(
+                    shape = RoundedCornerShape(6.dp),
+                    color = Color(0xFFFFE082)
+                ) {
                     Text(
-                        "\u23F0 Cronograma", 
-                        fontSize = (28 * screenConfig.textScale).sp
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(
-                        "Realiza el seguimiento de proyectos y próximas etapas",
-                        fontSize = (16 * screenConfig.textScale).sp,
-                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f)
-                    )
-                }
-            } else {
-                Column {
-                    Text(
-                        "\u23F0 Cronograma", 
-                        fontSize = (28 * screenConfig.textScale).sp
-                    )
-                    Text(
-                        "Seguimiento de proyectos",
-                        fontSize = (16 * screenConfig.textScale).sp,
-                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f)
+                        text = status, 
+                        fontSize = (14 * screenConfig.textScale).sp, 
+                        color = Color(0xFF744210),
+                        fontWeight = androidx.compose.ui.text.font.FontWeight.Medium,
+                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp)
                     )
                 }
             }
 
-            Spacer(modifier = Modifier.height(screenConfig.cardSpacing))
+            Spacer(modifier = Modifier.height(24.dp))
+
+            // Título del cronograma con ícono
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(
+                    "🕐 Cronograma", 
+                    fontSize = (32 * screenConfig.textScale).sp,
+                    color = Color(0xFF2D3748),
+                    fontWeight = androidx.compose.ui.text.font.FontWeight.Bold
+                )
+            }
+            Text(
+                "Realiza el seguimiento de proyectos y próximas etapas",
+                fontSize = (16 * screenConfig.textScale).sp,
+                color = Color(0xFF718096),
+                modifier = Modifier.padding(top = 4.dp)
+            )
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            // Leyenda de colores horizontal
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(24.dp),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                LegendItem("Diseño", Color(0xFF9CA3FF), screenConfig)
+                LegendItem("Revisión de Permisos", Color(0xFFFBB6CE), screenConfig)
+                LegendItem("Construcción", Color(0xFF68D391), screenConfig)
+                LegendItem("Entrega", Color(0xFFA0AEC0), screenConfig)
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
 
             // Tarjeta del gráfico
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
                     .weight(1f),
-                shape = RoundedCornerShape(12.dp)
+                shape = RoundedCornerShape(12.dp),
+                colors = androidx.compose.material3.CardDefaults.cardColors(
+                    containerColor = Color.White
+                )
             ) {
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(screenConfig.contentPadding)
+                        .padding(24.dp)
                 ) {
                     GanttChart(tasks = tasks, screenConfig = screenConfig)
                 }
@@ -188,62 +194,95 @@ fun CronogramaScreen(
 }
 
 @Composable
+private fun LegendItem(
+    label: String,
+    color: Color,
+    screenConfig: ScreenConfig
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        Box(
+            modifier = Modifier
+                .size(16.dp)
+                .background(color, RoundedCornerShape(4.dp))
+        )
+        Text(
+            text = label,
+            fontSize = (14 * screenConfig.textScale).sp,
+            color = Color(0xFF4A5568)
+        )
+    }
+}
+
+@Composable
 private fun GanttChart(
     tasks: List<Task>,
     screenConfig: ScreenConfig,
     days: Int = 11
 ) {
-    val rowHeight = if (screenConfig.isSmallScreen) 28f else 32f
-    val spacing = screenConfig.contentPadding.value
-    val textSize = 20f * screenConfig.textScale
+    val rowHeight = 40f
+    val headerHeight = 60f
+    val spacing = 16f
+    val textSize = 12f * screenConfig.textScale
+    val dayLabels = listOf("Lun 6", "Mar 7", "Mier 9", "Juev 10", "Vier 11", "Sab 12", "Dom 13", "Lun 13", "Mar 14", "Mier 15", "Juev 16")
 
     Canvas(modifier = Modifier.fillMaxSize()) {
         val totalWidth = size.width - spacing * 2
         val dayWidth = totalWidth / days
+        val currentDay = 2 // Línea vertical del día actual
 
-        // Líneas y etiquetas de días con texto escalable
-        for (i in 0..days) {
-            val x = spacing + i * dayWidth
-            drawLine(
-                color = Color.LightGray, 
-                start = Offset(x, 0f), 
-                end = Offset(x, size.height), 
-                strokeWidth = 1f
-            )
+        // Dibujar encabezado con días
+        dayLabels.forEachIndexed { i, dayLabel ->
             if (i < days) {
                 drawContext.canvas.nativeCanvas.apply {
-                    val dayLabel = when (i) {
-                        0 -> if (screenConfig.isSmallScreen) "L6" else "Lun 6"
-                        1 -> if (screenConfig.isSmallScreen) "M7" else "Mar 7"
-                        2 -> if (screenConfig.isSmallScreen) "X8" else "Mié 8"
-                        3 -> if (screenConfig.isSmallScreen) "J9" else "Jue 9"
-                        4 -> if (screenConfig.isSmallScreen) "V10" else "Vie 10"
-                        5 -> if (screenConfig.isSmallScreen) "S11" else "Sáb 11"
-                        6 -> if (screenConfig.isSmallScreen) "D12" else "Dom 12"
-                        7 -> if (screenConfig.isSmallScreen) "L13" else "Lun 13"
-                        8 -> if (screenConfig.isSmallScreen) "M14" else "Mar 14"
-                        9 -> if (screenConfig.isSmallScreen) "X15" else "Mié 15"
-                        else -> if (screenConfig.isSmallScreen) "J16" else "Jue 16"
+                    val shortLabel = when {
+                        screenConfig.isSmallScreen -> dayLabel.substring(0, 3)
+                        else -> dayLabel
                     }
                     drawText(
-                        dayLabel,
+                        shortLabel,
                         spacing + i * dayWidth + dayWidth / 2,
-                        24f,
+                        30f,
                         Paint().apply {
                             textAlign = Paint.Align.CENTER
                             this.textSize = textSize
-                            color = android.graphics.Color.DKGRAY
+                            color = android.graphics.Color.parseColor("#4A5568")
+                            isFakeBoldText = false
                         }
                     )
                 }
             }
         }
 
-        // Barras de tareas con altura responsiva
+        // Líneas verticales de la grilla
+        for (i in 0..days) {
+            val x = spacing + i * dayWidth
+            drawLine(
+                color = Color(0xFFE2E8F0), 
+                start = Offset(x, headerHeight), 
+                end = Offset(x, size.height), 
+                strokeWidth = 1f
+            )
+        }
+
+        // Línea vertical del día actual (más gruesa y de color distintivo)
+        val currentDayX = spacing + currentDay * dayWidth
+        drawLine(
+            color = Color(0xFF3182CE),
+            start = Offset(currentDayX, 0f),
+            end = Offset(currentDayX, size.height),
+            strokeWidth = 2f,
+            pathEffect = androidx.compose.ui.graphics.PathEffect.dashPathEffect(floatArrayOf(5f, 5f))
+        )
+
+        // Barras de tareas
         tasks.forEachIndexed { idx, task ->
-            val top = 32f + idx * (rowHeight + 8f)
-            val left = spacing + task.startDay * dayWidth
-            val right = spacing + (task.endDay + 1) * dayWidth
+            val top = headerHeight + 20f + idx * (rowHeight + 8f)
+            val left = spacing + task.startDay * dayWidth + 4f
+            val right = spacing + (task.endDay + 1) * dayWidth - 4f
+            
             drawRoundRect(
                 color = task.color, 
                 topLeft = Offset(left, top), 
