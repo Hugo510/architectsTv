@@ -40,6 +40,7 @@ dependencies {
     implementation(libs.androidx.ui)
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling)
+    implementation(libs.androidx.ui.tooling.preview)
 
     // 3) Foundation (layouts, focus, BorderStroke…)
     implementation(libs.androidx.compose.foundation)
