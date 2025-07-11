@@ -35,29 +35,29 @@ fun LoadingScreen(onComplete: () -> Unit) {
     
     val animatedScale by animateFloatAsState(
         targetValue = scale,
-        animationSpec = tween(durationMillis = 600, easing = FastOutSlowInEasing),
+        animationSpec = tween(durationMillis = 1200, easing = FastOutSlowInEasing), // Más lento
         label = "scale"
     )
     
     val animatedAlpha by animateFloatAsState(
         targetValue = alpha,
-        animationSpec = tween(durationMillis = 400),
+        animationSpec = tween(durationMillis = 800), // Más lento
         label = "alpha"
     )
 
     LaunchedEffect(Unit) {
-        // Fase 1: Aparece el contenido
+        // Fase 1: Aparece el contenido (más lento)
         showContent = true
         alpha = 1f
-        delay(200)
+        delay(500)
         
-        // Fase 2: Escala el indicador de progreso
+        // Fase 2: Escala el indicador de progreso (más lento)
         scale = 1f
-        delay(800)
+        delay(2000) // Aumentado de 800ms a 2000ms
         
-        // Fase 3: Desaparece gradualmente
+        // Fase 3: Desaparece gradualmente (más lento)
         alpha = 0f
-        delay(400)
+        delay(800) // Aumentado de 400ms a 800ms
         
         // Fase 4: Completa y navega
         onComplete()
