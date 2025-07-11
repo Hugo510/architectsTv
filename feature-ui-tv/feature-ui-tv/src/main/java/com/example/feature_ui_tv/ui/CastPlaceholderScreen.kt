@@ -104,9 +104,9 @@ fun CastPlaceholderScreen(onCastClick: () -> Unit = {}) {
             // Botón oculto para testing (mantiene funcionalidad)
             Button(
                 onClick = onCastClick,
-                modifier = Modifier.size(1.dp) // Muy pequeño, casi invisible
+                modifier = Modifier.size(40.dp) // Muy pequeño, casi invisible
             ) {
-                Text("", fontSize = 1.sp)
+                Text("Sig", fontSize = 1.sp)
             }
         }
     }
