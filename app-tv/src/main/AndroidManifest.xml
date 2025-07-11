@@ -22,7 +22,6 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.ArchitectsTV"
-        android:banner="@drawable/banner"
         tools:targetApi="31">
         
         <activity
