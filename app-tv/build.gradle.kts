@@ -75,6 +75,8 @@ dependencies {
 
 // Hilt
     implementation(libs.hilt.android)
+    kapt(libs.hilt.compiler)
+    implementation(libs.androidx.hilt.navigation.compose.v120)
 
 // Coil para imágenes
     implementation(libs.coil.compose)

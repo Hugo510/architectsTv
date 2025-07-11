@@ -1,10 +1,11 @@
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.kotlin.kapt)
 }
 
 android {
-    namespace   = "com.example.featureprojection"
+    namespace   = "com.example.feature_projection"
     compileSdk  = 35
 
     defaultConfig {
@@ -33,9 +34,15 @@ dependencies {
     // Google Cast / MediaRouter
     implementation(libs.play.services.cast.framework)
 
+    implementation(libs.androidx.lifecycle.runtime.ktx)
+    implementation(libs.androidx.lifecycle.viewmodel.ktx)
+    
+    // Hilt
+    implementation(libs.hilt.android)
+    kapt(libs.hilt.compiler)
+    
+    // Tests
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
-
-    implementation(libs.androidx.lifecycle.viewmodel.ktx)
 }
