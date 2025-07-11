@@ -16,9 +16,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.layout.ContentScale
 
 // Componentes reutilizables
 import com.example.feature_ui_tv.ui.components.ClockDate
@@ -31,7 +28,8 @@ data class EvidenceItem(val title: String, val imageUrl: String)
 
 private val sampleEvidence = listOf(
     EvidenceItem("Evidencia 1", "https://cmpcmaderas.com/assets/uploads/2024/05/minecraft-portada.jpg"),
-    EvidenceItem("Evidencia 2", "https://minecraftfullhd.weebly.com/uploads/5/2/9/9/52994245/3180102_orig.jpg")
+    EvidenceItem("Evidencia 2", "https://minecraftfullhd.weebly.com/uploads/5/2/9/9/52994245/3180102_orig.jpg"),
+    EvidenceItem("Evidencia 3", "https://static.planetminecraft.com/files/image/minecraft/project/2023/389/17216741_xl.webp")
 )
 
 @Composable
@@ -46,7 +44,7 @@ fun EvidenceScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFFF5F5F5))
+            .background(MaterialTheme.colorScheme.background)
     ) {
         LogoHeader(
             logoUrl = "https://tu.cdn.com/logo_pequeño.png",
@@ -82,65 +80,93 @@ fun EvidenceScreen(
                     end = screenConfig.contentPadding
                 )
         ) {
-            // Título del proyecto
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text(
-                    text = projectName,
-                    fontSize = (24 * screenConfig.textScale).sp,
-                    color = Color(0xFF2D3748),
-                    fontWeight = FontWeight.Bold
-                )
-                Spacer(modifier = Modifier.width(12.dp))
-                androidx.compose.material3.Surface(
-                    shape = RoundedCornerShape(6.dp),
-                    color = Color(0xFFFFE082)
+            // Encabezado responsivo
+            if (screenConfig.isLargeScreen) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.fillMaxWidth()
                 ) {
                     Text(
-                        text = status,
-                        fontSize = (14 * screenConfig.textScale).sp,
-                        color = Color(0xFF744210),
-                        fontWeight = FontWeight.Medium,
-                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp)
+                        text = "\uD83D\uDDBC Evidencia",
+                        fontSize = (32 * screenConfig.textScale).sp,
+                        color = MaterialTheme.colorScheme.onBackground
+                    )
+                }
+                Spacer(Modifier.height(4.dp))
+                Text(
+                    text = "Explora la evidencia del proyecto para darle seguimiento",
+                    fontSize = (16 * screenConfig.textScale).sp,
+                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f)
+                )
+            } else {
+                Column {
+                    Text(
+                        text = "\uD83D\uDDBC Evidencia",
+                        fontSize = (28 * screenConfig.textScale).sp,
+                        color = MaterialTheme.colorScheme.onBackground
+                    )
+                    Text(
+                        text = "Evidencia del proyecto",
+                        fontSize = (16 * screenConfig.textScale).sp,
+                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f)
                     )
                 }
             }
 
-            Spacer(Modifier.height(24.dp))
+            Spacer(Modifier.height(screenConfig.cardSpacing))
 
-            // Título de evidencia con ícono
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(
-                    text = "🖼️ Evidencia",
-                    fontSize = (32 * screenConfig.textScale).sp,
-                    color = Color(0xFF2D3748),
-                    fontWeight = FontWeight.Bold
-                )
-            }
-            Text(
-                text = "Explora la evidencia del proyecto para darle seguimiento",
-                fontSize = (16 * screenConfig.textScale).sp,
-                color = Color(0xFF718096),
-                modifier = Modifier.padding(top = 4.dp)
-            )
-
-            Spacer(Modifier.height(24.dp))
-
-            // Grilla de evidencias
-            Row(
+            // Card responsiva
+            Card(
                 modifier = Modifier
                     .fillMaxWidth()
                     .weight(1f),
-                horizontalArrangement = Arrangement.spacedBy(24.dp)
+                shape = RoundedCornerShape(12.dp)
             ) {
-                evidences.take(2).forEach { evidence ->
-                    EvidenceCard(
-                        item = evidence,
-                        screenConfig = screenConfig,
-                        modifier = Modifier.weight(1f)
-                    )
+                Column(
+                    Modifier
+                        .fillMaxSize()
+                        .padding(screenConfig.contentPadding)
+                ) {
+                    // Título del proyecto responsivo
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text(
+                            text = projectName,
+                            fontSize = (20 * screenConfig.textScale).sp,
+                            color = MaterialTheme.colorScheme.onBackground
+                        )
+                        Spacer(Modifier.width(8.dp))
+                        Card(shape = RoundedCornerShape(4.dp)) {
+                            Box(
+                                modifier = Modifier
+                                    .background(MaterialTheme.colorScheme.secondaryContainer)
+                                    .padding(horizontal = 8.dp, vertical = 2.dp)
+                            ) {
+                                Text(
+                                    text = status,
+                                    fontSize = (14 * screenConfig.textScale).sp,
+                                    color = MaterialTheme.colorScheme.onSecondaryContainer
+                                )
+                            }
+                        }
+                    }
+
+                    Spacer(Modifier.height(screenConfig.cardSpacing))
+
+                    // LazyRow responsiva
+                    LazyRow(
+                        contentPadding = PaddingValues(horizontal = screenConfig.contentPadding),
+                        horizontalArrangement = Arrangement.spacedBy(screenConfig.cardSpacing * 1.5f)
+                    ) {
+                        items(evidences) { item ->
+                            EvidenceCard(
+                                item = item,
+                                screenConfig = screenConfig
+                            )
+                        }
+                    }
                 }
             }
         }
@@ -163,42 +189,16 @@ fun EvidenceScreen(
 @Composable
 private fun EvidenceCard(
     item: EvidenceItem,
-    screenConfig: ScreenConfig,
-    modifier: Modifier = Modifier
+    screenConfig: ScreenConfig
 ) {
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = modifier
-    ) {
-        Card(
-            shape = RoundedCornerShape(12.dp),
-            colors = androidx.compose.material3.CardDefaults.cardColors(
-                containerColor = Color.White
-            ),
-            modifier = Modifier
-                .fillMaxWidth()
-                .aspectRatio(1.3f)
-        ) {
-            AsyncImage(
-                model = item.imageUrl,
-                contentDescription = item.title,
-                contentScale = ContentScale.Crop,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .clip(RoundedCornerShape(12.dp))
-            )
-        }
-        
-        Spacer(Modifier.height(16.dp))
-        
-        Text(
-            text = item.title,
-            fontSize = (18 * screenConfig.textScale).sp,
-            color = Color(0xFF2D3748),
-            fontWeight = FontWeight.Medium
-        )
+    val cardWidth = when {
+        screenConfig.isSmallScreen -> 200.dp
+        screenConfig.isMediumScreen -> 280.dp
+        else -> 320.dp
     }
-}
+    val cardHeight = when {
+        screenConfig.isSmallScreen -> 120.dp
+        screenConfig.isMediumScreen -> 160.dp
         else -> 180.dp
     }
 
