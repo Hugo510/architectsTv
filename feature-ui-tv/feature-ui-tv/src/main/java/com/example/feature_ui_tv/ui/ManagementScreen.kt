@@ -394,7 +394,7 @@ private fun ProjectInfoColumn(
         Button(onClick = onNext) {
             Text(
                 "Ver cronograma",
-                fontSize = (16 * screenConfig.textScale).sp
+                fontSize = (32 * screenConfig.textScale).sp
             )
         }
     }
