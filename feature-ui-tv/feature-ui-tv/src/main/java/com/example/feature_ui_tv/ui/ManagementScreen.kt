@@ -33,7 +33,7 @@ fun ManagementScreen(
     onNext: () -> Unit
 ) {
     val screenConfig = rememberScreenConfig()
-    
+
     // Animación de entrada
     var contentVisible by remember { mutableStateOf(false) }
     val contentAlpha by animateFloatAsState(
@@ -41,11 +41,11 @@ fun ManagementScreen(
         animationSpec = tween(600),
         label = "contentAlpha"
     )
-    
+
     LaunchedEffect(Unit) {
         contentVisible = true
     }
-    
+
     Box(
         Modifier
             .fillMaxSize()
@@ -118,7 +118,7 @@ fun ManagementScreen(
                 )
             ) {
                 Text(
-                    "Cronograma", 
+                    "Cronograma",
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Bold
                 )
@@ -144,8 +144,8 @@ private fun SmallScreenManagementContent(
         Modifier
             .fillMaxSize()
             .padding(
-                top = 88.dp, 
-                start = screenConfig.contentPadding, 
+                top = 88.dp,
+                start = screenConfig.contentPadding,
                 end = screenConfig.contentPadding
             )
     ) {
@@ -159,9 +159,9 @@ private fun SmallScreenManagementContent(
                 color = MaterialTheme.colorScheme.onBackground
             )
         }
-        
+
         Spacer(Modifier.height(screenConfig.cardSpacing))
-        
+
         // Layout vertical para pantallas pequeñas
         Card(
             modifier = Modifier
@@ -183,9 +183,9 @@ private fun SmallScreenManagementContent(
                         .aspectRatio(screenConfig.imageAspectRatio)
                         .clip(RoundedCornerShape(8.dp))
                 )
-                
+
                 Spacer(Modifier.height(screenConfig.cardSpacing))
-                
+
                 ProjectInfoColumn(
                     projectName = projectName,
                     status = status,
@@ -263,9 +263,9 @@ private fun LargeScreenManagementContent(
                         )
                     }
                 }
-                
+
                 Spacer(Modifier.height(16.dp))
-                
+
                 AsyncImage(
                     model = "https://www.xtrafondos.com/wallpapers/construccion-en-minecraft-12384.jpg",
                     contentDescription = "Obra ejemplo",
@@ -276,7 +276,7 @@ private fun LargeScreenManagementContent(
                         .clip(RoundedCornerShape(12.dp))
                 )
             }
-            
+
             // Columna derecha - Información general
             Column(
                 modifier = Modifier.weight(1f),
@@ -288,13 +288,13 @@ private fun LargeScreenManagementContent(
                     color = Color(0xFF2D3748),
                     fontWeight = FontWeight.Bold
                 )
-                
+
                 InfoSection(
                     title = "Ubicación",
                     content = "Calle [Nombre] # [Número]\nCol. [Colonia], Durango, Dgo.,\nMéxico",
                     screenConfig = screenConfig
                 )
-                
+
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween
@@ -312,7 +312,7 @@ private fun LargeScreenManagementContent(
                         modifier = Modifier.weight(1f)
                     )
                 }
-                
+
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween
@@ -330,9 +330,9 @@ private fun LargeScreenManagementContent(
                         modifier = Modifier.weight(1f)
                     )
                 }
-                
+
                 Spacer(Modifier.height(8.dp))
-                
+
                 // Barra de progreso
                 Column {
                     Text(
