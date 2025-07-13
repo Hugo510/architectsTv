@@ -14,10 +14,12 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.compose.currentBackStackEntryAsState
 import com.example.app_mobile.ui.theme.ArchitectsTvTheme
 import com.example.app_mobile.ui.components.BottomNavigationBar
 import com.example.app_mobile.ui.screens.home.HomeScreen
 import com.example.app_mobile.ui.screens.management.ManagementScreen
+import com.example.app_mobile.ui.screens.management.CreateProjectScreen
 import com.example.app_mobile.ui.screens.cronograma.CronogramaScreen
 import com.example.app_mobile.ui.screens.planos.PlanosScreen
 import com.example.app_mobile.ui.screens.evidencia.EvidenciaScreen
@@ -42,20 +44,41 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun MobileApp() {
     val navController = rememberNavController()
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentRoute = navBackStackEntry?.destination?.route
+    
+    // Lista de rutas que deben mostrar el bottom navigation
+    val bottomNavRoutes = listOf("management", "cronograma", "planos", "evidencia", "home")
+    val showBottomNav = currentRoute in bottomNavRoutes
     
     Scaffold(
         bottomBar = {
-            BottomNavigationBar(navController = navController)
+            if (showBottomNav) {
+                BottomNavigationBar(navController = navController)
+            }
         }
     ) { paddingValues ->
         NavHost(
             navController = navController,
             startDestination = "management",
-            modifier = Modifier.padding(paddingValues)
+            modifier = Modifier.padding(
+                bottom = if (showBottomNav) paddingValues.calculateBottomPadding() else 0.dp
+            )
         ) {
             composable("management") {
                 ManagementScreen(
-                    onNavigateToHome = { navController.navigate("home") }
+                    onNavigateToHome = { navController.navigate("home") },
+                    onNavigateToCreateProject = { navController.navigate("create_project") }
+                )
+            }
+            
+            composable("create_project") {
+                CreateProjectScreen(
+                    onNavigateBack = { navController.popBackStack() },
+                    onSaveProject = { project ->
+                        // TODO: Guardar proyecto en repositorio
+                        navController.popBackStack()
+                    }
                 )
             }
             

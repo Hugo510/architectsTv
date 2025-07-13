@@ -20,6 +20,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
+import com.example.shared_domain.model.*
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -34,24 +35,72 @@ fun HomeScreen(
     
     val statusOptions = listOf("Todos", "Activo", "En Proceso", "Completado", "En Pausa")
     
-    // Datos mockeados de proyectos
+    // Datos mockeados usando el dominio compartido
     val recentProjects = remember {
         listOf(
-            ProjectItem(
+            Project(
                 id = "1",
                 name = "Proyecto 1",
-                status = "Activo",
-                progress = 0,
-                imageUrl = "https://www.xtrafondos.com/wallpapers/construccion-en-minecraft-12384.jpg",
-                lastActivity = "Última actualización hace 1 día por: Arq. Steve"
+                description = "Casa residencial moderna",
+                status = ProjectStatus.PLANNING,
+                location = ProjectLocation(
+                    address = "Calle Ejemplo #123",
+                    city = "Durango",
+                    state = "Durango"
+                ),
+                budget = Money(2250000.0),
+                client = Client(
+                    id = "client1",
+                    name = "Juan Pérez",
+                    email = "juan@example.com"
+                ),
+                projectManager = ProjectManager(
+                    id = "pm1",
+                    name = "Arq. Steve",
+                    title = "Arquitecto Senior"
+                ),
+                timeline = ProjectTimeline(
+                    startDate = "2024-01-15",
+                    endDate = "2024-12-15",
+                    estimatedDuration = 300
+                ),
+                metadata = ProjectMetadata(
+                    createdAt = "2024-01-01T00:00:00Z",
+                    updatedAt = "2024-01-10T12:00:00Z"
+                ),
+                progress = 0.0
             ),
-            ProjectItem(
-                id = "2", 
+            Project(
+                id = "2",
                 name = "Proyecto 2",
-                status = "En Proceso",
-                progress = 50,
-                imageUrl = "https://minecraftfullhd.weebly.com/uploads/5/2/9/9/52994245/3180102_orig.jpg",
-                lastActivity = "Última actualización hace 2hrs por: Arq. Alex"
+                description = "Edificio comercial",
+                status = ProjectStatus.IN_PROGRESS,
+                location = ProjectLocation(
+                    address = "Av. Principal #456",
+                    city = "Durango",
+                    state = "Durango"
+                ),
+                budget = Money(5500000.0),
+                client = Client(
+                    id = "client2",
+                    name = "María González",
+                    company = "Empresa ABC"
+                ),
+                projectManager = ProjectManager(
+                    id = "pm2",
+                    name = "Arq. Alex",
+                    title = "Director de Proyecto"
+                ),
+                timeline = ProjectTimeline(
+                    startDate = "2023-08-01",
+                    endDate = "2024-08-01",
+                    estimatedDuration = 365
+                ),
+                metadata = ProjectMetadata(
+                    createdAt = "2023-07-15T00:00:00Z",
+                    updatedAt = "2024-01-09T10:30:00Z"
+                ),
+                progress = 0.5
             )
         )
     }
@@ -266,7 +315,7 @@ private fun SearchAndFilterSection(
 
 @Composable
 private fun ProjectCard(
-    project: ProjectItem,
+    project: Project,
     onClick: () -> Unit
 ) {
     Card(
@@ -280,15 +329,19 @@ private fun ProjectCard(
         Row(
             modifier = Modifier.padding(16.dp)
         ) {
-            // Imagen del proyecto
-            AsyncImage(
-                model = project.imageUrl,
-                contentDescription = "Imagen de ${project.name}",
+            // Imagen del proyecto (placeholder)
+            Box(
                 modifier = Modifier
                     .size(80.dp)
-                    .clip(RoundedCornerShape(8.dp)),
-                contentScale = ContentScale.Crop
-            )
+                    .clip(RoundedCornerShape(8.dp))
+                    .background(MaterialTheme.colorScheme.surfaceVariant),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = "🏗️",
+                    fontSize = 32.sp
+                )
+            }
             
             Spacer(modifier = Modifier.width(16.dp))
             
@@ -313,14 +366,21 @@ private fun ProjectCard(
                     Surface(
                         shape = RoundedCornerShape(12.dp),
                         color = when (project.status) {
-                            "Activo" -> Color(0xFF4CAF50)
-                            "En Proceso" -> Color(0xFFFF9800)
-                            "Completado" -> Color(0xFF2196F3)
-                            else -> MaterialTheme.colorScheme.surfaceVariant
+                            ProjectStatus.PLANNING -> Color(0xFF4CAF50)
+                            ProjectStatus.IN_PROGRESS -> Color(0xFFFF9800)
+                            ProjectStatus.COMPLETED -> Color(0xFF2196F3)
+                            ProjectStatus.ON_HOLD -> Color(0xFF9E9E9E)
+                            ProjectStatus.CANCELLED -> Color(0xFFF44336)
                         }
                     ) {
                         Text(
-                            text = project.status,
+                            text = when (project.status) {
+                                ProjectStatus.PLANNING -> "Activo"
+                                ProjectStatus.IN_PROGRESS -> "En Proceso"
+                                ProjectStatus.COMPLETED -> "Completado"
+                                ProjectStatus.ON_HOLD -> "En Pausa"
+                                ProjectStatus.CANCELLED -> "Cancelado"
+                            },
                             modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
                             fontSize = 12.sp,
                             color = Color.White,
@@ -331,7 +391,7 @@ private fun ProjectCard(
                 
                 // Actividad reciente
                 Text(
-                    text = "Nombre Actividad",
+                    text = project.description ?: "Sin descripción",
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Medium,
                     color = MaterialTheme.colorScheme.onSurface,
@@ -339,51 +399,38 @@ private fun ProjectCard(
                 )
                 
                 Text(
-                    text = project.lastActivity,
+                    text = "Última actualización por: ${project.projectManager.name}",
                     fontSize = 12.sp,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.padding(top = 2.dp)
                 )
                 
                 // Barra de progreso
-                if (project.progress > 0) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(top = 8.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    if (project.progressPercentage > 0) {
                         LinearProgressIndicator(
-                            progress = { project.progress / 100f },
+                            progress = { project.progress.toFloat() },
                             modifier = Modifier.weight(1f),
-                            color = MaterialTheme.colorScheme.primary
+                            color = when (project.status) {
+                                ProjectStatus.COMPLETED -> Color(0xFF4CAF50)
+                                ProjectStatus.IN_PROGRESS -> Color(0xFF2196F3)
+                                else -> MaterialTheme.colorScheme.primary
+                            }
                         )
                         Spacer(modifier = Modifier.width(8.dp))
-                        Text(
-                            text = "Progreso - ${project.progress}%",
-                            fontSize = 12.sp,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
                     }
-                } else {
                     Text(
-                        text = "Progreso - ${project.progress}%",
+                        text = "Progreso - ${project.progressPercentage}%",
                         fontSize = 12.sp,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier = Modifier.padding(top = 8.dp)
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
             }
         }
     }
 }
-
-// Data class para los proyectos
-data class ProjectItem(
-    val id: String,
-    val name: String,
-    val status: String,
-    val progress: Int,
-    val imageUrl: String,
-    val lastActivity: String
-)
