@@ -108,18 +108,51 @@ fun KanbanBoardView(
 
 @Composable
 private fun KanbanViewHeader() {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween
+    Card(
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f)
+        ),
+        modifier = Modifier.fillMaxWidth()
     ) {
-        Text(
-            text = "📋 Vista Kanban",
-            fontSize = 18.sp,
-            fontWeight = FontWeight.Bold
-        )
-        
-        TextButton(onClick = { /* TODO: Implementar configuración de columnas */ }) {
-            Text("Configurar")
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(
+                    text = "📋",
+                    fontSize = 24.sp,
+                    modifier = Modifier.padding(end = 8.dp)
+                )
+                Text(
+                    text = "Vista Kanban",
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onPrimaryContainer
+                )
+            }
+            
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                IconButton(
+                    onClick = { /* TODO: Implementar configuración de columnas */ },
+                    modifier = Modifier
+                        .background(
+                            MaterialTheme.colorScheme.surface.copy(alpha = 0.7f),
+                            RoundedCornerShape(8.dp)
+                        )
+                        .size(36.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Settings,
+                        contentDescription = "Configurar",
+                        tint = MaterialTheme.colorScheme.onSurface,
+                        modifier = Modifier.size(18.dp)
+                    )
+                }
+            }
         }
     }
 }
@@ -137,10 +170,25 @@ fun KanbanColumn(
     modifier: Modifier = Modifier
 ) {
     var isDropTarget by remember { mutableStateOf(false) }
+    val columnColor = getProjectStatusColor(status)
+    
+    // Animación para el estado de drop
+    val animatedElevation by animateDpAsState(
+        targetValue = if (isDropTarget && draggedTask != null) 8.dp else 4.dp,
+        animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy),
+        label = "elevation_animation"
+    )
+    
+    val animatedAlpha by animateFloatAsState(
+        targetValue = if (isDropTarget && draggedTask != null) 0.4f else 0.1f,
+        animationSpec = tween(200),
+        label = "alpha_animation"
+    )
     
     Card(
         modifier = modifier
-            .width(280.dp)
+            .width(300.dp)
+            .heightIn(min = 200.dp)
             .pointerInput(status) {
                 detectDragGesturesAfterLongPress(
                     onDragStart = { },
@@ -156,41 +204,40 @@ fun KanbanColumn(
                 }
             },
         colors = CardDefaults.cardColors(
-            containerColor = if (isDropTarget && draggedTask != null) {
-                getProjectStatusColor(status).copy(alpha = 0.3f)
-            } else {
-                getProjectStatusColor(status).copy(alpha = 0.1f)
-            }
+            containerColor = columnColor.copy(alpha = animatedAlpha)
         ),
         border = if (isDropTarget && draggedTask != null) {
-            BorderStroke(2.dp, getProjectStatusColor(status))
-        } else null
+            androidx.compose.foundation.BorderStroke(3.dp, columnColor)
+        } else {
+            androidx.compose.foundation.BorderStroke(1.dp, columnColor.copy(alpha = 0.3f))
+        },
+        elevation = CardDefaults.cardElevation(defaultElevation = animatedElevation)
     ) {
         Column(
             modifier = Modifier.padding(12.dp)
         ) {
             KanbanColumnHeader(
                 status = status,
-                taskCount = tasks.size
+                taskCount = tasks.size,
+                color = columnColor
             )
             
-            Spacer(modifier = Modifier.height(12.dp))
+            Spacer(modifier = Modifier.height(16.dp))
             
-            // Lista de tareas en la columna
-            tasks.forEach { kanbanTask ->
-                if (draggedTask?.task?.id != kanbanTask.task.id) {
-                    DraggableTaskCard(
-                        kanbanTask = kanbanTask,
-                        onClick = { onTaskClick(kanbanTask.task) },
-                        onDragStart = { onDragStart(kanbanTask) },
-                        modifier = Modifier.padding(bottom = 8.dp)
-                    )
-                }
-            }
-            
-            // Placeholder para cuando no hay tareas
+            // Lista de tareas con mejor espaciado
             if (tasks.isEmpty()) {
                 KanbanEmptyState(status = status)
+            } else {
+                tasks.forEach { kanbanTask ->
+                    if (draggedTask?.task?.id != kanbanTask.task.id) {
+                        DraggableTaskCard(
+                            kanbanTask = kanbanTask,
+                            onClick = { onTaskClick(kanbanTask.task) },
+                            onDragStart = { onDragStart(kanbanTask) },
+                            modifier = Modifier.padding(bottom = 8.dp)
+                        )
+                    }
+                }
             }
         }
     }
@@ -199,40 +246,57 @@ fun KanbanColumn(
 @Composable
 private fun KanbanColumnHeader(
     status: ProjectStatus,
-    taskCount: Int
+    taskCount: Int,
+    color: Color
 ) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier.fillMaxWidth()
+    Card(
+        colors = CardDefaults.cardColors(
+            containerColor = color.copy(alpha = 0.2f)
+        ),
+        border = androidx.compose.foundation.BorderStroke(1.dp, color.copy(alpha = 0.5f))
     ) {
-        Box(
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
-                .size(8.dp)
-                .clip(CircleShape)
-                .background(getProjectStatusColor(status))
-        )
-        
-        Spacer(modifier = Modifier.width(8.dp))
-        
-        Text(
-            text = "${getProjectStatusDisplayName(status)} ($taskCount)",
-            fontSize = 14.sp,
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier.weight(1f)
-        )
-        
-        // Badge con contador
-        if (taskCount > 0) {
-            Surface(
-                shape = CircleShape,
-                color = MaterialTheme.colorScheme.primaryContainer
-            ) {
+                .fillMaxWidth()
+                .padding(12.dp)
+        ) {
+            // Icono de fase
+            Text(
+                text = getPhaseIcon(status),
+                fontSize = 20.sp,
+                modifier = Modifier.padding(end = 8.dp)
+            )
+            
+            Column(modifier = Modifier.weight(1f)) {
                 Text(
-                    text = taskCount.toString(),
-                    fontSize = 12.sp,
-                    modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
-                    color = MaterialTheme.colorScheme.onPrimaryContainer
+                    text = getProjectStatusDisplayName(status),
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onSurface
                 )
+                Text(
+                    text = "$taskCount tareas",
+                    fontSize = 12.sp,
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+                )
+            }
+            
+            // Badge con contador mejorado
+            if (taskCount > 0) {
+                Card(
+                    colors = CardDefaults.cardColors(
+                        containerColor = color
+                    )
+                ) {
+                    Text(
+                        text = taskCount.toString(),
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                        color = Color.White
+                    )
+                }
             }
         }
     }
@@ -247,10 +311,30 @@ fun DraggableTaskCard(
 ) {
     var isDragging by remember { mutableStateOf(false) }
     
+    val animatedElevation by animateDpAsState(
+        targetValue = if (isDragging) 12.dp else 3.dp,
+        animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy),
+        label = "elevation_animation"
+    )
+    
+    val animatedAlpha by animateFloatAsState(
+        targetValue = if (isDragging) 0.7f else 1f,
+        animationSpec = tween(200),
+        label = "alpha_animation"
+    )
+    
+    val animatedScale by animateFloatAsState(
+        targetValue = if (isDragging) 1.02f else 1f,
+        animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy),
+        label = "scale_animation"
+    )
+    
     Card(
         onClick = onClick,
         modifier = modifier
             .fillMaxWidth()
+            .scale(animatedScale)
+            .graphicsLayer { alpha = animatedAlpha }
             .pointerInput(kanbanTask.task.id) {
                 detectDragGesturesAfterLongPress(
                     onDragStart = { 
@@ -261,19 +345,20 @@ fun DraggableTaskCard(
                         isDragging = false
                     }
                 ) { _, _ -> }
-            }
-            .graphicsLayer {
-                alpha = if (isDragging) 0.5f else 1f
             },
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surface
         ),
-        elevation = CardDefaults.cardElevation(
-            defaultElevation = if (isDragging) 8.dp else 2.dp
+        elevation = CardDefaults.cardElevation(defaultElevation = animatedElevation),
+        border = androidx.compose.foundation.BorderStroke(
+            width = if (isDragging) 2.dp else 1.dp,
+            color = getProjectStatusColor(kanbanTask.projectStatus).copy(
+                alpha = if (isDragging) 0.8f else 0.3f
+            )
         )
     ) {
         Column(
-            modifier = Modifier.padding(12.dp)
+            modifier = Modifier.padding(14.dp)
         ) {
             KanbanTaskHeader(task = kanbanTask.task)
             
@@ -424,25 +509,50 @@ private fun KanbanTaskProgress(
 
 @Composable
 private fun KanbanEmptyState(status: ProjectStatus) {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(100.dp),
-        contentAlignment = Alignment.Center
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
+        )
     ) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(120.dp),
+            contentAlignment = Alignment.Center
         ) {
-            Text(
-                text = "📋",
-                fontSize = 24.sp
-            )
-            Text(
-                text = "Sin tareas en ${getProjectStatusDisplayName(status)}",
-                fontSize = 12.sp,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    text = getPhaseIcon(status),
+                    fontSize = 32.sp,
+                    modifier = Modifier.padding(bottom = 8.dp)
+                )
+                Text(
+                    text = "Sin tareas",
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Medium,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+                Text(
+                    text = "Arrastra tareas aquí",
+                    fontSize = 12.sp,
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                    textAlign = TextAlign.Center
+                )
+            }
         }
+    }
+}
+
+// Helper functions
+private fun getPhaseIcon(status: ProjectStatus): String {
+    return when (status) {
+        ProjectStatus.DESIGN -> "📐"
+        ProjectStatus.PERMITS_REVIEW -> "📋"
+        ProjectStatus.CONSTRUCTION -> "🏗️"
+        ProjectStatus.DELIVERY -> "🎉"
     }
 }
 

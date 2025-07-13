@@ -4,39 +4,36 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.example.shared_domain.model.*
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.app_mobile.ui.screens.cronograma.components.*
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CronogramaScreen(
-    onNavigateToHome: () -> Unit,
-    modifier: Modifier = Modifier
+    onNavigateToTaskDetail: (String) -> Unit = {},
+    onNavigateToCreateTask: () -> Unit = {},
+    onNavigateToMilestoneDetail: (String) -> Unit = {},
+    onNavigateToScheduleSettings: () -> Unit = {},
+    modifier: Modifier = Modifier,
+    viewModel: CronogramaViewModel = viewModel()
 ) {
-    var selectedView by remember { mutableStateOf(ViewType.CRONOGRAMA) }
+    val uiState by viewModel.uiState.collectAsState()
+    val currentSchedule by viewModel.currentSchedule.collectAsState()
+    val allTasks by viewModel.allTasks.collectAsState()
+    val milestones by viewModel.milestones.collectAsState()
     
-    // TODO: Esto debería venir de un ViewModel
-    var projectSchedule by remember { mutableStateOf(getMockProjectSchedule()) }
-    
-    // Función para mover tareas entre fases
-    val moveTaskToPhase = { task: ScheduleTask, newPhase: ProjectStatus ->
-        val updatedTasks = projectSchedule.tasks.map { existingTask =>
-            if (existingTask.id == task.id) {
-                existingTask.copy(
-                    category = mapProjectStatusToTaskCategory(newPhase)
-                )
-            } else {
-                existingTask
-            }
+    // Mostrar mensajes
+    LaunchedEffect(uiState.message) {
+        uiState.message?.let {
+            // TODO: Mostrar snackbar o toast
+            viewModel.clearMessage()
         }
-        
-        projectSchedule = projectSchedule.copy(tasks = updatedTasks)
     }
     
     Scaffold(
@@ -48,206 +45,98 @@ fun CronogramaScreen(
                         fontWeight = FontWeight.Bold
                     ) 
                 },
-                navigationIcon = {
-                    IconButton(onClick = onNavigateToHome) {
-                        Icon(Icons.Default.Home, contentDescription = "Inicio")
+                actions = {
+                    IconButton(onClick = onNavigateToScheduleSettings) {
+                        Icon(
+                            Icons.Default.Settings, 
+                            contentDescription = "Configuración de cronograma"
+                        )
                     }
                 }
             )
         },
         floatingActionButton = {
             FloatingActionButton(
-                onClick = { /* TODO: Navegar a crear cronograma */ }
+                onClick = onNavigateToCreateTask
             ) {
-                Icon(Icons.Default.Add, contentDescription = "Agregar cronograma")
+                Icon(Icons.Default.Add, contentDescription = "Agregar tarea")
             }
         }
     ) { paddingValues ->
-        LazyColumn(
-            modifier = modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-                .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            // Header empresarial
-            item {
-                CronogramaHeader()
+        if (uiState.isLoading) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues),
+                contentAlignment = androidx.compose.ui.Alignment.Center
+            ) {
+                CircularProgressIndicator()
             }
-            
-            // Información del cronograma
-            item {
-                ScheduleInfoCard(schedule = projectSchedule)
-            }
-            
-            // Selector de vista
-            item {
-                ViewSelector(
-                    selectedView = selectedView,
-                    onViewChange = { selectedView = it }
-                )
-            }
-            
-            // Leyenda de estados
-            item {
-                StatusLegend()
-            }
-            
-            // Contenido principal según vista seleccionada
-            item {
-                when (selectedView) {
-                    ViewType.CRONOGRAMA -> {
-                        CronogramaTimelineView(
-                            tasks = projectSchedule.tasks,
-                            onTaskClick = { task ->
-                                // TODO: Navegar a detalle de tarea
-                            }
-                        )
-                    }
-                    ViewType.KANBAN -> {
-                        KanbanBoardView(
-                            tasks = projectSchedule.tasks,
-                            onTaskClick = { task ->
-                                // TODO: Navegar a detalle de tarea
-                            },
-                            onTaskMove = moveTaskToPhase
-                        )
+        } else {
+            LazyColumn(
+                modifier = modifier
+                    .fillMaxSize()
+                    .padding(paddingValues)
+                    .padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                // Header empresarial
+                item {
+                    CronogramaHeader()
+                }
+                
+                // Información del cronograma
+                currentSchedule?.let { schedule =>
+                    item {
+                        ScheduleInfoCard(schedule = schedule)
                     }
                 }
-            }
-            
-            // Hitos del proyecto
-            item {
-                MilestonesSection(
-                    milestones = projectSchedule.milestones,
-                    onMilestoneClick = { milestone ->
-                        // TODO: Navegar a detalle de hito
-                    }
-                )
-            }
-        }
-    }
-}
-
-// Función temporal para datos mock - debería moverse a un repository
-private fun getMockProjectSchedule(): ProjectSchedule {
-    return ProjectSchedule(
-        id = "schedule_1",
-        projectId = "project_1",
-        name = "Cronograma Principal - Casa Residencial",
-        description = "Cronograma completo del proyecto de casa residencial moderna",
-        tasks = listOf(
-            ScheduleTask(
-                id = "task_1",
-                name = "Diseño Arquitectónico",
-                description = "Elaboración de planos y diseños iniciales",
-                startDate = "2024-01-15",
-                endDate = "2024-02-15",
-                progress = 1.0,
-                status = TaskStatus.COMPLETED,
-                priority = TaskPriority.HIGH,
-                assignedTo = listOf("arq_steve"),
-                category = TaskCategory.DESIGN,
-                estimatedHours = 160,
-                actualHours = 150
-            ),
-            ScheduleTask(
-                id = "task_2",
-                name = "Trámites y Permisos",
-                description = "Gestión de licencias de construcción",
-                startDate = "2024-02-01",
-                endDate = "2024-03-15",
-                progress = 0.75,
-                status = TaskStatus.IN_PROGRESS,
-                priority = TaskPriority.CRITICAL,
-                assignedTo = listOf("ing_maria"),
-                category = TaskCategory.PERMITS,
-                estimatedHours = 80,
-                actualHours = 60
-            ),
-            ScheduleTask(
-                id = "task_3",
-                name = "Excavación y Cimentación",
-                description = "Preparación del terreno y bases",
-                startDate = "2024-03-01",
-                endDate = "2024-04-15",
-                progress = 0.25,
-                status = TaskStatus.NOT_STARTED,
-                priority = TaskPriority.HIGH,
-                assignedTo = listOf("ing_carlos"),
-                category = TaskCategory.CONSTRUCTION,
-                estimatedHours = 200,
-                actualHours = 50
-            ),
-            ScheduleTask(
-                id = "task_4",
-                name = "Estructura Principal",
-                description = "Construcción de columnas y vigas",
-                startDate = "2024-04-01",
-                endDate = "2024-06-30",
-                progress = 0.0,
-                status = TaskStatus.ON_HOLD,
-                priority = TaskPriority.HIGH,
-                assignedTo = listOf("ing_luis"),
-                category = TaskCategory.CONSTRUCTION,
-                estimatedHours = 400,
-                actualHours = 0
-            )
-        ),
-        milestones = listOf(
-            Milestone(
-                id = "milestone_1",
-                name = "Aprobación de Diseño",
-                description = "Diseño arquitectónico aprobado por el cliente",
-                targetDate = "2024-02-15",
-                isCompleted = true,
-                completedDate = "2024-02-14",
-                importance = MilestoneImportance.HIGH
-            ),
-            Milestone(
-                id = "milestone_2",
-                name = "Permisos Obtenidos",
-                description = "Todas las licencias y permisos aprobados",
-                targetDate = "2024-03-15",
-                isCompleted = false,
-                importance = MilestoneImportance.CRITICAL
-            )
-        ),
-        metadata = ScheduleMetadata(
-            createdAt = "2024-01-01T00:00:00Z",
-            updatedAt = "2024-01-15T10:30:00Z",
-            version = 1,
-            lastModifiedBy = "arq_steve"
-        )
-    )
-}
-            item {
-                ViewSelector(
-                    selectedView = selectedView,
-                    onViewChange = { selectedView = it }
-                )
-            }
-            
-            // Leyenda de estados
-            item {
-                StatusLegend()
-            }
-            
-            // Contenido según la vista seleccionada
-            item {
-                when (selectedView) {
-                    ViewType.CRONOGRAMA -> {
-                        CronogramaView(tasks = projectSchedule.tasks)
-                    }
-                    ViewType.KANBAN -> {
-                        KanbanView(tasks = projectSchedule.tasks)
+                
+                // Selector de vista
+                item {
+                    ViewSelector(
+                        selectedView = uiState.selectedView,
+                        onViewChange = viewModel::setViewType
+                    )
+                }
+                
+                // Leyenda de estados
+                item {
+                    StatusLegend()
+                }
+                
+                // Contenido principal según vista seleccionada
+                item {
+                    when (uiState.selectedView) {
+                        ViewType.CRONOGRAMA -> {
+                            CronogramaTimelineView(
+                                tasks = allTasks,
+                                onTaskClick = { task ->
+                                    onNavigateToTaskDetail(task.id)
+                                }
+                            )
+                        }
+                        ViewType.KANBAN -> {
+                            KanbanBoardView(
+                                tasks = allTasks,
+                                onTaskClick = { task ->
+                                    onNavigateToTaskDetail(task.id)
+                                },
+                                onTaskMove = viewModel::moveTaskToPhase
+                            )
+                        }
                     }
                 }
-            }
-            
-            // Milestones
-            item {
-                MilestonesSection(milestones = projectSchedule.milestones)
+                
+                // Hitos del proyecto
+                item {
+                    MilestonesSection(
+                        milestones = milestones,
+                        onMilestoneClick = { milestone ->
+                            onNavigateToMilestoneDetail(milestone.id)
+                        }
+                    )
+                }
             }
         }
     }
@@ -835,6 +724,123 @@ private fun MilestoneCard(milestone: Milestone) {
                 else 
                     Icons.Default.Schedule,
                 contentDescription = null,
+                tint = if (milestone.isCompleted) 
+                    Color(0xFF4CAF50) 
+                else 
+                    MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.size(24.dp)
+            )
+            
+            Spacer(modifier = Modifier.width(12.dp))
+            
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = milestone.name,
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Bold
+                )
+                
+                if (milestone.description != null) {
+                    Text(
+                        text = milestone.description,
+                        fontSize = 12.sp,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+                
+                Text(
+                    text = if (milestone.isCompleted) 
+                        "Completado: ${milestone.completedDate}"
+                    else 
+                        "Fecha objetivo: ${milestone.targetDate}",
+                    fontSize = 11.sp,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+            
+            // Importancia
+            Surface(
+                shape = RoundedCornerShape(8.dp),
+                color = getMilestoneImportanceColor(milestone.importance)
+            ) {
+                Text(
+                    text = getDisplayImportance(milestone.importance),
+                    modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
+                    fontSize = 10.sp,
+                    color = Color.White,
+                    fontWeight = FontWeight.Medium
+                )
+            }
+        }
+    }
+}
+
+// Helper functions para colores y display
+private fun getTaskStatusColor(status: TaskStatus): Color {
+    return when (status) {
+        TaskStatus.NOT_STARTED -> Color(0xFF2196F3)
+        TaskStatus.IN_PROGRESS -> Color(0xFFFF9800)
+        TaskStatus.COMPLETED -> Color(0xFF4CAF50)
+        TaskStatus.ON_HOLD -> Color(0xFFF44336)
+        TaskStatus.CANCELLED -> Color(0xFF9E9E9E)
+    }
+}
+
+private fun getPriorityColor(priority: TaskPriority): Color {
+    return when (priority) {
+        TaskPriority.LOW -> Color(0xFF4CAF50)
+        TaskPriority.MEDIUM -> Color(0xFFFF9800)
+        TaskPriority.HIGH -> Color(0xFFFF5722)
+        TaskPriority.CRITICAL -> Color(0xFFF44336)
+    }
+}
+
+private fun getMilestoneImportanceColor(importance: MilestoneImportance): Color {
+    return when (importance) {
+        MilestoneImportance.LOW -> Color(0xFF4CAF50)
+        MilestoneImportance.MEDIUM -> Color(0xFFFF9800)
+        MilestoneImportance.HIGH -> Color(0xFFFF5722)
+        MilestoneImportance.CRITICAL -> Color(0xFFF44336)
+    }
+}
+
+private fun getDisplayStatus(status: TaskStatus): String {
+    return when (status) {
+        TaskStatus.NOT_STARTED -> "Por Iniciar"
+        TaskStatus.IN_PROGRESS -> "En Proceso"
+        TaskStatus.COMPLETED -> "Completado"
+        TaskStatus.ON_HOLD -> "En Pausa"
+        TaskStatus.CANCELLED -> "Cancelado"
+    }
+}
+
+private fun getDisplayPriority(priority: TaskPriority): String {
+    return when (priority) {
+        TaskPriority.LOW -> "Baja"
+        TaskPriority.MEDIUM -> "Media"
+        TaskPriority.HIGH -> "Alta"
+        TaskPriority.CRITICAL -> "Crítica"
+    }
+}
+
+private fun getDisplayImportance(importance: MilestoneImportance): String {
+    return when (importance) {
+        MilestoneImportance.LOW -> "Baja"
+        MilestoneImportance.MEDIUM -> "Media"
+        MilestoneImportance.HIGH -> "Alta"
+        MilestoneImportance.CRITICAL -> "Crítica"
+    }
+}
+
+// Función auxiliar para mapear ProjectStatus a TaskCategory
+private fun mapProjectStatusToTaskCategory(status: ProjectStatus): TaskCategory {
+    return when (status) {
+        ProjectStatus.DESIGN -> TaskCategory.DESIGN
+        ProjectStatus.PERMITS_REVIEW -> TaskCategory.PERMITS
+        ProjectStatus.CONSTRUCTION -> TaskCategory.CONSTRUCTION
+        ProjectStatus.DELIVERY -> TaskCategory.DELIVERY
+    }
+}
                 tint = if (milestone.isCompleted) 
                     Color(0xFF4CAF50) 
                 else 
