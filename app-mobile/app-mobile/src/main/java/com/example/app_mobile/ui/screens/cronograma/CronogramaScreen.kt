@@ -1,169 +1,42 @@
 package com.example.app_mobile.ui.screens.cronograma
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.CalendarMonth
-import androidx.compose.material.icons.filled.CheckCircle
-import androidx.compose.material.icons.filled.Dashboard
 import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Schedule
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.example.shared_domain.model.*
-
-enum class ViewType {
-    CRONOGRAMA, KANBAN
-}
+import com.example.app_mobile.ui.screens.cronograma.components.*
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CronogramaScreen(
-    onNavigateToHome: () -> Unit
+    onNavigateToHome: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
     var selectedView by remember { mutableStateOf(ViewType.CRONOGRAMA) }
     
-    // Datos mockeados usando el dominio compartido
-    val projectSchedule = remember {
-        ProjectSchedule(
-            id = "schedule_1",
-            projectId = "project_1",
-            name = "Cronograma Principal - Casa Residencial",
-            description = "Cronograma completo del proyecto de casa residencial moderna",
-            tasks = listOf(
-                ScheduleTask(
-                    id = "task_1",
-                    name = "Diseño Arquitectónico",
-                    description = "Elaboración de planos y diseños iniciales",
-                    startDate = "2024-01-15",
-                    endDate = "2024-02-15",
-                    progress = 1.0,
-                    status = TaskStatus.COMPLETED,
-                    priority = TaskPriority.HIGH,
-                    assignedTo = listOf("arq_steve"),
-                    category = TaskCategory.DESIGN,
-                    estimatedHours = 160,
-                    actualHours = 150
-                ),
-                ScheduleTask(
-                    id = "task_2",
-                    name = "Trámites y Permisos",
-                    description = "Gestión de licencias de construcción",
-                    startDate = "2024-02-01",
-                    endDate = "2024-03-15",
-                    progress = 0.75,
-                    status = TaskStatus.IN_PROGRESS,
-                    priority = TaskPriority.CRITICAL,
-                    assignedTo = listOf("ing_maria"),
-                    category = TaskCategory.PERMITS,
-                    estimatedHours = 80,
-                    actualHours = 60
-                ),
-                ScheduleTask(
-                    id = "task_3",
-                    name = "Excavación y Cimentación",
-                    description = "Preparación del terreno y bases",
-                    startDate = "2024-03-01",
-                    endDate = "2024-04-15",
-                    progress = 0.25,
-                    status = TaskStatus.NOT_STARTED,
-                    priority = TaskPriority.HIGH,
-                    assignedTo = listOf("ing_carlos"),
-                    category = TaskCategory.CONSTRUCTION,
-                    estimatedHours = 200,
-                    actualHours = 50
-                ),
-                ScheduleTask(
-                    id = "task_4",
-                    name = "Estructura Principal",
-                    description = "Construcción de columnas y vigas",
-                    startDate = "2024-04-01",
-                    endDate = "2024-06-30",
-                    progress = 0.0,
-                    status = TaskStatus.ON_HOLD,
-                    priority = TaskPriority.HIGH,
-                    assignedTo = listOf("ing_luis"),
-                    category = TaskCategory.CONSTRUCTION,
-                    estimatedHours = 400,
-                    actualHours = 0
-                ),
-                ScheduleTask(
-                    id = "task_5",
-                    name = "Instalaciones Eléctricas",
-                    description = "Sistema eléctrico y cableado",
-                    startDate = "2024-06-15",
-                    endDate = "2024-08-30",
-                    progress = 0.0,
-                    status = TaskStatus.NOT_STARTED,
-                    priority = TaskPriority.MEDIUM,
-                    assignedTo = listOf("tec_pedro"),
-                    category = TaskCategory.CONSTRUCTION,
-                    estimatedHours = 120,
-                    actualHours = 0
-                ),
-                ScheduleTask(
-                    id = "task_6",
-                    name = "Acabados Finales",
-                    description = "Pisos, pintura y detalles finales",
-                    startDate = "2024-08-15",
-                    endDate = "2024-10-30",
-                    progress = 0.0,
-                    status = TaskStatus.NOT_STARTED,
-                    priority = TaskPriority.MEDIUM,
-                    assignedTo = listOf("arq_ana"),
-                    category = TaskCategory.CONSTRUCTION,
-                    estimatedHours = 160,
-                    actualHours = 0
+    // TODO: Esto debería venir de un ViewModel
+    var projectSchedule by remember { mutableStateOf(getMockProjectSchedule()) }
+    
+    // Función para mover tareas entre fases
+    val moveTaskToPhase = { task: ScheduleTask, newPhase: ProjectStatus ->
+        val updatedTasks = projectSchedule.tasks.map { existingTask =>
+            if (existingTask.id == task.id) {
+                existingTask.copy(
+                    category = mapProjectStatusToTaskCategory(newPhase)
                 )
-            ),
-            milestones = listOf(
-                Milestone(
-                    id = "milestone_1",
-                    name = "Aprobación de Diseño",
-                    description = "Diseño arquitectónico aprobado por el cliente",
-                    targetDate = "2024-02-15",
-                    isCompleted = true,
-                    completedDate = "2024-02-14",
-                    importance = MilestoneImportance.HIGH
-                ),
-                Milestone(
-                    id = "milestone_2",
-                    name = "Permisos Obtenidos",
-                    description = "Todas las licencias y permisos aprobados",
-                    targetDate = "2024-03-15",
-                    isCompleted = false,
-                    importance = MilestoneImportance.CRITICAL
-                ),
-                Milestone(
-                    id = "milestone_3",
-                    name = "Estructura Completada",
-                    description = "Estructura principal del edificio terminada",
-                    targetDate = "2024-06-30",
-                    isCompleted = false,
-                    importance = MilestoneImportance.HIGH
-                )
-            ),
-            metadata = ScheduleMetadata(
-                createdAt = "2024-01-01T00:00:00Z",
-                updatedAt = "2024-01-15T10:30:00Z",
-                version = 1,
-                lastModifiedBy = "arq_steve"
-            )
-        )
+            } else {
+                existingTask
+            }
+        }
+        
+        projectSchedule = projectSchedule.copy(tasks = updatedTasks)
     }
     
     Scaffold(
@@ -191,13 +64,13 @@ fun CronogramaScreen(
         }
     ) { paddingValues ->
         LazyColumn(
-            modifier = Modifier
+            modifier = modifier
                 .fillMaxSize()
                 .padding(paddingValues)
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            // Header con logo empresarial
+            // Header empresarial
             item {
                 CronogramaHeader()
             }
@@ -208,6 +81,146 @@ fun CronogramaScreen(
             }
             
             // Selector de vista
+            item {
+                ViewSelector(
+                    selectedView = selectedView,
+                    onViewChange = { selectedView = it }
+                )
+            }
+            
+            // Leyenda de estados
+            item {
+                StatusLegend()
+            }
+            
+            // Contenido principal según vista seleccionada
+            item {
+                when (selectedView) {
+                    ViewType.CRONOGRAMA -> {
+                        CronogramaTimelineView(
+                            tasks = projectSchedule.tasks,
+                            onTaskClick = { task ->
+                                // TODO: Navegar a detalle de tarea
+                            }
+                        )
+                    }
+                    ViewType.KANBAN -> {
+                        KanbanBoardView(
+                            tasks = projectSchedule.tasks,
+                            onTaskClick = { task ->
+                                // TODO: Navegar a detalle de tarea
+                            },
+                            onTaskMove = moveTaskToPhase
+                        )
+                    }
+                }
+            }
+            
+            // Hitos del proyecto
+            item {
+                MilestonesSection(
+                    milestones = projectSchedule.milestones,
+                    onMilestoneClick = { milestone ->
+                        // TODO: Navegar a detalle de hito
+                    }
+                )
+            }
+        }
+    }
+}
+
+// Función temporal para datos mock - debería moverse a un repository
+private fun getMockProjectSchedule(): ProjectSchedule {
+    return ProjectSchedule(
+        id = "schedule_1",
+        projectId = "project_1",
+        name = "Cronograma Principal - Casa Residencial",
+        description = "Cronograma completo del proyecto de casa residencial moderna",
+        tasks = listOf(
+            ScheduleTask(
+                id = "task_1",
+                name = "Diseño Arquitectónico",
+                description = "Elaboración de planos y diseños iniciales",
+                startDate = "2024-01-15",
+                endDate = "2024-02-15",
+                progress = 1.0,
+                status = TaskStatus.COMPLETED,
+                priority = TaskPriority.HIGH,
+                assignedTo = listOf("arq_steve"),
+                category = TaskCategory.DESIGN,
+                estimatedHours = 160,
+                actualHours = 150
+            ),
+            ScheduleTask(
+                id = "task_2",
+                name = "Trámites y Permisos",
+                description = "Gestión de licencias de construcción",
+                startDate = "2024-02-01",
+                endDate = "2024-03-15",
+                progress = 0.75,
+                status = TaskStatus.IN_PROGRESS,
+                priority = TaskPriority.CRITICAL,
+                assignedTo = listOf("ing_maria"),
+                category = TaskCategory.PERMITS,
+                estimatedHours = 80,
+                actualHours = 60
+            ),
+            ScheduleTask(
+                id = "task_3",
+                name = "Excavación y Cimentación",
+                description = "Preparación del terreno y bases",
+                startDate = "2024-03-01",
+                endDate = "2024-04-15",
+                progress = 0.25,
+                status = TaskStatus.NOT_STARTED,
+                priority = TaskPriority.HIGH,
+                assignedTo = listOf("ing_carlos"),
+                category = TaskCategory.CONSTRUCTION,
+                estimatedHours = 200,
+                actualHours = 50
+            ),
+            ScheduleTask(
+                id = "task_4",
+                name = "Estructura Principal",
+                description = "Construcción de columnas y vigas",
+                startDate = "2024-04-01",
+                endDate = "2024-06-30",
+                progress = 0.0,
+                status = TaskStatus.ON_HOLD,
+                priority = TaskPriority.HIGH,
+                assignedTo = listOf("ing_luis"),
+                category = TaskCategory.CONSTRUCTION,
+                estimatedHours = 400,
+                actualHours = 0
+            )
+        ),
+        milestones = listOf(
+            Milestone(
+                id = "milestone_1",
+                name = "Aprobación de Diseño",
+                description = "Diseño arquitectónico aprobado por el cliente",
+                targetDate = "2024-02-15",
+                isCompleted = true,
+                completedDate = "2024-02-14",
+                importance = MilestoneImportance.HIGH
+            ),
+            Milestone(
+                id = "milestone_2",
+                name = "Permisos Obtenidos",
+                description = "Todas las licencias y permisos aprobados",
+                targetDate = "2024-03-15",
+                isCompleted = false,
+                importance = MilestoneImportance.CRITICAL
+            )
+        ),
+        metadata = ScheduleMetadata(
+            createdAt = "2024-01-01T00:00:00Z",
+            updatedAt = "2024-01-15T10:30:00Z",
+            version = 1,
+            lastModifiedBy = "arq_steve"
+        )
+    )
+}
             item {
                 ViewSelector(
                     selectedView = selectedView,
@@ -927,5 +940,15 @@ private fun getDisplayImportance(importance: MilestoneImportance): String {
         MilestoneImportance.MEDIUM -> "Media"
         MilestoneImportance.HIGH -> "Alta"
         MilestoneImportance.CRITICAL -> "Crítica"
+    }
+}
+
+// Función auxiliar para mapear ProjectStatus a TaskCategory
+private fun mapProjectStatusToTaskCategory(status: ProjectStatus): TaskCategory {
+    return when (status) {
+        ProjectStatus.DESIGN -> TaskCategory.DESIGN
+        ProjectStatus.PERMITS_REVIEW -> TaskCategory.PERMITS
+        ProjectStatus.CONSTRUCTION -> TaskCategory.CONSTRUCTION
+        ProjectStatus.DELIVERY -> TaskCategory.DELIVERY
     }
 }
