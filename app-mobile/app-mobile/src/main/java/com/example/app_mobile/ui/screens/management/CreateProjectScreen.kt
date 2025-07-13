@@ -28,7 +28,7 @@ fun CreateProjectScreen(
 ) {
     var projectName by remember { mutableStateOf("") }
     var projectDescription by remember { mutableStateOf("") }
-    var selectedStatus by remember { mutableStateOf(ProjectStatus.PLANNING) }
+    var selectedStatus by remember { mutableStateOf(ProjectStatus.DESIGN) }
     var isStatusDropdownExpanded by remember { mutableStateOf(false) }
     
     // Ubicación
@@ -56,9 +56,10 @@ fun CreateProjectScreen(
     var estimatedDuration by remember { mutableStateOf("") }
     
     val statusOptions = listOf(
-        ProjectStatus.PLANNING to "Activo",
-        ProjectStatus.IN_PROGRESS to "En Proceso",
-        ProjectStatus.ON_HOLD to "En Pausa"
+        ProjectStatus.DESIGN to "Diseño",
+        ProjectStatus.PERMITS_REVIEW to "Revisión de Permisos",
+        ProjectStatus.CONSTRUCTION to "Construcción",
+        ProjectStatus.DELIVERY to "Entrega"
     )
     
     Scaffold(
@@ -386,34 +387,3 @@ fun CreateProjectScreen(
             Spacer(modifier = Modifier.height(80.dp))
         }
     }
-}
-
-@Composable
-private fun SectionCard(
-    title: String,
-    content: @Composable ColumnScope.() -> Unit
-) {
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surface
-        ),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-            Text(
-                text = title,
-                fontSize = 18.sp,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onSurface
-            )
-            
-            content()
-        }
-    }
-}

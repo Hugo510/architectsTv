@@ -22,18 +22,17 @@ data class Project(
         require(progress in 0.0..1.0) { "Progress must be between 0.0 and 1.0" }
     }
     
-    val isCompleted: Boolean get() = status == ProjectStatus.COMPLETED
-    val isActive: Boolean get() = status == ProjectStatus.IN_PROGRESS
+    val isCompleted: Boolean get() = status == ProjectStatus.DELIVERY
+    val isActive: Boolean get() = status == ProjectStatus.CONSTRUCTION
     val progressPercentage: Int get() = (progress * 100).toInt()
 }
 
 @Serializable
 enum class ProjectStatus {
-    PLANNING,
-    IN_PROGRESS,
-    ON_HOLD,
-    COMPLETED,
-    CANCELLED
+    DESIGN,
+    PERMITS_REVIEW,
+    CONSTRUCTION,
+    DELIVERY
 }
 
 @Serializable
@@ -141,4 +140,5 @@ data class ProjectMetadata(
     init {
         require(version > 0) { "Version must be positive" }
     }
+}
 }

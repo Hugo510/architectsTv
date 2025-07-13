@@ -31,7 +31,7 @@ fun ManagementScreen(
     var selectedStatus by remember { mutableStateOf("Estado") }
     var isStatusDropdownExpanded by remember { mutableStateOf(false) }
     
-    val statusOptions = listOf("Estado", "Activo", "En Proceso", "Completado", "En Pausa")
+    val statusOptions = listOf("Estado", "Diseño", "Revisión de Permisos", "Construcción", "Entrega")
     
     // Datos mockeados usando el dominio compartido
     val allProjects = remember {
@@ -40,7 +40,7 @@ fun ManagementScreen(
                 id = "1",
                 name = "Proyecto 1",
                 description = "Casa residencial moderna",
-                status = ProjectStatus.PLANNING,
+                status = ProjectStatus.DESIGN,
                 location = ProjectLocation(
                     address = "Calle Ejemplo #123",
                     city = "Durango",
@@ -66,13 +66,13 @@ fun ManagementScreen(
                     createdAt = "2024-01-01T00:00:00Z",
                     updatedAt = "2024-01-10T12:00:00Z"
                 ),
-                progress = 0.0
+                progress = 0.15
             ),
             Project(
                 id = "2",
                 name = "Proyecto 2",
                 description = "Edificio comercial",
-                status = ProjectStatus.IN_PROGRESS,
+                status = ProjectStatus.CONSTRUCTION,
                 location = ProjectLocation(
                     address = "Av. Principal #456",
                     city = "Durango",
@@ -98,13 +98,13 @@ fun ManagementScreen(
                     createdAt = "2023-07-15T00:00:00Z",
                     updatedAt = "2024-01-09T10:30:00Z"
                 ),
-                progress = 0.5
+                progress = 0.65
             ),
             Project(
                 id = "3",
                 name = "Proyecto 3",
                 description = "Complejo habitacional",
-                status = ProjectStatus.COMPLETED,
+                status = ProjectStatus.DELIVERY,
                 location = ProjectLocation(
                     address = "Blvd. Norte #789",
                     city = "Durango",
@@ -130,13 +130,13 @@ fun ManagementScreen(
                     createdAt = "2022-05-15T00:00:00Z",
                     updatedAt = "2023-12-05T16:30:00Z"
                 ),
-                progress = 1.0
+                progress = 0.95
             ),
             Project(
                 id = "4",
                 name = "Proyecto 4",
                 description = "Centro comercial",
-                status = ProjectStatus.ON_HOLD,
+                status = ProjectStatus.PERMITS_REVIEW,
                 location = ProjectLocation(
                     address = "Zona Industrial #101",
                     city = "Durango",
@@ -421,11 +421,10 @@ private fun ProjectCard(
                     Surface(
                         shape = RoundedCornerShape(12.dp),
                         color = when (project.status) {
-                            ProjectStatus.PLANNING -> Color(0xFF4CAF50)
-                            ProjectStatus.IN_PROGRESS -> Color(0xFFFF9800)
-                            ProjectStatus.COMPLETED -> Color(0xFF2196F3)
-                            ProjectStatus.ON_HOLD -> Color(0xFF9E9E9E)
-                            ProjectStatus.CANCELLED -> Color(0xFFF44336)
+                            ProjectStatus.DESIGN -> Color(0xFF9CA3FF)
+                            ProjectStatus.PERMITS_REVIEW -> Color(0xFFFBB6CE)
+                            ProjectStatus.CONSTRUCTION -> Color(0xFF68D391)
+                            ProjectStatus.DELIVERY -> Color(0xFFA0AEC0)
                         }
                     ) {
                         Text(
@@ -487,10 +486,10 @@ private fun ProjectCard(
 // Función auxiliar para convertir ProjectStatus a string de UI
 private fun getStatusDisplayName(status: ProjectStatus): String {
     return when (status) {
-        ProjectStatus.PLANNING -> "Activo"
-        ProjectStatus.IN_PROGRESS -> "En Proceso"
-        ProjectStatus.COMPLETED -> "Completado"
-        ProjectStatus.ON_HOLD -> "En Pausa"
-        ProjectStatus.CANCELLED -> "Cancelado"
+        ProjectStatus.DESIGN -> "Diseño"
+        ProjectStatus.PERMITS_REVIEW -> "Revisión de Permisos"
+        ProjectStatus.CONSTRUCTION -> "Construcción"
+        ProjectStatus.DELIVERY -> "Entrega"
     }
 }
+
