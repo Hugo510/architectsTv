@@ -465,8 +465,8 @@ private fun ProjectCard(
                             progress = { project.progress.toFloat() },
                             modifier = Modifier.weight(1f),
                             color = when (project.status) {
-                                ProjectStatus.COMPLETED -> Color(0xFF4CAF50)
-                                ProjectStatus.IN_PROGRESS -> Color(0xFF2196F3)
+                                ProjectStatus.DELIVERY -> Color(0xFF4CAF50)
+                                ProjectStatus.CONSTRUCTION -> Color(0xFF2196F3)
                                 else -> MaterialTheme.colorScheme.primary
                             }
                         )
