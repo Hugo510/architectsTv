@@ -1,9 +1,9 @@
 [versions]
 agp = "8.10.1"
 coilCompose = "2.4.0"
-hiltAndroid = "2.49"
+hiltAndroid = "2.56.2"
 hiltNavigationComposeVersion = "1.2.0"
-kotlin = "2.0.21"
+kotlin = "2.1.21"
 coreKtx = "1.16.0"
 junit = "4.13.2"
 junitVersion = "1.2.1"
@@ -99,6 +99,7 @@ androidx-tv-foundation    = { group = "androidx.tv", name = "tv-foundation", ver
 androidx-tv-material      = { group = "androidx.tv", name = "tv-material",   version.ref = "tvMaterial" }
 androidx-compose-foundation = { group = "androidx.compose.foundation", name = "foundation", version.ref = "foundation" }
 # Hilt
+
 hilt-compiler                = { group = "com.google.dagger",              name = "hilt-compiler",               version.ref = "hilt" }
 hilt-navigation-compose = { group = "androidx.hilt", name  = "hilt-navigation-compose", version.ref = "hiltNavigationCompose" }
 androidx-material-icons-extended = { group = "androidx.compose.material", name  = "material-icons-extended", version.ref = "materialIcons" }
@@ -238,4 +239,5 @@ android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 android-library = { id = "com.android.library", version.ref = "agp" }
+hilt = { id = "com.google.dagger.hilt.android", version.ref = "hiltAndroid" }
 ksp = { id = "com.google.devtools.ksp", version = "2.0.21-1.0.27" }
