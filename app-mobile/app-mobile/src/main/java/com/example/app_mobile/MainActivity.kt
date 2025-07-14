@@ -27,6 +27,8 @@ import com.example.app_mobile.ui.screens.management.CreateProjectScreen
 import com.example.app_mobile.ui.screens.cronograma.CronogramaScreen
 import com.example.app_mobile.ui.screens.planos.PlanosScreen
 import com.example.app_mobile.ui.screens.evidencia.EvidenciaScreen
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.app_mobile.ui.screens.management.ManagementViewModel
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -50,6 +52,9 @@ fun MobileApp() {
     val navController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
+    
+    // ViewModel compartido para gestión de proyectos
+    val managementViewModel: ManagementViewModel = viewModel()
     
     // Lista de rutas principales que muestran el bottom navigation
     val bottomNavRoutes = listOf("home", "management", "cronograma", "planos", "evidencia")
@@ -172,6 +177,7 @@ fun MobileApp() {
                     label = "management_animation"
                 ) {
                     ManagementScreen(
+                        viewModel = managementViewModel,
                         onNavigateToHome = { 
                             navController.navigate("home") {
                                 launchSingleTop = true
@@ -203,9 +209,10 @@ fun MobileApp() {
                 }
             ) {
                 CreateProjectScreen(
+                    viewModel = managementViewModel,
                     onNavigateBack = { navController.popBackStack() },
                     onSaveProject = { project ->
-                        // TODO: Guardar proyecto en repositorio
+                        managementViewModel.createProject(project)
                         navController.popBackStack()
                     }
                 )

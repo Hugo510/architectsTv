@@ -7,6 +7,10 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Architecture
+import androidx.compose.material.icons.filled.Assignment
+import androidx.compose.material.icons.filled.Construction
+import androidx.compose.material.icons.filled.DeliveryDining
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -20,163 +24,19 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.shared_domain.model.*
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.compose.runtime.collectAsState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ManagementScreen(
+    viewModel: ManagementViewModel = viewModel(),
     onNavigateToHome: () -> Unit,
     onNavigateToCreateProject: () -> Unit
 ) {
-    var searchQuery by remember { mutableStateOf("") }
-    var selectedStatus by remember { mutableStateOf("Estado") }
-    var isStatusDropdownExpanded by remember { mutableStateOf(false) }
+    val uiState by viewModel.uiState.collectAsState()
     
     val statusOptions = listOf("Estado", "Diseño", "Revisión de Permisos", "Construcción", "Entrega")
-    
-    // Datos mockeados usando el dominio compartido
-    val allProjects = remember {
-        listOf(
-            Project(
-                id = "1",
-                name = "Proyecto 1",
-                description = "Casa residencial moderna",
-                status = ProjectStatus.DESIGN,
-                location = ProjectLocation(
-                    address = "Calle Ejemplo #123",
-                    city = "Durango",
-                    state = "Durango"
-                ),
-                budget = Money(2250000.0),
-                client = Client(
-                    id = "client1",
-                    name = "Juan Pérez",
-                    email = "juan@example.com"
-                ),
-                projectManager = ProjectManager(
-                    id = "pm1",
-                    name = "Arq. Steve",
-                    title = "Arquitecto Senior"
-                ),
-                timeline = ProjectTimeline(
-                    startDate = "2024-01-15",
-                    endDate = "2024-12-15",
-                    estimatedDuration = 300
-                ),
-                metadata = ProjectMetadata(
-                    createdAt = "2024-01-01T00:00:00Z",
-                    updatedAt = "2024-01-10T12:00:00Z"
-                ),
-                progress = 0.15
-            ),
-            Project(
-                id = "2",
-                name = "Proyecto 2",
-                description = "Edificio comercial",
-                status = ProjectStatus.CONSTRUCTION,
-                location = ProjectLocation(
-                    address = "Av. Principal #456",
-                    city = "Durango",
-                    state = "Durango"
-                ),
-                budget = Money(5500000.0),
-                client = Client(
-                    id = "client2",
-                    name = "María González",
-                    company = "Empresa ABC"
-                ),
-                projectManager = ProjectManager(
-                    id = "pm2",
-                    name = "Arq. Alex",
-                    title = "Director de Proyecto"
-                ),
-                timeline = ProjectTimeline(
-                    startDate = "2023-08-01",
-                    endDate = "2024-08-01",
-                    estimatedDuration = 365
-                ),
-                metadata = ProjectMetadata(
-                    createdAt = "2023-07-15T00:00:00Z",
-                    updatedAt = "2024-01-09T10:30:00Z"
-                ),
-                progress = 0.65
-            ),
-            Project(
-                id = "3",
-                name = "Proyecto 3",
-                description = "Complejo habitacional",
-                status = ProjectStatus.DELIVERY,
-                location = ProjectLocation(
-                    address = "Blvd. Norte #789",
-                    city = "Durango",
-                    state = "Durango"
-                ),
-                budget = Money(8750000.0),
-                client = Client(
-                    id = "client3",
-                    name = "Carlos López",
-                    company = "Constructora XYZ"
-                ),
-                projectManager = ProjectManager(
-                    id = "pm3",
-                    name = "Arq. Carlos",
-                    title = "Gerente de Proyecto"
-                ),
-                timeline = ProjectTimeline(
-                    startDate = "2022-06-01",
-                    endDate = "2023-12-01",
-                    estimatedDuration = 550
-                ),
-                metadata = ProjectMetadata(
-                    createdAt = "2022-05-15T00:00:00Z",
-                    updatedAt = "2023-12-05T16:30:00Z"
-                ),
-                progress = 0.95
-            ),
-            Project(
-                id = "4",
-                name = "Proyecto 4",
-                description = "Centro comercial",
-                status = ProjectStatus.PERMITS_REVIEW,
-                location = ProjectLocation(
-                    address = "Zona Industrial #101",
-                    city = "Durango",
-                    state = "Durango"
-                ),
-                budget = Money(12000000.0),
-                client = Client(
-                    id = "client4",
-                    name = "Ana Martínez",
-                    company = "Inversiones del Norte"
-                ),
-                projectManager = ProjectManager(
-                    id = "pm4",
-                    name = "Arq. María",
-                    title = "Coordinadora General"
-                ),
-                timeline = ProjectTimeline(
-                    startDate = "2023-10-01",
-                    endDate = "2025-03-01",
-                    estimatedDuration = 520
-                ),
-                metadata = ProjectMetadata(
-                    createdAt = "2023-09-01T00:00:00Z",
-                    updatedAt = "2024-01-05T09:15:00Z"
-                ),
-                progress = 0.25
-            )
-        )
-    }
-    
-    // Filtrar proyectos basado en búsqueda y estado
-    val filteredProjects = remember(searchQuery, selectedStatus) {
-        allProjects.filter { project ->
-            val matchesSearch = searchQuery.isEmpty() || 
-                project.name.contains(searchQuery, ignoreCase = true)
-            val matchesStatus = selectedStatus == "Estado" || 
-                getStatusDisplayName(project.status) == selectedStatus
-            matchesSearch && matchesStatus
-        }
-    }
     
     Scaffold(
         floatingActionButton = {
@@ -208,18 +68,18 @@ fun ManagementScreen(
             // Buscador y filtro
             item {
                 SearchAndFilterSection(
-                    searchQuery = searchQuery,
-                    onSearchQueryChange = { searchQuery = it },
-                    selectedStatus = selectedStatus,
-                    onStatusChange = { selectedStatus = it },
+                    searchQuery = uiState.searchQuery,
+                    onSearchQueryChange = viewModel::updateSearchQuery,
+                    selectedStatus = uiState.selectedStatus,
+                    onStatusChange = viewModel::updateSelectedStatus,
                     statusOptions = statusOptions,
-                    isDropdownExpanded = isStatusDropdownExpanded,
-                    onDropdownExpandedChange = { isStatusDropdownExpanded = it }
+                    isDropdownExpanded = false, // Mantener estado local para dropdown
+                    onDropdownExpandedChange = { }
                 )
             }
             
             // Lista de todos los proyectos
-            items(filteredProjects) { project ->
+            items(uiState.filteredProjects) { project ->
                 ProjectCard(
                     project = project,
                     onClick = { /* TODO: Navigate to project detail */ }
@@ -371,6 +231,146 @@ private fun SearchAndFilterSection(
 @Composable
 private fun ProjectCard(
     project: Project,
+    onClick: () -> Unit
+) {
+    Card(
+        onClick = onClick,
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surface
+        ),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+    ) {
+        Row(
+            modifier = Modifier.padding(16.dp)
+        ) {
+            // Icono profesional del proyecto
+            Box(
+                modifier = Modifier
+                    .size(80.dp)
+                    .clip(RoundedCornerShape(8.dp))
+                    .background(
+                        when (project.status) {
+                            ProjectStatus.DESIGN -> Color(0xFF9CA3FF).copy(alpha = 0.2f)
+                            ProjectStatus.PERMITS_REVIEW -> Color(0xFFFBB6CE).copy(alpha = 0.2f)
+                            ProjectStatus.CONSTRUCTION -> Color(0xFF68D391).copy(alpha = 0.2f)
+                            ProjectStatus.DELIVERY -> Color(0xFFA0AEC0).copy(alpha = 0.2f)
+                        }
+                    ),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    imageVector = when (project.status) {
+                        ProjectStatus.DESIGN -> Icons.Default.Architecture
+                        ProjectStatus.PERMITS_REVIEW -> Icons.Default.Assignment
+                        ProjectStatus.CONSTRUCTION -> Icons.Default.Construction
+                        ProjectStatus.DELIVERY -> Icons.Default.DeliveryDining
+                    },
+                    contentDescription = "Proyecto",
+                    tint = when (project.status) {
+                        ProjectStatus.DESIGN -> Color(0xFF9CA3FF)
+                        ProjectStatus.PERMITS_REVIEW -> Color(0xFFFBB6CE)
+                        ProjectStatus.CONSTRUCTION -> Color(0xFF68D391)
+                        ProjectStatus.DELIVERY -> Color(0xFFA0AEC0)
+                    },
+                    modifier = Modifier.size(32.dp)
+                )
+            }
+            
+            Spacer(modifier = Modifier.width(16.dp))
+            
+            // Información del proyecto
+            Column(
+                modifier = Modifier.weight(1f)
+            ) {
+                // Nombre y estado
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = project.name,
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                    
+                    // Chip de estado
+                    Surface(
+                        shape = RoundedCornerShape(12.dp),
+                        color = when (project.status) {
+                            ProjectStatus.DESIGN -> Color(0xFF9CA3FF)
+                            ProjectStatus.PERMITS_REVIEW -> Color(0xFFFBB6CE)
+                            ProjectStatus.CONSTRUCTION -> Color(0xFF68D391)
+                            ProjectStatus.DELIVERY -> Color(0xFFA0AEC0)
+                        }
+                    ) {
+                        Text(
+                            text = getStatusDisplayName(project.status),
+                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                            fontSize = 12.sp,
+                            color = Color.White,
+                            fontWeight = FontWeight.Medium
+                        )
+                    }
+                }
+                
+                // Actividad reciente
+                Text(
+                    text = project.description ?: "Sin descripción",
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Medium,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    modifier = Modifier.padding(top = 4.dp)
+                )
+                
+                Text(
+                    text = "Última actualización por: ${project.projectManager.name}",
+                    fontSize = 12.sp,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.padding(top = 2.dp)
+                )
+                
+                // Barra de progreso
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    if (project.progressPercentage > 0) {
+                        LinearProgressIndicator(
+                            progress = { project.progress.toFloat() },
+                            modifier = Modifier.weight(1f),
+                            color = when (project.status) {
+                                ProjectStatus.DELIVERY -> Color(0xFF4CAF50)
+                                ProjectStatus.CONSTRUCTION -> Color(0xFF2196F3)
+                                else -> MaterialTheme.colorScheme.primary
+                            }
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                    }
+                    Text(
+                        text = "Progreso - ${project.progressPercentage}%",
+                        fontSize = 12.sp,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+            }
+        }
+    }
+}
+
+// Función auxiliar para convertir ProjectStatus a string de UI
+private fun getStatusDisplayName(status: ProjectStatus): String {
+    return when (status) {
+        ProjectStatus.DESIGN -> "Diseño"
+        ProjectStatus.PERMITS_REVIEW -> "Revisión de Permisos"
+        ProjectStatus.CONSTRUCTION -> "Construcción"
+        ProjectStatus.DELIVERY -> "Entrega"
+    }
+}
     onClick: () -> Unit
 ) {
     Card(

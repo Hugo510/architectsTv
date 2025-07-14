@@ -19,13 +19,18 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.shared_domain.model.*
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.compose.runtime.collectAsState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CreateProjectScreen(
+    viewModel: ManagementViewModel = viewModel(),
     onNavigateBack: () -> Unit,
     onSaveProject: (Project) -> Unit
 ) {
+    val uiState by viewModel.uiState.collectAsState()
+    
     var projectName by remember { mutableStateOf("") }
     var projectDescription by remember { mutableStateOf("") }
     var selectedStatus by remember { mutableStateOf(ProjectStatus.DESIGN) }
@@ -61,6 +66,22 @@ fun CreateProjectScreen(
         ProjectStatus.CONSTRUCTION to "Construcción",
         ProjectStatus.DELIVERY to "Entrega"
     )
+    
+    // Manejar estados de creación
+    LaunchedEffect(uiState.createProjectSuccess) {
+        if (uiState.createProjectSuccess) {
+            viewModel.clearCreateProjectState()
+            onNavigateBack()
+        }
+    }
+    
+    // Mostrar error si existe
+    uiState.createProjectError?.let { error ->
+        LaunchedEffect(error) {
+            // TODO: Mostrar snackbar o diálogo de error
+            viewModel.clearCreateProjectState()
+        }
+    }
     
     Scaffold(
         topBar = {
@@ -132,11 +153,19 @@ fun CreateProjectScreen(
                 },
                 containerColor = MaterialTheme.colorScheme.primary
             ) {
-                Icon(
-                    Icons.Default.Save,
-                    contentDescription = "Guardar proyecto",
-                    tint = Color.White
-                )
+                if (uiState.isCreatingProject) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(24.dp),
+                        color = Color.White,
+                        strokeWidth = 2.dp
+                    )
+                } else {
+                    Icon(
+                        Icons.Default.Save,
+                        contentDescription = "Guardar proyecto",
+                        tint = Color.White
+                    )
+                }
             }
         }
     ) { paddingValues ->
@@ -385,6 +414,35 @@ fun CreateProjectScreen(
             
             // Spacer para el FAB (sin bottom nav)
             Spacer(modifier = Modifier.height(80.dp))
+        }
+    }
+}
+
+@Composable
+private fun SectionCard(
+    title: String,
+    modifier: Modifier = Modifier,
+    content: @Composable ColumnScope.() -> Unit
+) {
+    Card(
+        modifier = modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surface
+        ),
+        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
+    ) {
+        Column(
+            modifier = Modifier.padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            Text(
+                text = title,
+                fontSize = 18.sp,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onSurface
+            )
+            
+            content()
         }
     }
 }
