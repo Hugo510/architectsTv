@@ -34,6 +34,8 @@ import com.example.app_mobile.ui.screens.evidencia.GalleryProjectDetailScreen
 import com.example.app_mobile.ui.screens.evidencia.AddGalleryProjectScreen
 import com.example.app_mobile.data.repository.ManagementRepository
 import androidx.compose.runtime.remember
+import com.example.app_mobile.ui.screens.cronograma.TaskDetailScreen
+import com.example.app_mobile.ui.screens.cronograma.CreateTaskScreen
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -280,19 +282,58 @@ fun MobileApp() {
                 ) {
                     CronogramaScreen(
                         onNavigateToTaskDetail = { taskId ->
-                            // TODO: Navegar a detalle de tarea
+                            navController.navigate("task_detail/$taskId")
                         },
                         onNavigateToCreateTask = {
-                            // TODO: Navegar a crear tarea
-                        },
-                        onNavigateToMilestoneDetail = { milestoneId ->
-                            // TODO: Navegar a detalle de hito
-                        },
-                        onNavigateToScheduleSettings = {
-                            // TODO: Navegar a configuración de cronograma
+                            navController.navigate("create_task")
                         }
                     )
                 }
+            }
+            // Pantalla de detalle de tarea
+            composable(
+                "task_detail/{taskId}",
+                enterTransition = {
+                    // TODO: Puedes personalizar la animación si lo deseas
+                    slideInVertically(
+                        initialOffsetY = { it },
+                        animationSpec = tween(400, easing = FastOutSlowInEasing)
+                    ) + fadeIn(animationSpec = tween(400))
+                },
+                exitTransition = {
+                    slideOutVertically(
+                        targetOffsetY = { it },
+                        animationSpec = tween(400, easing = FastOutSlowInEasing)
+                    ) + fadeOut(animationSpec = tween(400))
+                }
+            ) { backStackEntry ->
+                val taskId = backStackEntry.arguments?.getString("taskId") ?: ""
+                TaskDetailScreen(
+                    taskId = taskId,
+                    onNavigateBack = { navController.popBackStack() },
+                    onEditTask = { /* TODO: Implementar edición de tarea si es necesario */ }
+                )
+            }
+            // Pantalla de crear tarea
+            composable(
+                "create_task",
+                enterTransition = {
+                    // TODO: Puedes personalizar la animación si lo deseas
+                    slideInVertically(
+                        initialOffsetY = { it },
+                        animationSpec = tween(400, easing = FastOutSlowInEasing)
+                    ) + fadeIn(animationSpec = tween(400))
+                },
+                exitTransition = {
+                    slideOutVertically(
+                        targetOffsetY = { it },
+                        animationSpec = tween(400, easing = FastOutSlowInEasing)
+                    ) + fadeOut(animationSpec = tween(400))
+                }
+            ) {
+                CreateTaskScreen(
+                    onNavigateBack = { navController.popBackStack() }
+                )
             }
             
             composable(

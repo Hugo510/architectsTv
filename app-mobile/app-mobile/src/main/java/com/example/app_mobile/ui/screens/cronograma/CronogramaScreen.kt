@@ -32,8 +32,6 @@ import com.example.shared_domain.model.*
 fun CronogramaScreen(
     onNavigateToTaskDetail: (String) -> Unit = {},
     onNavigateToCreateTask: () -> Unit = {},
-    onNavigateToMilestoneDetail: (String) -> Unit = {},
-    onNavigateToScheduleSettings: () -> Unit = {},
     modifier: Modifier = Modifier,
     viewModel: CronogramaViewModel = viewModel()
 ) {
@@ -60,12 +58,8 @@ fun CronogramaScreen(
                     ) 
                 },
                 actions = {
-                    IconButton(onClick = onNavigateToScheduleSettings) {
-                        Icon(
-                            Icons.Default.Settings, 
-                            contentDescription = "Configuración de cronograma"
-                        )
-                    }
+                    // Eliminar botón de configuración, dejar TODO
+                    // TODO: Botón de configuración eliminado, no implementado
                 }
             )
         },
@@ -152,11 +146,10 @@ fun CronogramaScreen(
                 
                 // Hitos del proyecto mejorados
                 item {
+                    // La sección de hitos solo muestra información, no navega a detalle
                     MilestonesSection(
                         milestones = milestones,
-                        onMilestoneClick = { milestone ->
-                            onNavigateToMilestoneDetail(milestone.id)
-                        },
+                        onMilestoneClick = { /* No hace nada */ },
                         onMilestoneToggle = { milestoneId ->
                             viewModel.toggleMilestoneCompletion(milestoneId)
                         }
@@ -816,6 +809,13 @@ private fun mapProjectStatusToTaskCategory(status: ProjectStatus): TaskCategory 
     return when (status) {
         ProjectStatus.DESIGN -> TaskCategory.DESIGN
         ProjectStatus.PERMITS_REVIEW -> TaskCategory.PERMITS
+        ProjectStatus.CONSTRUCTION -> TaskCategory.CONSTRUCTION
+        ProjectStatus.DELIVERY -> TaskCategory.DELIVERY
+    }
+}
+        ProjectStatus.DELIVERY -> TaskCategory.DELIVERY
+    }
+}
         ProjectStatus.CONSTRUCTION -> TaskCategory.CONSTRUCTION
         ProjectStatus.DELIVERY -> TaskCategory.DELIVERY
     }
