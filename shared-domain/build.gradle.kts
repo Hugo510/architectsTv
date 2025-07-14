@@ -1,6 +1,6 @@
 plugins {
     id("org.jetbrains.kotlin.jvm")
-    alias(libs.plugins.kotlin.serialization)
+    kotlin("plugin.serialization") version "2.2.0"
 }
 
 java {
@@ -13,7 +13,7 @@ dependencies {
     implementation(libs.kotlinx.coroutines.core)
     
     // Serialization para DTOs
-    implementation(libs.kotlinx.serialization.json)
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.8.1")
     
     // DateTime API
     implementation(libs.kotlinx.datetime)

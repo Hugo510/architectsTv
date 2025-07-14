@@ -4,7 +4,7 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.kotlin.kapt)
     alias(libs.plugins.hilt.android)
-    alias(libs.plugins.kotlin.serialization)
+    kotlin("plugin.serialization") version libs.versions.kotlin.get()
 }
 
 android {
@@ -90,7 +90,7 @@ dependencies {
     // DEPENDENCIAS CRÍTICAS AGREGADAS:
     
     // Kotlinx Serialization - CRÍTICA para shared-domain
-    implementation(libs.kotlinx.serialization.json)
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.8.1")
     
     // Compose Animation - Para las animaciones avanzadas implementadas
     implementation(libs.androidx.compose.animation)

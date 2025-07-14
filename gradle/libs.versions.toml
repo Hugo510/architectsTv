@@ -29,7 +29,7 @@ desugar_jdk_libs = "2.1.5"
 hilt               = "2.44"
 castFramework      = "21.1.0"
 hiltNavigationCompose = "1.2.0"
-kotlinx-serialization = "1.6.2"
+#kotlinx-serialization = "1.8.1"
 compose-animation = "1.8.3"
 kotlinx-collections-immutable = "0.3.7"
 accompanist = "0.32.0"
@@ -105,7 +105,7 @@ androidx-material-icons-extended = { group = "androidx.compose.material", name  
 androidx-lifecycle-viewmodel-ktx = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-ktx", version.ref = "lifecycleViewModelKtx" }
 android-desugar-jdk-libs = { module = "com.android.tools:desugar_jdk_libs", version.ref = "desugar_jdk_libs" }
 androidx-hilt-navigation-compose-v120 = { module = "androidx.hilt:hilt-navigation-compose", version.ref = "hiltNavigationComposeVersion" }
-kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "serialization-json", version.ref = "kotlinx-serialization" }
+#kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "serialization-json", version.ref = "kotlinx-serialization" }
 androidx-compose-animation = { group = "androidx.compose.animation", name = "animation", version.ref = "compose-animation" }
 androidx-compose-animation-core = { group = "androidx.compose.animation", name = "animation-core", version.ref = "compose-animation" }
 kotlinx-collections-immutable = { group = "org.jetbrains.kotlinx", name = "kotlinx-collections-immutable", version.ref = "kotlinx-collections-immutable" }
@@ -238,7 +238,6 @@ kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "ko
 android-library = { id = "com.android.library", version.ref = "agp" }
 kotlin-kapt = { id = "org.jetbrains.kotlin.kapt", version.ref = "kotlin" }
 hilt-android = { id = "com.google.dagger.hilt.android", version.ref = "hiltAndroid" }
-kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm" }
 
 # Compose Foundation avanzada - Para BorderStroke y efectos
