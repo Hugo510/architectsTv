@@ -22,7 +22,6 @@
             <option value="$PROJECT_DIR$/feature-ui-tv" />
             <option value="$PROJECT_DIR$/feature-ui-tv/feature-ui-tv" />
             <option value="$PROJECT_DIR$/shared-domain" />
-            <option value="$PROJECT_DIR$/shared-domain/shared-domain" />
           </set>
         </option>
       </GradleProjectSettings>

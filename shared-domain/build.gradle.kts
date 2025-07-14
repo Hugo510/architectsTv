@@ -36,13 +36,13 @@ android {
 dependencies {
     // Kotlin Coroutines para operaciones asíncronas
     implementation(libs.kotlinx.coroutines.core)
-    
+
     // Serialization para DTOs
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.8.1")
-    
+
     // DateTime API
     implementation(libs.kotlinx.datetime)
-    
+
     // Testing
     testImplementation(libs.junit)
     testImplementation(libs.kotlinx.coroutines.test)
