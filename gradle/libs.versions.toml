@@ -229,7 +229,7 @@ androidx-compose-ui-test-manifest-debug = { group = "androidx.compose.ui", name 
 androidx-navigation-animation = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigationCompose" }
 
 # Kotlinx Datetime
-kotlinx.datetime = { group = "org.jetbrains.kotlinx", name = "kotlinx-datetime", version.ref = "kotlinx-datetime" }
+kotlinx-datetime = { group = "org.jetbrains.kotlinx", name = "kotlinx-datetime", version.ref = "kotlinx-datetime" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
