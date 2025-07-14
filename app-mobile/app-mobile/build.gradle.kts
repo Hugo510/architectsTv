@@ -147,8 +147,11 @@ dependencies {
     implementation(libs.accompanist.navigation.animation)
     
     // Insets - Para manejo de padding del sistema
-    implementation(libs.accompanist.insets)
-    implementation(libs.accompanist.insets.ui)
+    // implementation(libs.accompanist.insets)
+    // implementation(libs.accompanist.insets.ui)
+    
+    // Material3 Adaptive - Para ExposedDropdownMenuBox avanzado
+    // implementation(libs.androidx.compose.material3.adaptive)
     
     // Koin DI - Para EvidenciaViewModel como se muestra en el código
     implementation(libs.koin.android)
@@ -221,17 +224,14 @@ dependencies {
 
     //DEPENDENCIAS PARA FUNCIONALIDADES ESPECÍFICAS DEL CÓDIGO:
 
-    //Compose Foundation avanzada - Para BorderStroke y efectos
-    implementation(libs.androidx.compose.foundation)
-
     //Layout Staggered Grid - Para layouts avanzados
     implementation(libs.androidx.compose.foundation.layout.staggeredgrid)
 
     //Accompanist específicos para funcionalidades detectadas
     implementation(libs.accompanist.placeholder.material)
     implementation(libs.accompanist.navigation.animation)
-    implementation(libs.accompanist.insets)
-    implementation(libs.accompanist.insets.ui)
+    // implementation(libs.accompanist.insets)
+    // implementation(libs.accompanist.insets.ui)
 
     //DEPENDENCIAS PARA DEBUGGING Y TESTING MEJORADO:
     debugImplementation(libs.androidx.compose.ui.test.manifest.debug)
