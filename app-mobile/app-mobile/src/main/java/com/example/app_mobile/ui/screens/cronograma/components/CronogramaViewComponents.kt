@@ -36,6 +36,8 @@ import com.example.shared_domain.model.*
 fun CronogramaTimelineView(
     tasks: List<ScheduleTask>,
     onTaskClick: (ScheduleTask) -> Unit = {},
+    onTaskStatusUpdate: (String, TaskStatus) -> Unit = { _, _ -> }, // Nuevo parámetro
+    onTaskProgressUpdate: (String, Double) -> Unit = { _, _ -> }, // Nuevo parámetro
     modifier: Modifier = Modifier
 ) {
     // Agrupar tareas por fase de proyecto
@@ -62,7 +64,9 @@ fun CronogramaTimelineView(
                         ProjectPhaseSection(
                             phase = phase,
                             tasks = phaseTasks,
-                            onTaskClick = onTaskClick
+                            onTaskClick = onTaskClick,
+                            onTaskStatusUpdate = onTaskStatusUpdate, // Pasar función
+                            onTaskProgressUpdate = onTaskProgressUpdate // Pasar función
                         )
                     }
                 }
@@ -142,7 +146,9 @@ private fun CronogramaViewHeader() {
 private fun ProjectPhaseSection(
     phase: ProjectStatus,
     tasks: List<ScheduleTask>,
-    onTaskClick: (ScheduleTask) -> Unit
+    onTaskClick: (ScheduleTask) -> Unit,
+    onTaskStatusUpdate: (String, TaskStatus) -> Unit = { _, _ -> }, // Nuevo parámetro
+    onTaskProgressUpdate: (String, Double) -> Unit = { _, _ -> } // Nuevo parámetro
 ) {
     var isExpanded by remember { mutableStateOf(true) }
     
@@ -195,7 +201,9 @@ private fun ProjectPhaseSection(
                                 task = task,
                                 phase = phase,
                                 isLast = index == tasks.lastIndex,
-                                onClick = { onTaskClick(task) }
+                                onClick = { onTaskClick(task) },
+                                onStatusUpdate = { status -> onTaskStatusUpdate(task.id, status) }, // Nueva funcionalidad
+                                onProgressUpdate = { progress -> onTaskProgressUpdate(task.id, progress) } // Nueva funcionalidad
                             )
                             
                             if (index != tasks.lastIndex) {
@@ -324,6 +332,8 @@ fun TaskTimelineCard(
     phase: ProjectStatus,
     isLast: Boolean = false,
     onClick: () -> Unit,
+    onStatusUpdate: (TaskStatus) -> Unit = {}, // Nuevo parámetro
+    onProgressUpdate: (Double) -> Unit = {}, // Nuevo parámetro
     modifier: Modifier = Modifier
 ) {
     val phaseColor = getProjectStatusColor(phase)
@@ -341,70 +351,122 @@ fun TaskTimelineCard(
             color = taskStatusColor.copy(alpha = 0.3f)
         )
     ) {
-        Row(
-            modifier = Modifier.padding(16.dp),
-            verticalAlignment = Alignment.Top
+        Column(
+            modifier = Modifier.padding(16.dp)
         ) {
-            // Timeline indicator mejorado
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier.width(32.dp)
+            Row(
+                modifier = Modifier.padding(16.dp),
+                verticalAlignment = Alignment.Top
             ) {
-                Card(
-                    modifier = Modifier.size(16.dp),
-                    colors = CardDefaults.cardColors(
-                        containerColor = taskStatusColor
-                    )
+                // Timeline indicator mejorado
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier.width(32.dp)
                 ) {
-                    Box(
-                        contentAlignment = Alignment.Center,
-                        modifier = Modifier.fillMaxSize()
+                    Card(
+                        modifier = Modifier.size(16.dp),
+                        colors = CardDefaults.cardColors(
+                            containerColor = taskStatusColor
+                        )
                     ) {
-                        when (task.status) {
-                            TaskStatus.COMPLETED -> Text("✓", fontSize = 8.sp, color = Color.White)
-                            TaskStatus.IN_PROGRESS -> Text("⏳", fontSize = 6.sp)
-                            TaskStatus.ON_HOLD -> Text("⏸", fontSize = 6.sp, color = Color.White)
-                            else -> Box(
-                                modifier = Modifier
-                                    .size(6.dp)
-                                    .background(Color.White, CircleShape)
-                            )
+                        Box(
+                            contentAlignment = Alignment.Center,
+                            modifier = Modifier.fillMaxSize()
+                        ) {
+                            when (task.status) {
+                                TaskStatus.COMPLETED -> Text("✓", fontSize = 8.sp, color = Color.White)
+                                TaskStatus.IN_PROGRESS -> Text("⏳", fontSize = 6.sp)
+                                TaskStatus.ON_HOLD -> Text("⏸", fontSize = 6.sp, color = Color.White)
+                                else -> Box(
+                                    modifier = Modifier
+                                        .size(6.dp)
+                                        .background(Color.White, CircleShape)
+                                )
+                            }
                         }
+                    }
+                    
+                    // Línea conectora
+                    if (!isLast) {
+                        Box(
+                            modifier = Modifier
+                                .width(2.dp)
+                                .height(48.dp)
+                                .background(
+                                    phaseColor.copy(alpha = 0.3f),
+                                    RoundedCornerShape(1.dp)
+                                )
+                        )
                     }
                 }
                 
-                // Línea conectora
-                if (!isLast) {
-                    Box(
-                        modifier = Modifier
-                            .width(2.dp)
-                            .height(48.dp)
-                            .background(
-                                phaseColor.copy(alpha = 0.3f),
-                                RoundedCornerShape(1.dp)
-                            )
+                Spacer(modifier = Modifier.width(16.dp))
+                
+                // Contenido de la tarea mejorado
+                Column(modifier = Modifier.weight(1f)) {
+                    TaskHeader(task = task)
+                    
+                    if (task.description != null) {
+                        TaskDescription(description = task.description)
+                    }
+                    
+                    TaskMetadata(task = task)
+                    
+                    if (task.progress > 0) {
+                        TaskProgress(
+                            progress = task.progress,
+                            phase = phase,
+                            onProgressUpdate = onProgressUpdate // Nueva funcionalidad
+                        )
+                    }
+                    
+                    // Controles rápidos de estado
+                    TaskQuickActions(
+                        task = task,
+                        onStatusUpdate = onStatusUpdate // Nueva funcionalidad
                     )
                 }
             }
-            
-            Spacer(modifier = Modifier.width(16.dp))
-            
-            // Contenido de la tarea mejorado
-            Column(modifier = Modifier.weight(1f)) {
-                TaskHeader(task = task)
-                
-                if (task.description != null) {
-                    TaskDescription(description = task.description)
-                }
-                
-                TaskMetadata(task = task)
-                
-                if (task.progress > 0) {
-                    TaskProgress(
-                        progress = task.progress,
-                        phase = phase
-                    )
-                }
+        }
+    }
+}
+
+// Nuevo componente para acciones rápidas
+@Composable
+private fun TaskQuickActions(
+    task: ScheduleTask,
+    onStatusUpdate: (TaskStatus) -> Unit
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 8.dp),
+        horizontalArrangement = Arrangement.spacedBy(4.dp)
+    ) {
+        if (task.status == TaskStatus.NOT_STARTED) {
+            OutlinedButton(
+                onClick = { onStatusUpdate(TaskStatus.IN_PROGRESS) },
+                modifier = Modifier.weight(1f)
+            ) {
+                Text("Iniciar", fontSize = 10.sp)
+            }
+        }
+        
+        if (task.status == TaskStatus.IN_PROGRESS) {
+            OutlinedButton(
+                onClick = { onStatusUpdate(TaskStatus.COMPLETED) },
+                modifier = Modifier.weight(1f)
+            ) {
+                Text("Completar", fontSize = 10.sp)
+            }
+        }
+        
+        if (task.status == TaskStatus.ON_HOLD) {
+            OutlinedButton(
+                onClick = { onStatusUpdate(TaskStatus.IN_PROGRESS) },
+                modifier = Modifier.weight(1f)
+            ) {
+                Text("Reanudar", fontSize = 10.sp)
             }
         }
     }
@@ -513,27 +575,50 @@ private fun TaskMetadata(task: ScheduleTask) {
 @Composable
 private fun TaskProgress(
     progress: Double,
-    phase: ProjectStatus
+    phase: ProjectStatus,
+    onProgressUpdate: (Double) -> Unit = {} // Nuevo parámetro
 ) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(top = 6.dp),
-        verticalAlignment = Alignment.CenterVertically
+    Column(
+        modifier = Modifier.padding(top = 6.dp)
     ) {
-        LinearProgressIndicator(
-            progress = { progress.toFloat() },
-            modifier = Modifier.weight(1f),
-            color = getProjectStatusColor(phase)
-        )
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            LinearProgressIndicator(
+                progress = { progress.toFloat() },
+                modifier = Modifier.weight(1f),
+                color = getProjectStatusColor(phase)
+            )
+            
+            Spacer(modifier = Modifier.width(8.dp))
+            
+            Text(
+                text = "${(progress * 100).toInt()}%",
+                fontSize = 11.sp,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
         
-        Spacer(modifier = Modifier.width(8.dp))
-        
-        Text(
-            text = "${(progress * 100).toInt()}%",
-            fontSize = 11.sp,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
-        )
+        // Botones de progreso rápido
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 4.dp),
+            horizontalArrangement = Arrangement.spacedBy(2.dp)
+        ) {
+            listOf(0.25, 0.5, 0.75, 1.0).forEach { progressValue ->
+                if (progress < progressValue) {
+                    OutlinedButton(
+                        onClick = { onProgressUpdate(progressValue) },
+                        modifier = Modifier.weight(1f),
+                        contentPadding = PaddingValues(2.dp)
+                    ) {
+                        Text("${(progressValue * 100).toInt()}%", fontSize = 8.sp)
+                    }
+                }
+            }
+        }
     }
 }
 

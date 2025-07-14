@@ -479,6 +479,7 @@ private fun ProjectStatusLegendCard(
 fun MilestonesSection(
     milestones: List<Milestone>,
     onMilestoneClick: (Milestone) -> Unit = {},
+    onMilestoneToggle: (String) -> Unit = {}, // Nuevo parámetro
     modifier: Modifier = Modifier
 ) {
     Card(
@@ -514,7 +515,8 @@ fun MilestonesSection(
                 milestones.forEach { milestone ->
                     MilestoneCard(
                         milestone = milestone,
-                        onClick = { onMilestoneClick(milestone) }
+                        onClick = { onMilestoneClick(milestone) },
+                        onToggle = { onMilestoneToggle(milestone.id) } // Nueva funcionalidad
                     )
                     if (milestone != milestones.last()) {
                         Spacer(modifier = Modifier.height(12.dp))
@@ -560,7 +562,8 @@ private fun EmptyMilestonesState() {
 @Composable
 private fun MilestoneCard(
     milestone: Milestone,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    onToggle: () -> Unit = {} // Nuevo parámetro
 ) {
     val cardColor by animateColorAsState(
         targetValue = if (milestone.isCompleted) 
@@ -581,27 +584,26 @@ private fun MilestoneCard(
             modifier = Modifier.padding(16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Icono animado
-            val iconScale by animateFloatAsState(
-                targetValue = if (milestone.isCompleted) 1.2f else 1f,
-                animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy),
-                label = "icon_scale"
-            )
-            
-            Icon(
-                imageVector = if (milestone.isCompleted) 
-                    Icons.Default.CheckCircle 
-                else 
-                    Icons.Default.Schedule,
-                contentDescription = null,
-                tint = if (milestone.isCompleted) 
-                    Color(0xFF4CAF50) 
-                else 
-                    MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier
-                    .size(28.dp)
-                    .scale(iconScale)
-            )
+            // Icono animado clickeable para toggle
+            IconButton(
+                onClick = onToggle,
+                modifier = Modifier.size(32.dp)
+            ) {
+                Icon(
+                    imageVector = if (milestone.isCompleted) 
+                        Icons.Default.CheckCircle 
+                    else 
+                        Icons.Default.Schedule,
+                    contentDescription = if (milestone.isCompleted) "Marcar como pendiente" else "Marcar como completado",
+                    tint = if (milestone.isCompleted) 
+                        Color(0xFF4CAF50) 
+                    else 
+                        MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier
+                        .size(28.dp)
+                        .scale(iconScale)
+                )
+            }
             
             Spacer(modifier = Modifier.width(16.dp))
             

@@ -24,6 +24,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.app_mobile.ui.screens.cronograma.components.*
 import com.example.shared_domain.model.*
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -93,60 +94,71 @@ fun CronogramaScreen(
                     .padding(16.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                // Header empresarial - implementación simple
+                // Header empresarial mejorado
                 item {
-                    CronogramaHeaderSimple()
+                    CronogramaHeader() // Usar componente avanzado
                 }
                 
-                // Información del cronograma - implementación simple
+                // Información del cronograma mejorada
                 currentSchedule?.let { schedule ->
                     item {
-                        ScheduleInfoCardSimple(schedule = schedule)
+                        ScheduleInfoCard(schedule = schedule) // Usar componente avanzado
                     }
                 }
                 
-                // Selector de vista - implementación simple
+                // Selector de vista mejorado
                 item {
-                    ViewSelectorSimple(
+                    ViewSelector(
                         selectedView = uiState.selectedView,
                         onViewChange = viewModel::setViewType
                     )
                 }
                 
-                // Leyenda de estados - implementación simple
+                // Leyenda de estados mejorada
                 item {
-                    StatusLegendSimple()
+                    StatusLegend() // Usar componente avanzado
                 }
                 
                 // Contenido principal según vista seleccionada
                 item {
                     when (uiState.selectedView) {
                         ViewType.CRONOGRAMA -> {
-                            CronogramaTimelineViewSimple(
-                                tasks = allTasks,
-                                onTaskClick = { task ->
-                                    onNavigateToTaskDetail(task.id)
-                                }
-                            )
-                        }
-                        ViewType.KANBAN -> {
-                            KanbanBoardViewSimple(
+                            CronogramaTimelineView(
                                 tasks = allTasks,
                                 onTaskClick = { task ->
                                     onNavigateToTaskDetail(task.id)
                                 },
-                                onTaskMove = viewModel::moveTaskToPhase
+                                onTaskStatusUpdate = { taskId, status ->
+                                    viewModel.updateTaskStatus(taskId, status)
+                                },
+                                onTaskProgressUpdate = { taskId, progress ->
+                                    viewModel.updateTaskProgress(taskId, progress)
+                                }
+                            )
+                        }
+                        ViewType.KANBAN -> {
+                            KanbanBoardView(
+                                tasks = allTasks,
+                                onTaskClick = { task ->
+                                    onNavigateToTaskDetail(task.id)
+                                },
+                                onTaskMove = { task, newPhase ->
+                                    viewModel.moveTaskToPhase(task, newPhase)
+                                }
                             )
                         }
                     }
                 }
                 
-                // Hitos del proyecto
+                // Hitos del proyecto mejorados
                 item {
                     MilestonesSection(
                         milestones = milestones,
                         onMilestoneClick = { milestone ->
                             onNavigateToMilestoneDetail(milestone.id)
+                        },
+                        onMilestoneToggle = { milestoneId ->
+                            viewModel.toggleMilestoneCompletion(milestoneId)
                         }
                     )
                 }
