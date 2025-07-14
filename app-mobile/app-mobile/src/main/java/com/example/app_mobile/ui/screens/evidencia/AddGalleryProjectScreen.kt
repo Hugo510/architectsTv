@@ -2,6 +2,7 @@ package com.example.app_mobile.ui.screens.evidencia
 
 import androidx.compose.animation.*
 import androidx.compose.animation.core.*
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
@@ -36,7 +37,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.delay
-import org.koin.androidx.compose.getViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -54,42 +54,42 @@ fun AddGalleryProjectScreen(
     var showSuccessDialog by remember { mutableStateOf(false) }
     var currentStep by remember { mutableStateOf(0) }
     var isVisible by remember { mutableStateOf(false) }
-    
+
     val uiState by viewModel.uiState.collectAsState()
     val hapticFeedback = LocalHapticFeedback.current
     val keyboardController = LocalSoftwareKeyboardController.current
     val focusManager = LocalFocusManager.current
-    
+
     // Focus requesters para navegación entre campos
     val nameFocusRequester = remember { FocusRequester() }
     val descriptionFocusRequester = remember { FocusRequester() }
     val locationFocusRequester = remember { FocusRequester() }
     val architectFocusRequester = remember { FocusRequester() }
     val areaFocusRequester = remember { FocusRequester() }
-    
+
     val styleOptions = listOf(
-        "Contemporáneo", "Minimalista", "Industrial", 
+        "Contemporáneo", "Minimalista", "Industrial",
         "Moderno", "Clásico", "Rústico", "Colonial"
     )
-    
+
     // Animación de entrada
     LaunchedEffect(Unit) {
         delay(100)
         isVisible = true
     }
-    
+
     // Validación en tiempo real
     val isFormValid by remember {
         derivedStateOf {
-            projectName.isNotBlank() && 
-            projectDescription.isNotBlank() && 
-            projectLocation.isNotBlank() && 
-            architectName.isNotBlank() && 
-            projectArea.isNotBlank() &&
-            projectArea.toDoubleOrNull() != null
+            projectName.isNotBlank() &&
+                    projectDescription.isNotBlank() &&
+                    projectLocation.isNotBlank() &&
+                    architectName.isNotBlank() &&
+                    projectArea.isNotBlank() &&
+                    projectArea.toDoubleOrNull() != null
         }
     }
-    
+
     // Manejar éxito en la creación
     LaunchedEffect(uiState.message) {
         uiState.message?.let { message ->
@@ -99,15 +99,15 @@ fun AddGalleryProjectScreen(
             }
         }
     }
-    
+
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { 
+                title = {
                     Text(
                         "Agregar Proyecto",
                         fontWeight = FontWeight.Bold
-                    ) 
+                    )
                 },
                 navigationIcon = {
                     IconButton(
@@ -175,7 +175,7 @@ fun AddGalleryProjectScreen(
                     verticalArrangement = Arrangement.spacedBy(20.dp)
                 ) {
                     item { Spacer(modifier = Modifier.height(8.dp)) }
-                    
+
                     // Header con animación mejorada
                     item {
                         AnimatedVisibility(
@@ -191,7 +191,7 @@ fun AddGalleryProjectScreen(
                             EnhancedAddProjectHeader()
                         }
                     }
-                    
+
                     // Formulario principal con animaciones escalonadas
                     item {
                         AnimatedVisibility(
@@ -203,17 +203,17 @@ fun AddGalleryProjectScreen(
                         ) {
                             EnhancedProjectBasicInfoForm(
                                 projectName = projectName,
-                                onProjectNameChange = { 
+                                onProjectNameChange = {
                                     projectName = it
                                     currentStep = maxOf(currentStep, 1)
                                 },
                                 projectDescription = projectDescription,
-                                onProjectDescriptionChange = { 
+                                onProjectDescriptionChange = {
                                     projectDescription = it
                                     currentStep = maxOf(currentStep, 2)
                                 },
                                 projectLocation = projectLocation,
-                                onProjectLocationChange = { 
+                                onProjectLocationChange = {
                                     projectLocation = it
                                     currentStep = maxOf(currentStep, 3)
                                 },
@@ -224,7 +224,7 @@ fun AddGalleryProjectScreen(
                             )
                         }
                     }
-                    
+
                     // Selector de estilo mejorado
                     item {
                         AnimatedVisibility(
@@ -236,7 +236,7 @@ fun AddGalleryProjectScreen(
                         ) {
                             EnhancedStyleSelectionSection(
                                 selectedStyle = selectedStyle,
-                                onStyleSelected = { 
+                                onStyleSelected = {
                                     selectedStyle = it
                                     currentStep = maxOf(currentStep, 4)
                                     hapticFeedback.performHapticFeedback(HapticFeedbackType.TextHandleMove)
@@ -245,7 +245,7 @@ fun AddGalleryProjectScreen(
                             )
                         }
                     }
-                    
+
                     // Información del arquitecto y área
                     item {
                         AnimatedVisibility(
@@ -257,12 +257,12 @@ fun AddGalleryProjectScreen(
                         ) {
                             EnhancedProjectDetailsForm(
                                 architectName = architectName,
-                                onArchitectNameChange = { 
+                                onArchitectNameChange = {
                                     architectName = it
                                     currentStep = maxOf(currentStep, 5)
                                 },
                                 projectArea = projectArea,
-                                onProjectAreaChange = { 
+                                onProjectAreaChange = {
                                     projectArea = it
                                     currentStep = maxOf(currentStep, 6)
                                 },
@@ -271,7 +271,7 @@ fun AddGalleryProjectScreen(
                             )
                         }
                     }
-                    
+
                     // Vista previa animada
                     item {
                         AnimatedVisibility(
@@ -290,7 +290,7 @@ fun AddGalleryProjectScreen(
                             )
                         }
                     }
-                    
+
                     // Botones de acción mejorados
                     item {
                         AnimatedVisibility(
@@ -301,7 +301,7 @@ fun AddGalleryProjectScreen(
                             ) + fadeIn(animationSpec = tween(600, delayMillis = 1200))
                         ) {
                             EnhancedActionButtons(
-                                onSaveAsDraft = { 
+                                onSaveAsDraft = {
                                     hapticFeedback.performHapticFeedback(HapticFeedbackType.TextHandleMove)
                                     // TODO: Guardar como borrador
                                 },
@@ -311,7 +311,7 @@ fun AddGalleryProjectScreen(
                                         hapticFeedback.performHapticFeedback(HapticFeedbackType.LongPress)
                                         keyboardController?.hide()
                                         focusManager.clearFocus()
-                                        
+
                                         viewModel.createGalleryProject(
                                             name = projectName,
                                             description = projectDescription,
@@ -327,11 +327,11 @@ fun AddGalleryProjectScreen(
                             )
                         }
                     }
-                    
+
                     item { Spacer(modifier = Modifier.height(32.dp)) }
                 }
             }
-            
+
             // Overlay de carga mejorado
             AnimatedVisibility(
                 visible = isCreating || uiState.isLoading,
@@ -348,7 +348,7 @@ fun AddGalleryProjectScreen(
                 }
             }
         }
-        
+
         // Dialog de éxito mejorado
         if (showSuccessDialog) {
             EnhancedSuccessDialog(
@@ -400,12 +400,12 @@ private fun EnhancedAddProjectHeader() {
                     ),
                     label = "icon_scale"
                 )
-                
+
                 LaunchedEffect(Unit) {
                     delay(500)
                     iconScale = 1f
                 }
-                
+
                 Box(
                     modifier = Modifier
                         .size(100.dp)
@@ -428,9 +428,9 @@ private fun EnhancedAddProjectHeader() {
                         modifier = Modifier.size(56.dp)
                     )
                 }
-                
+
                 Spacer(modifier = Modifier.height(20.dp))
-                
+
                 Text(
                     text = "Nuevo Proyecto",
                     fontSize = 32.sp,
@@ -439,13 +439,13 @@ private fun EnhancedAddProjectHeader() {
                     textAlign = TextAlign.Center,
                     letterSpacing = 0.5.sp
                 )
-                
+
                 Text(
                     text = "Agrega un nuevo proyecto completado a tu galería profesional",
                     fontSize = 16.sp,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     textAlign = TextAlign.Center,
-                    modifier = Modifier.padding(top = 12.dp, horizontal = 16.dp),
+                    modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 12.dp),
                     lineHeight = 24.sp,
                     letterSpacing = 0.1.sp
                 )
@@ -497,7 +497,7 @@ private fun EnhancedProjectBasicInfoForm(
                     color = MaterialTheme.colorScheme.onSurface
                 )
             }
-            
+
             // Nombre del proyecto con indicador de progreso
             OutlinedTextField(
                 value = projectName,
@@ -528,13 +528,13 @@ private fun EnhancedProjectBasicInfoForm(
                 ),
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedBorderColor = MaterialTheme.colorScheme.primary,
-                    unfocusedBorderColor = if (projectName.isNotBlank()) 
+                    unfocusedBorderColor = if (projectName.isNotBlank())
                         Color(0xFF4CAF50) else MaterialTheme.colorScheme.outline
                 )
             )
-            
+
             Spacer(modifier = Modifier.height(20.dp))
-            
+
             // Descripción con contador de caracteres
             OutlinedTextField(
                 value = projectDescription,
@@ -564,13 +564,13 @@ private fun EnhancedProjectBasicInfoForm(
                 ),
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedBorderColor = MaterialTheme.colorScheme.primary,
-                    unfocusedBorderColor = if (projectDescription.isNotBlank()) 
+                    unfocusedBorderColor = if (projectDescription.isNotBlank())
                         Color(0xFF4CAF50) else MaterialTheme.colorScheme.outline
                 )
             )
-            
+
             Spacer(modifier = Modifier.height(20.dp))
-            
+
             // Ubicación con sugerencias
             OutlinedTextField(
                 value = projectLocation,
@@ -601,7 +601,7 @@ private fun EnhancedProjectBasicInfoForm(
                 ),
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedBorderColor = MaterialTheme.colorScheme.primary,
-                    unfocusedBorderColor = if (projectLocation.isNotBlank()) 
+                    unfocusedBorderColor = if (projectLocation.isNotBlank())
                         Color(0xFF4CAF50) else MaterialTheme.colorScheme.outline
                 )
             )
@@ -641,12 +641,12 @@ private fun EnhancedStyleSelectionSection(
                     color = MaterialTheme.colorScheme.onSurface
                 )
             }
-            
+
             LazyRow(
                 horizontalArrangement = Arrangement.spacedBy(16.dp),
                 contentPadding = PaddingValues(horizontal = 4.dp)
             ) {
-                items(styleOptions) { style =>
+                items(styleOptions) { style ->
                     EnhancedStyleChip(
                         style = style,
                         isSelected = selectedStyle == style,
@@ -674,7 +674,7 @@ private fun EnhancedStyleChip(
         animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy),
         label = "chip_scale"
     )
-    
+
     val backgroundColor = when (style) {
         "Contemporáneo" -> Color(0xFF667EEA)
         "Minimalista" -> Color(0xFF9FACE6)
@@ -685,7 +685,7 @@ private fun EnhancedStyleChip(
         "Colonial" -> Color(0xFFFF9F9F)
         else -> MaterialTheme.colorScheme.primary
     }
-    
+
     Card(
         onClick = {
             isPressed = true
@@ -713,7 +713,7 @@ private fun EnhancedStyleChip(
                 isPressed = false
             }
         }
-        
+
         Column(
             modifier = Modifier.padding(20.dp),
             horizontalAlignment = Alignment.CenterHorizontally
@@ -722,7 +722,7 @@ private fun EnhancedStyleChip(
                 modifier = Modifier
                     .size(40.dp)
                     .background(
-                        if (isSelected) Color.White.copy(alpha = 0.2f) 
+                        if (isSelected) Color.White.copy(alpha = 0.2f)
                         else backgroundColor.copy(alpha = 0.2f),
                         CircleShape
                     ),
@@ -736,7 +736,7 @@ private fun EnhancedStyleChip(
                         "Moderno" -> Icons.Default.Apartment
                         "Clásico" -> Icons.Default.AccountBalance
                         "Rústico" -> Icons.Default.Cottage
-                        "Colonial" -> Icons.Default.Temple
+                        "Colonial" -> Icons.Default.AccountBalance // Cambiado de Temple a AccountBalance
                         else -> Icons.Default.Construction
                     },
                     contentDescription = style,
@@ -744,9 +744,9 @@ private fun EnhancedStyleChip(
                     modifier = Modifier.size(24.dp)
                 )
             }
-            
+
             Spacer(modifier = Modifier.height(12.dp))
-            
+
             Text(
                 text = style,
                 fontSize = 13.sp,
@@ -755,7 +755,7 @@ private fun EnhancedStyleChip(
                 textAlign = TextAlign.Center,
                 letterSpacing = 0.2.sp
             )
-            
+
             if (isSelected) {
                 Spacer(modifier = Modifier.height(4.dp))
                 Box(
@@ -804,7 +804,7 @@ private fun EnhancedProjectDetailsForm(
                     color = MaterialTheme.colorScheme.onSurface
                 )
             }
-            
+
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(16.dp)
@@ -822,11 +822,11 @@ private fun EnhancedProjectDetailsForm(
                     },
                     colors = OutlinedTextFieldDefaults.colors(
                         focusedBorderColor = MaterialTheme.colorScheme.primary,
-                        unfocusedBorderColor = if (architectName.isNotBlank()) 
+                        unfocusedBorderColor = if (architectName.isNotBlank())
                             Color(0xFF4CAF50) else MaterialTheme.colorScheme.outline
                     )
                 )
-                
+
                 // Área
                 OutlinedTextField(
                     value = projectArea,
@@ -841,7 +841,7 @@ private fun EnhancedProjectDetailsForm(
                     },
                     colors = OutlinedTextFieldDefaults.colors(
                         focusedBorderColor = MaterialTheme.colorScheme.primary,
-                        unfocusedBorderColor = if (projectArea.isNotBlank()) 
+                        unfocusedBorderColor = if (projectArea.isNotBlank())
                             Color(0xFF4CAF50) else MaterialTheme.colorScheme.outline
                     )
                 )
@@ -885,7 +885,7 @@ private fun EnhancedProjectPreview(
                     color = MaterialTheme.colorScheme.onSurface
                 )
             }
-            
+
             // Mini card preview
             Card(
                 modifier = Modifier.fillMaxWidth(),
@@ -925,7 +925,7 @@ private fun EnhancedProjectPreview(
                                 "Moderno" -> Icons.Default.Apartment
                                 "Clásico" -> Icons.Default.AccountBalance
                                 "Rústico" -> Icons.Default.Cottage
-                                "Colonial" -> Icons.Default.Temple
+                                "Colonial" -> Icons.Default.AccountBalance // Cambiado de Temple a AccountBalance
                                 else -> Icons.Default.Construction
                             },
                             contentDescription = style,
@@ -933,9 +933,9 @@ private fun EnhancedProjectPreview(
                             modifier = Modifier.size(32.dp)
                         )
                     }
-                    
+
                     Spacer(modifier = Modifier.height(12.dp))
-                    
+
                     // Información del proyecto
                     Text(
                         text = name,
@@ -944,7 +944,7 @@ private fun EnhancedProjectPreview(
                         color = MaterialTheme.colorScheme.onSurface,
                         maxLines = 1
                     )
-                    
+
                     Text(
                         text = description,
                         fontSize = 12.sp,
@@ -952,7 +952,7 @@ private fun EnhancedProjectPreview(
                         modifier = Modifier.padding(top = 4.dp),
                         maxLines = 2
                     )
-                    
+
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -965,7 +965,7 @@ private fun EnhancedProjectPreview(
                             fontSize = 12.sp,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
-                        
+
                         Text(
                             text = "$area m²",
                             fontSize = 12.sp,
@@ -973,7 +973,7 @@ private fun EnhancedProjectPreview(
                             color = MaterialTheme.colorScheme.primary
                         )
                     }
-                    
+
                     Text(
                         text = "Por $architect",
                         fontSize = 11.sp,
@@ -1029,7 +1029,7 @@ private fun EnhancedActionButtons(
                 fontWeight = FontWeight.Bold
             )
         }
-        
+
         // Botón secundario - Guardar borrador
         OutlinedButton(
             onClick = onSaveAsDraft,
@@ -1071,9 +1071,9 @@ private fun EnhancedLoadingCard() {
                 modifier = Modifier.size(32.dp),
                 color = MaterialTheme.colorScheme.primary
             )
-            
+
             Spacer(modifier = Modifier.height(16.dp))
-            
+
             Text(
                 text = "Creando proyecto...",
                 fontSize = 16.sp,
@@ -1089,11 +1089,11 @@ private fun EnhancedSuccessDialog(
     onDismiss: () -> Unit
 ) {
     var isVisible by remember { mutableStateOf(false) }
-    
+
     LaunchedEffect(Unit) {
         isVisible = true
     }
-    
+
     AnimatedVisibility(
         visible = isVisible,
         enter = scaleIn(
@@ -1116,12 +1116,12 @@ private fun EnhancedSuccessDialog(
                     ),
                     label = "success_icon"
                 )
-                
+
                 LaunchedEffect(Unit) {
                     delay(200)
                     iconScale = 1f
                 }
-                
+
                 Box(
                     modifier = Modifier
                         .size(80.dp)
@@ -1164,9 +1164,9 @@ private fun EnhancedSuccessDialog(
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         letterSpacing = 0.1.sp
                     )
-                    
+
                     Spacer(modifier = Modifier.height(16.dp))
-                    
+
                     // Estadísticas animadas
                     Card(
                         colors = CardDefaults.cardColors(
@@ -1253,10 +1253,10 @@ private fun validateForm(
     architect: String,
     area: String
 ): Boolean {
-    return name.isNotBlank() && 
-           description.isNotBlank() && 
-           location.isNotBlank() && 
-           architect.isNotBlank() && 
-           area.isNotBlank() &&
-           area.toDoubleOrNull() != null
+    return name.isNotBlank() &&
+            description.isNotBlank() &&
+            location.isNotBlank() &&
+            architect.isNotBlank() &&
+            area.isNotBlank() &&
+            area.toDoubleOrNull() != null
 }
