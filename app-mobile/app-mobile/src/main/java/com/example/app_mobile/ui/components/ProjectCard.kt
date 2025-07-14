@@ -165,5 +165,4 @@ fun getStatusIcon(status: ProjectStatus): ImageVector {
         ProjectStatus.DELIVERY -> Icons.Default.DeliveryDining
     }
 }
-    }
-}
+

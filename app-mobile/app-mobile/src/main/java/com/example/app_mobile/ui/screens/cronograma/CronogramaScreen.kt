@@ -271,7 +271,7 @@ private fun StatusLegendSimple() {
             LazyRow(
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                items(TaskStatus.values()) { status =>
+                items(TaskStatus.values()) { status ->
                     Row(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
@@ -809,13 +809,6 @@ private fun mapProjectStatusToTaskCategory(status: ProjectStatus): TaskCategory 
     return when (status) {
         ProjectStatus.DESIGN -> TaskCategory.DESIGN
         ProjectStatus.PERMITS_REVIEW -> TaskCategory.PERMITS
-        ProjectStatus.CONSTRUCTION -> TaskCategory.CONSTRUCTION
-        ProjectStatus.DELIVERY -> TaskCategory.DELIVERY
-    }
-}
-        ProjectStatus.DELIVERY -> TaskCategory.DELIVERY
-    }
-}
         ProjectStatus.CONSTRUCTION -> TaskCategory.CONSTRUCTION
         ProjectStatus.DELIVERY -> TaskCategory.DELIVERY
     }
