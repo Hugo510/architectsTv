@@ -125,9 +125,9 @@ fun MobileApp() {
                         )
                     },
                     label = "home_animation"
-                ) { _ ->
+                ) {
                     HomeScreen(
-                        repository = managementRepository, // Inyectar repository compartido
+                        repository = managementRepository,
                         onNavigateToProjects = { 
                             navController.navigate("management") {
                                 launchSingleTop = true
@@ -190,7 +190,7 @@ fun MobileApp() {
                         ) + fadeOut()
                     },
                     label = "management_animation"
-                ) { _ ->
+                ) {
                     ManagementScreen(
                         viewModel = managementViewModel,
                         onNavigateToHome = { 
@@ -280,7 +280,7 @@ fun MobileApp() {
                         ) + fadeOut()
                     },
                     label = "cronograma_animation"
-                ) { _ ->
+                ) {
                     CronogramaScreen(
                         onNavigateToTaskDetail = { taskId ->
                             navController.navigate("task_detail/$taskId")
@@ -384,7 +384,7 @@ fun MobileApp() {
                         ) + fadeOut()
                     },
                     label = "planos_animation"
-                ) { _ ->
+                ) {
                     PlanosScreen(
                         onNavigateToHome = { 
                             navController.navigate("home") {
@@ -428,7 +428,7 @@ fun MobileApp() {
                         ) + fadeOut()
                     },
                     label = "evidencia_animation"
-                ) { _ ->
+                ) {
                     EvidenciaScreen(
                         viewModel = evidenciaViewModel,
                         onNavigateToProjectDetail = { projectId ->
