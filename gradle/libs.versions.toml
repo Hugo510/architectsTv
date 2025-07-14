@@ -70,6 +70,7 @@ lifecycle-livedata = "2.9.1"
 compose-foundation-lazy = "1.8.3"
 compose-ui-graphics-vector = "1.8.3"
 material-icons-core = "1.7.8"
+kotlinx-datetime = "0.4.1"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -226,6 +227,9 @@ androidx-compose-ui-test-manifest-debug = { group = "androidx.compose.ui", name 
 
 # Navigation Animation para transiciones entre pantallas
 androidx-navigation-animation = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigationCompose" }
+
+# Kotlinx Datetime
+kotlinx.datetime = { group = "org.jetbrains.kotlinx", name = "kotlinx-datetime", version.ref = "kotlinx-datetime" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
