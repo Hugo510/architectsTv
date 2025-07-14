@@ -21,11 +21,16 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.modifier.modifierLocalOf
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.draw.scale
 
 data class BottomNavItem(
     val route: String,
@@ -83,7 +88,7 @@ fun BottomNavigationBar(
     ) {
         BottomNavItems.items.forEachIndexed { index, item ->
             val selected = currentRoute == item.route
-            
+
             // Animaciones para la selección
             val scale by animateFloatAsState(
                 targetValue = if (selected) 1.1f else 1f,
@@ -93,7 +98,7 @@ fun BottomNavigationBar(
                 ),
                 label = "nav_scale_$index"
             )
-            
+
             val iconScale by animateFloatAsState(
                 targetValue = if (selected) 1.2f else 1f,
                 animationSpec = spring(
@@ -102,7 +107,7 @@ fun BottomNavigationBar(
                 ),
                 label = "icon_scale_$index"
             )
-            
+
             NavigationBarItem(
                 icon = {
                     Box(
@@ -110,7 +115,7 @@ fun BottomNavigationBar(
                         modifier = Modifier.scale(iconScale)
                     ) {
                         // Indicador de fondo animado para el icono seleccionado
-                        AnimatedVisibility(
+                        androidx.compose.animation.AnimatedVisibility(
                             visible = selected,
                             enter = scaleIn(
                                 animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy)
@@ -128,7 +133,7 @@ fun BottomNavigationBar(
                                     )
                             )
                         }
-                        
+
                         // Icono con animación de rotación sutil
                         val rotation by animateFloatAsState(
                             targetValue = if (selected) 360f else 0f,
@@ -138,7 +143,7 @@ fun BottomNavigationBar(
                             ),
                             label = "icon_rotation_$index"
                         )
-                        
+
                         Icon(
                             imageVector = if (selected) item.selectedIcon else item.unselectedIcon,
                             contentDescription = item.title,
@@ -150,7 +155,7 @@ fun BottomNavigationBar(
                         )
                     }
                 },
-                label = { 
+                label = {
                     AnimatedContent(
                         targetState = selected,
                         transitionSpec = {
