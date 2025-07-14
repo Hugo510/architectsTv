@@ -6,6 +6,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -41,20 +42,22 @@ fun HomeScreen(
     var selectedStatus by remember { mutableStateOf("Todos") }
     var isStatusDropdownExpanded by remember { mutableStateOf(false) }
     var isVisible by remember { mutableStateOf(false) }
-    
+
     // Obtener últimos 2 proyectos del repository compartido
-    val recentProjects by repository.getAllProjects()
-        .map { projects -> projects.take(2) } // ← Solo últimos 2 proyectos
-        .collectAsState(initial = emptyList())
-    
+    val recentProjects by produceState(initialValue = emptyList<Project>(), repository) {
+        repository.getAllProjects()
+            .map { projects -> projects.take(2) }
+            .collect { value = it }
+    }
+
     // Activar animaciones de entrada después de un breve delay
     LaunchedEffect(Unit) {
         delay(100)
         isVisible = true
     }
-    
+
     val statusOptions = listOf("Todos", "Diseño", "Revisión de Permisos", "Construcción", "Entrega")
-    
+
     Scaffold(
         floatingActionButton = {
             AnimatedVisibility(
@@ -63,8 +66,7 @@ fun HomeScreen(
                     initialScale = 0f,
                     animationSpec = spring(
                         dampingRatio = Spring.DampingRatioMediumBouncy,
-                        stiffness = Spring.StiffnessMedium,
-                        delayMillis = 800
+                        stiffness = Spring.StiffnessMedium
                     )
                 ) + fadeIn(animationSpec = tween(400, delayMillis = 800)),
                 exit = scaleOut() + fadeOut()
@@ -105,7 +107,7 @@ fun HomeScreen(
                     }
                 }
             }
-            
+
             // Buscador y filtro con animación retardada
             item {
                 AnimatedVisibility(
@@ -114,8 +116,7 @@ fun HomeScreen(
                         initialOffsetY = { it / 2 },
                         animationSpec = spring(
                             dampingRatio = Spring.DampingRatioMediumBouncy,
-                            stiffness = Spring.StiffnessMedium,
-                            delayMillis = 200
+                            stiffness = Spring.StiffnessMedium
                         )
                     ) + fadeIn(animationSpec = tween(600, delayMillis = 200)),
                     exit = slideOutVertically() + fadeOut()
@@ -131,7 +132,7 @@ fun HomeScreen(
                     )
                 }
             }
-            
+
             // Sección de últimas actualizaciones
             item {
                 AnimatedVisibility(
@@ -140,8 +141,7 @@ fun HomeScreen(
                         initialOffsetX = { -it },
                         animationSpec = spring(
                             dampingRatio = Spring.DampingRatioMediumBouncy,
-                            stiffness = Spring.StiffnessMedium,
-                            delayMillis = 400
+                            stiffness = Spring.StiffnessMedium
                         )
                     ) + fadeIn(animationSpec = tween(600, delayMillis = 400)),
                     exit = slideOutHorizontally() + fadeOut()
@@ -166,17 +166,16 @@ fun HomeScreen(
                     }
                 }
             }
-            
+
             // Lista de proyectos recientes con animación escalonada
-            itemsIndexed(recentProjects) { index, project ->
+            itemsIndexed(recentProjects) { index: Int, project: Project ->
                 AnimatedVisibility(
                     visible = isVisible,
                     enter = slideInVertically(
                         initialOffsetY = { it },
                         animationSpec = spring(
                             dampingRatio = Spring.DampingRatioMediumBouncy,
-                            stiffness = Spring.StiffnessMedium,
-                            delayMillis = 600 + (index * 150)
+                            stiffness = Spring.StiffnessMedium
                         )
                     ) + fadeIn(animationSpec = tween(600, delayMillis = 600 + (index * 150))),
                     exit = slideOutVertically() + fadeOut()
@@ -187,7 +186,7 @@ fun HomeScreen(
                     )
                 }
             }
-            
+
             // Spacer para el FAB
             item {
                 Spacer(modifier = Modifier.height(80.dp))
@@ -221,9 +220,9 @@ private fun CompanyHeader() {
                     fontWeight = FontWeight.Bold
                 )
             }
-            
+
             Spacer(modifier = Modifier.width(12.dp))
-            
+
             Text(
                 text = "LOGO EMPRESA",
                 fontSize = 18.sp,
@@ -231,7 +230,7 @@ private fun CompanyHeader() {
                 color = MaterialTheme.colorScheme.onBackground
             )
         }
-        
+
         // Bienvenida
         Text(
             text = "Bienvenido, Arq. Uriel",
@@ -239,7 +238,7 @@ private fun CompanyHeader() {
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.onBackground
         )
-        
+
         // Subtítulo
         Text(
             text = "[Poner de subtítulo o frase aquí]",
@@ -269,11 +268,11 @@ private fun SearchAndFilterSection(
         OutlinedTextField(
             value = searchQuery,
             onValueChange = onSearchQueryChange,
-            placeholder = { 
+            placeholder = {
                 Text(
                     "Buscar proyecto",
                     color = MaterialTheme.colorScheme.onSurfaceVariant
-                ) 
+                )
             },
             leadingIcon = {
                 Icon(
@@ -289,7 +288,7 @@ private fun SearchAndFilterSection(
                 unfocusedBorderColor = MaterialTheme.colorScheme.outline
             )
         )
-        
+
         // Filtro de estado
         ExposedDropdownMenuBox(
             expanded = isDropdownExpanded,
@@ -311,12 +310,12 @@ private fun SearchAndFilterSection(
                     unfocusedBorderColor = MaterialTheme.colorScheme.outline
                 )
             )
-            
+
             ExposedDropdownMenu(
                 expanded = isDropdownExpanded,
                 onDismissRequest = { onDropdownExpandedChange(false) }
             ) {
-                statusOptions.forEach { status =>
+                statusOptions.forEach { status ->
                     DropdownMenuItem(
                         text = { Text(status) },
                         onClick = {
