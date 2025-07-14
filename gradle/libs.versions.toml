@@ -48,6 +48,12 @@ compose-graphics = "1.7.8"
 animation-graphics = "1.5.8"
 koin = "3.5.3"
 staggered-grid = "1.7.8"
+# NUEVAS VERSIONES AGREGADAS - CRÍTICAS PARA EL FUNCIONAMIENTO
+border-stroke = "1.7.8"
+window-insets = "1.7.8" 
+compose-foundation-layout = "1.7.8"
+lazy-layouts = "1.7.8"
+animation-graphics-android = "1.7.8"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -149,6 +155,62 @@ koin-androidx-compose = { group = "io.insert-koin", name = "koin-androidx-compos
 
 # StaggeredGrid - Para el layout de galería
 androidx-compose-foundation-layout-staggeredgrid = { group = "androidx.compose.foundation", name = "foundation-layout", version.ref = "staggered-grid" }
+
+# DEPENDENCIAS CRÍTICAS FALTANTES IDENTIFICADAS EN EL CÓDIGO:
+
+# BorderStroke - Usado en EnhancedStyleChip y otros componentes
+androidx-compose-foundation-border = { group = "androidx.compose.foundation", name = "foundation", version.ref = "border-stroke" }
+
+# LazyVerticalStaggeredGrid - Usado en EvidenciaScreen
+androidx-compose-foundation-layout = { group = "androidx.compose.foundation", name = "foundation-layout", version.ref = "compose-foundation-layout" }
+
+# WindowInsets y configuración de pantalla
+androidx-compose-ui-util = { group = "androidx.compose.ui", name = "ui-util", version.ref = "window-insets" }
+
+# Lazy layouts mejorados
+androidx-compose-foundation-lazy = { group = "androidx.compose.foundation", name = "foundation", version.ref = "lazy-layouts" }
+
+# Animation core para spring y animaciones avanzadas
+androidx-compose-animation-core-desktop = { group = "androidx.compose.animation", name = "animation-core", version.ref = "compose-animation" }
+
+# Material3 additional components - Para ExposedDropdownMenuBox
+androidx-compose-material3-adaptive = { group = "androidx.compose.material3", name = "material3-adaptive", version.ref = "material3" }
+
+# Focus management y keyboard controller
+androidx-compose-foundation-text = { group = "androidx.compose.foundation", name = "foundation", version.ref = "foundation" }
+
+# DialogProperties y Dialog components
+androidx-compose-ui-window = { group = "androidx.compose.ui", name = "ui", version.ref = "foundation" }
+
+# Configuration para responsive design
+androidx-compose-ui-platform = { group = "androidx.compose.ui", name = "ui", version.ref = "foundation" }
+
+# Haptic feedback support
+androidx-compose-ui-haptic = { group = "androidx.compose.ui", name = "ui", version.ref = "foundation" }
+
+# Graphics avanzados para gradientes complejos
+androidx-compose-ui-graphics-vector = { group = "androidx.compose.ui", name = "ui-graphics", version.ref = "compose-graphics" }
+
+# NUEVAS DEPENDENCIAS PARA FUNCIONALIDADES ESPECÍFICAS:
+
+# Para manejo de estados más complejos
+androidx-lifecycle-livedata-ktx = { group = "androidx.lifecycle", name = "lifecycle-livedata-ktx", version.ref = "lifecycleViewModelKtx" }
+
+# Para animaciones de contenido
+androidx-compose-animation-content = { group = "androidx.compose.animation", name = "animation", version.ref = "compose-animation" }
+
+# Para efectos visuales avanzados
+androidx-compose-ui-graphics-shapes = { group = "androidx.compose.ui", name = "ui-graphics", version.ref = "compose-graphics" }
+
+# Para manejo de gestures
+androidx-compose-foundation-gestures = { group = "androidx.compose.foundation", name = "foundation", version.ref = "foundation" }
+
+# Para state holders
+androidx-compose-runtime-saveable = { group = "androidx.compose.runtime", name = "runtime-saveable", version.ref = "foundation" }
+
+# DEPENDENCIAS PARA TESTING DE LAS NUEVAS FUNCIONALIDADES:
+androidx-compose-ui-test-junit4-android = { group = "androidx.compose.ui", name = "ui-test-junit4-android", version.ref = "foundation" }
+androidx-compose-ui-test-manifest-debug = { group = "androidx.compose.ui", name = "ui-test-manifest", version.ref = "foundation" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

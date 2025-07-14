@@ -172,4 +172,64 @@ dependencies {
     kaptAndroidTest(libs.hilt.compiler)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+    
+    // DEPENDENCIAS CRÍTICAS FALTANTES IDENTIFICADAS:
+    
+    // LazyVerticalStaggeredGrid - CRÍTICA para EvidenciaScreen
+    implementation(libs.androidx.compose.foundation.layout.staggeredgrid)
+    
+    // BorderStroke y Foundation extras - Para EnhancedStyleChip
+    implementation(libs.androidx.compose.foundation.border)
+    
+    // UI Utils para configuración de pantalla
+    implementation(libs.androidx.compose.ui.util)
+    
+    // Dialog y Window components - Para FullScreenImageViewer
+    implementation(libs.androidx.compose.ui.window)
+    
+    // Platform utilities - Para LocalConfiguration
+    implementation(libs.androidx.compose.ui.platform)
+    
+    // Haptic feedback - Para todas las interacciones táctiles
+    implementation(libs.androidx.compose.ui.haptic)
+    
+    // Graphics vector - Para iconos avanzados
+    implementation(libs.androidx.compose.ui.graphics.vector)
+    
+    // Foundation gestures - Para detectTapGestures
+    implementation(libs.androidx.compose.foundation.gestures)
+    
+    // Runtime saveable - Para remember y state management
+    implementation(libs.androidx.compose.runtime.saveable)
+    
+    // LiveData support - Para mejor state management
+    implementation(libs.androidx.lifecycle.livedata.ktx)
+    
+    // Animation content - Para AnimatedVisibility y transiciones
+    implementation(libs.androidx.compose.animation.content)
+    
+    // Graphics shapes - Para formas personalizadas
+    implementation(libs.androidx.compose.ui.graphics.shapes)
+    
+    // Material3 adaptive - Para ExposedDropdownMenuBox
+    implementation(libs.androidx.compose.material3.adaptive)
+    
+    // Foundation text - Para KeyboardActions y focus management
+    implementation(libs.androidx.compose.foundation.text)
+    
+    // Foundation lazy - Para optimización de LazyColumn/LazyRow
+    implementation(libs.androidx.compose.foundation.lazy)
+    
+    // Animation core adicional - Para spring animations
+    implementation(libs.androidx.compose.animation.core.desktop)
+    
+    // DEPENDENCIAS PARA DEBUGGING Y DESARROLLO:
+    
+    // UI tooling para preview avanzado
+    debugImplementation(libs.androidx.ui.tooling)
+    debugImplementation(libs.androidx.ui.test.manifest)
+    debugImplementation(libs.androidx.compose.ui.test.manifest.debug)
+    
+    // Testing para las nuevas funcionalidades
+    androidTestImplementation(libs.androidx.compose.ui.test.junit4.android)
 }
