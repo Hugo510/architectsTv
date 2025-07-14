@@ -45,7 +45,7 @@ object BottomNavItems {
         ),
         BottomNavItem(
             route = "evidencia",
-            title = "Evidencia",
+            title = "Galería",
             selectedIcon = Icons.Filled.PhotoCamera,
             unselectedIcon = Icons.Outlined.PhotoCamera
         )

@@ -124,4 +124,59 @@ dependencies {
     kaptAndroidTest(libs.hilt.compiler)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+    
+    // DEPENDENCIAS FALTANTES IDENTIFICADAS:
+    
+    // BorderStroke - Para los chips modernos con bordes
+    implementation(libs.androidx.compose.foundation)
+    
+    // Animaciones avanzadas - Para las animaciones fluidas implementadas
+    implementation(libs.androidx.compose.animation.graphics)
+    
+    // UI graphics - Para gradientes y efectos visuales avanzados
+    implementation(libs.androidx.compose.ui.graphics)
+    
+    // Brush y efectos gráficos - Para glassmorphism y gradientes
+    implementation(libs.androidx.compose.ui.graphics.android)
+    
+    // Scale animation - Para las micro-interacciones
+    implementation(libs.androidx.compose.animation.core.android)
+    
+    // Material3 WindowSizeClass - Para responsive design
+    implementation(libs.androidx.compose.material3.window.size)
+    
+    // Activity result APIs - Para funcionalidades futuras de la galería
+    implementation(libs.androidx.activity.result)
+    
+    // Lifecycle viewmodel savedstate - Para persistir estado en rotaciones
+    implementation(libs.androidx.lifecycle.viewmodel.savedstate)
+    
+    // Datastore preferences - Para configuraciones de usuario
+    implementation(libs.androidx.datastore.preferences)
+    
+    // Splash screen API - Para pantalla de inicio moderna
+    implementation(libs.androidx.core.splashscreen)
+    
+    // System UI controller - Para control de barras de estado
+    implementation(libs.accompanist.systemuicontroller)
+    
+    // Pager support - Para futuras funcionalidades de galería
+    implementation(libs.accompanist.pager)
+    implementation(libs.accompanist.pager.indicators)
+    
+    // Flow layout - Para layouts dinámicos de chips
+    implementation(libs.accompanist.flowlayout)
+    
+    // Swipe refresh - Para actualización por deslizamiento
+    implementation(libs.accompanist.swiperefresh)
+    
+    // Placeholder - Para estados de carga
+    implementation(libs.accompanist.placeholder.material)
+    
+    // Navigation animation - Para transiciones entre pantallas
+    implementation(libs.accompanist.navigation.animation)
+    
+    // Insets - Para manejo de padding del sistema
+    implementation(libs.accompanist.insets)
+    implementation(libs.accompanist.insets.ui)
 }
