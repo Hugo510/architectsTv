@@ -79,11 +79,11 @@ fun MobileApp() {
             AnimatedVisibility(
                 visible = showBottomNav,
                 enter = slideInVertically(
-                    initialOffsetY = { offset -> offset },
+                    initialOffsetY = { it },
                     animationSpec = tween(durationMillis = 300, easing = FastOutSlowInEasing)
                 ) + fadeIn(animationSpec = tween(300)),
                 exit = slideOutVertically(
-                    targetOffsetY = { offset -> offset },
+                    targetOffsetY = { it },
                     animationSpec = tween(durationMillis = 300, easing = FastOutSlowInEasing)
                 ) + fadeOut(animationSpec = tween(300))
             ) {
@@ -98,131 +98,22 @@ fun MobileApp() {
                 bottom = if (showBottomNav) paddingValues.calculateBottomPadding() else 0.dp
             )
         ) {
-            composable(
-                "home",
-                enterTransition = {
-                    slideInHorizontally(
-                        initialOffsetX = { offset -> -offset },
-                        animationSpec = tween(durationMillis = 400, easing = FastOutSlowInEasing)
-                    ) + fadeIn(animationSpec = tween(400))
-                },
-                exitTransition = {
-                    slideOutHorizontally(
-                        targetOffsetX = { offset -> -offset },
-                        animationSpec = tween(durationMillis = 400, easing = FastOutSlowInEasing)
-                    ) + fadeOut(animationSpec = tween(400))
-                }
-            ) {
-                AnimatedContent(
-                    targetState = "home",
-                    transitionSpec = {
-                        scaleIn(
-                            initialScale = 0.9f,
-                            animationSpec = tween(300, easing = FastOutSlowInEasing)
-                        ) togetherWith scaleOut(
-                            targetScale = 1.1f,
-                            animationSpec = tween(300, easing = FastOutSlowInEasing)
-                        )
-                    },
-                    label = "home_animation"
-                ) {
-                    HomeScreen(
-                        repository = managementRepository,
-                        onNavigateToProjects = { 
-                            navController.navigate("management") {
-                                launchSingleTop = true
-                            }
-                        },
-                        onNavigateToManagement = { 
-                            navController.navigate("management") {
-                                launchSingleTop = true
-                            }
-                        },
-                        onNavigateToCast = { /* TODO: Implementar cast */ }
-                    )
-                }
+            composable("home") {
+                HomeScreen(
+                    repository = managementRepository,
+                    onNavigateToProjects = { navController.navigate("management") { launchSingleTop = true } },
+                    onNavigateToManagement = { navController.navigate("management") { launchSingleTop = true } },
+                    onNavigateToCast = { /* ... */ }
+                )
             }
-            
-            composable(
-                "management",
-                enterTransition = {
-                    when (initialState.destination.route) {
-                        "home" -> slideInHorizontally(
-                            initialOffsetX = { offset -> offset },
-                            animationSpec = tween(400, easing = FastOutSlowInEasing)
-                        )
-                        "cronograma" -> slideInHorizontally(
-                            initialOffsetX = { offset -> -offset },
-                            animationSpec = tween(400, easing = FastOutSlowInEasing)
-                        )
-                        else -> slideInVertically(
-                            initialOffsetY = { offset -> offset },
-                            animationSpec = tween(400, easing = FastOutSlowInEasing)
-                        )
-                    } + fadeIn(animationSpec = tween(400))
-                },
-                exitTransition = {
-                    when (targetState.destination.route) {
-                        "home" -> slideOutHorizontally(
-                            targetOffsetX = { offset -> offset },
-                            animationSpec = tween(400, easing = FastOutSlowInEasing)
-                        )
-                        "cronograma" -> slideOutHorizontally(
-                            targetOffsetX = { offset -> -offset },
-                            animationSpec = tween(400, easing = FastOutSlowInEasing)
-                        )
-                        else -> slideOutVertically(
-                            targetOffsetY = { offset -> offset },
-                            animationSpec = tween(400, easing = FastOutSlowInEasing)
-                        )
-                    } + fadeOut(animationSpec = tween(400))
-                }
-            ) {
-                AnimatedContent(
-                    targetState = "management",
-                    transitionSpec = {
-                        slideInVertically(
-                            initialOffsetY = { it / 3 },
-                            animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy)
-                        ) + fadeIn() togetherWith slideOutVertically(
-                            targetOffsetY = { -it / 3 },
-                            animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy)
-                        ) + fadeOut()
-                    },
-                    label = "management_animation"
-                ) {
-                    ManagementScreen(
-                        viewModel = managementViewModel,
-                        onNavigateToHome = { 
-                            navController.navigate("home") {
-                                launchSingleTop = true
-                            }
-                        },
-                        onNavigateToCreateProject = { 
-                            navController.navigate("create_project") 
-                        }
-                    )
-                }
+            composable("management") {
+                ManagementScreen(
+                    viewModel = managementViewModel,
+                    onNavigateToHome = { navController.navigate("home") { launchSingleTop = true } },
+                    onNavigateToCreateProject = { navController.navigate("create_project") }
+                )
             }
-            
-            composable(
-                "create_project",
-                enterTransition = {
-                    slideInVertically(
-                        initialOffsetY = { offset -> offset },
-                        animationSpec = spring(
-                            dampingRatio = Spring.DampingRatioMediumBouncy,
-                            stiffness = Spring.StiffnessLow
-                        )
-                    ) + fadeIn(animationSpec = tween(500))
-                },
-                exitTransition = {
-                    slideOutVertically(
-                        targetOffsetY = { offset -> offset },
-                        animationSpec = tween(400, easing = FastOutSlowInEasing)
-                    ) + fadeOut(animationSpec = tween(400))
-                }
-            ) {
+            composable("create_project") {
                 CreateProjectScreen(
                     viewModel = managementViewModel,
                     onNavigateBack = { navController.popBackStack() },
@@ -232,237 +123,38 @@ fun MobileApp() {
                     }
                 )
             }
-            
-            composable(
-                "cronograma",
-                enterTransition = {
-                    when (initialState.destination.route) {
-                        "management" -> slideInHorizontally(
-                            initialOffsetX = { offset -> offset },
-                            animationSpec = tween(400, easing = FastOutSlowInEasing)
-                        )
-                        "planos" -> slideInHorizontally(
-                            initialOffsetX = { offset -> -offset },
-                            animationSpec = tween(400, easing = FastOutSlowInEasing)
-                        )
-                        else -> slideInVertically(
-                            initialOffsetY = { offset -> offset },
-                            animationSpec = tween(400, easing = FastOutSlowInEasing)
-                        )
-                    } + fadeIn(animationSpec = tween(400))
-                },
-                exitTransition = {
-                    when (targetState.destination.route) {
-                        "management" -> slideOutHorizontally(
-                            targetOffsetX = { offset -> offset },
-                            animationSpec = tween(400, easing = FastOutSlowInEasing)
-                        )
-                        "planos" -> slideOutHorizontally(
-                            targetOffsetX = { offset -> -offset },
-                            animationSpec = tween(400, easing = FastOutSlowInEasing)
-                        )
-                        else -> slideOutVertically(
-                            targetOffsetY = { offset -> offset },
-                            animationSpec = tween(400, easing = FastOutSlowInEasing)
-                        )
-                    } + fadeOut(animationSpec = tween(400))
-                }
-            ) {
-                AnimatedContent(
-                    targetState = "cronograma",
-                    transitionSpec = {
-                        scaleIn(
-                            initialScale = 0.8f,
-                            animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy)
-                        ) + fadeIn() togetherWith scaleOut(
-                            targetScale = 1.2f,
-                            animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy)
-                        ) + fadeOut()
-                    },
-                    label = "cronograma_animation"
-                ) {
-                    CronogramaScreen(
-                        onNavigateToTaskDetail = { taskId ->
-                            navController.navigate("task_detail/$taskId")
-                        },
-                        onNavigateToCreateTask = {
-                            navController.navigate("create_task")
-                        }
-                    )
-                }
+            composable("cronograma") {
+                CronogramaScreen(
+                    onNavigateToTaskDetail = { taskId -> navController.navigate("task_detail/$taskId") },
+                    onNavigateToCreateTask = { navController.navigate("create_task") }
+                )
             }
-            // Pantalla de detalle de tarea
-            composable(
-                "task_detail/{taskId}",
-                enterTransition = {
-                    // TODO: Puedes personalizar la animación si lo deseas
-                    slideInVertically(
-                        initialOffsetY = { offset -> offset },
-                        animationSpec = tween(400, easing = FastOutSlowInEasing)
-                    ) + fadeIn(animationSpec = tween(400))
-                },
-                exitTransition = {
-                    slideOutVertically(
-                        targetOffsetY = { offset -> offset },
-                        animationSpec = tween(400, easing = FastOutSlowInEasing)
-                    ) + fadeOut(animationSpec = tween(400))
-                }
-            ) { backStackEntry ->
+            composable("task_detail/{taskId}") { backStackEntry ->
                 val taskId = backStackEntry.arguments?.getString("taskId") ?: ""
                 TaskDetailScreen(
                     taskId = taskId,
                     onNavigateBack = { navController.popBackStack() },
-                    onEditTask = { /* TODO: Implementar edición de tarea si es necesario */ }
+                    onEditTask = { /* ... */ }
                 )
             }
-            // Pantalla de crear tarea
-            composable(
-                "create_task",
-                enterTransition = {
-                    // TODO: Puedes personalizar la animación si lo deseas
-                    slideInVertically(
-                        initialOffsetY = { offset -> offset },
-                        animationSpec = tween(400, easing = FastOutSlowInEasing)
-                    ) + fadeIn(animationSpec = tween(400))
-                },
-                exitTransition = {
-                    slideOutVertically(
-                        targetOffsetY = { offset -> offset },
-                        animationSpec = tween(400, easing = FastOutSlowInEasing)
-                    ) + fadeOut(animationSpec = tween(400))
-                }
-            ) {
+            composable("create_task") {
                 CreateTaskScreen(
                     onNavigateBack = { navController.popBackStack() }
                 )
             }
-            
-            composable(
-                "planos",
-                enterTransition = {
-                    when (initialState.destination.route) {
-                        "cronograma" -> slideInHorizontally(
-                            initialOffsetX = { offset -> offset },
-                            animationSpec = tween(400, easing = FastOutSlowInEasing)
-                        )
-                        "evidencia" -> slideInHorizontally(
-                            initialOffsetX = { offset -> -offset },
-                            animationSpec = tween(400, easing = FastOutSlowInEasing)
-                        )
-                        else -> slideInVertically(
-                            initialOffsetY = { offset -> offset },
-                            animationSpec = tween(400, easing = FastOutSlowInEasing)
-                        )
-                    } + fadeIn(animationSpec = tween(400))
-                },
-                exitTransition = {
-                    when (targetState.destination.route) {
-                        "cronograma" -> slideOutHorizontally(
-                            targetOffsetX = { offset -> offset },
-                            animationSpec = tween(400, easing = FastOutSlowInEasing)
-                        )
-                        "evidencia" -> slideOutHorizontally(
-                            targetOffsetX = { offset -> -offset },
-                            animationSpec = tween(400, easing = FastOutSlowInEasing)
-                        )
-                        else -> slideOutVertically(
-                            targetOffsetY = { offset -> offset },
-                            animationSpec = tween(400, easing = FastOutSlowInEasing)
-                        )
-                    } + fadeOut(animationSpec = tween(400))
-                }
-            ) {
-                AnimatedContent(
-                    targetState = "planos",
-                    transitionSpec = {
-                        slideInHorizontally(
-                            initialOffsetX = { it / 2 },
-                            animationSpec = spring(dampingRatio = Spring.DampingRatioLowBouncy)
-                        ) + fadeIn() togetherWith slideOutHorizontally(
-                            targetOffsetX = { -it / 2 },
-                            animationSpec = spring(dampingRatio = Spring.DampingRatioLowBouncy)
-                        ) + fadeOut()
-                    },
-                    label = "planos_animation"
-                ) {
-                    PlanosScreen(
-                        onNavigateToHome = { 
-                            navController.navigate("home") {
-                                launchSingleTop = true
-                            }
-                        }
-                    )
-                }
+            composable("planos") {
+                PlanosScreen(
+                    onNavigateToHome = { navController.navigate("home") { launchSingleTop = true } }
+                )
             }
-            
-            composable(
-                "evidencia",
-                enterTransition = {
-                    slideInHorizontally(
-                        initialOffsetX = { offset -> offset },
-                        animationSpec = tween(400, easing = FastOutSlowInEasing)
-                    ) + fadeIn(animationSpec = tween(400))
-                },
-                exitTransition = {
-                    slideOutHorizontally(
-                        targetOffsetX = { offset -> offset },
-                        animationSpec = tween(400, easing = FastOutSlowInEasing)
-                    ) + fadeOut(animationSpec = tween(400))
-                }
-            ) {
-                AnimatedContent(
-                    targetState = "evidencia",
-                    transitionSpec = {
-                        slideInVertically(
-                            initialOffsetY = { it / 4 },
-                            animationSpec = spring(
-                                dampingRatio = Spring.DampingRatioMediumBouncy,
-                                stiffness = Spring.StiffnessMedium
-                            )
-                        ) + fadeIn() togetherWith slideOutVertically(
-                            targetOffsetY = { -it / 4 },
-                            animationSpec = spring(
-                                dampingRatio = Spring.DampingRatioMediumBouncy,
-                                stiffness = Spring.StiffnessMedium
-                            )
-                        ) + fadeOut()
-                    },
-                    label = "evidencia_animation"
-                ) {
-                    EvidenciaScreen(
-                        viewModel = evidenciaViewModel,
-                        onNavigateToProjectDetail = { projectId ->
-                            navController.navigate("project_detail/$projectId") {
-                                launchSingleTop = true
-                            }
-                        },
-                        onNavigateToAddProject = {
-                            navController.navigate("add_gallery_project") {
-                                launchSingleTop = true
-                            }
-                        }
-                    )
-                }
+            composable("evidencia") {
+                EvidenciaScreen(
+                    viewModel = evidenciaViewModel,
+                    onNavigateToProjectDetail = { projectId -> navController.navigate("project_detail/$projectId") { launchSingleTop = true } },
+                    onNavigateToAddProject = { navController.navigate("add_gallery_project") { launchSingleTop = true } }
+                )
             }
-            
-            composable(
-                "project_detail/{projectId}",
-                enterTransition = {
-                    slideInVertically(
-                        initialOffsetY = { offset -> offset },
-                        animationSpec = spring(
-                            dampingRatio = Spring.DampingRatioMediumBouncy,
-                            stiffness = Spring.StiffnessLow
-                        )
-                    ) + fadeIn(animationSpec = tween(500))
-                },
-                exitTransition = {
-                    slideOutVertically(
-                        targetOffsetY = { offset -> offset },
-                        animationSpec = tween(400, easing = FastOutSlowInEasing)
-                    ) + fadeOut(animationSpec = tween(400))
-                }
-            ) { backStackEntry ->
+            composable("project_detail/{projectId}") { backStackEntry ->
                 val projectId = backStackEntry.arguments?.getString("projectId") ?: ""
                 GalleryProjectDetailScreen(
                     projectId = projectId,
@@ -470,25 +162,7 @@ fun MobileApp() {
                     onNavigateBack = { navController.popBackStack() }
                 )
             }
-            
-            composable(
-                "add_gallery_project",
-                enterTransition = {
-                    slideInVertically(
-                        initialOffsetY = { offset -> offset },
-                        animationSpec = spring(
-                            dampingRatio = Spring.DampingRatioMediumBouncy,
-                            stiffness = Spring.StiffnessLow
-                        )
-                    ) + fadeIn(animationSpec = tween(500))
-                },
-                exitTransition = {
-                    slideOutVertically(
-                        targetOffsetY = { offset -> offset },
-                        animationSpec = tween(400, easing = FastOutSlowInEasing)
-                    ) + fadeOut(animationSpec = tween(400))
-                }
-            ) {
+            composable("add_gallery_project") {
                 AddGalleryProjectScreen(
                     viewModel = evidenciaViewModel,
                     onNavigateBack = { navController.popBackStack() }
