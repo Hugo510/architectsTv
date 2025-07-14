@@ -23,14 +23,14 @@ data class ManagementUiState(
 class ManagementViewModel(
     private val repository: ProjectRepository // Ahora acepta inyección
 ) : ViewModel() {
-    
+
     private val _uiState = MutableStateFlow(ManagementUiState())
     val uiState: StateFlow<ManagementUiState> = _uiState.asStateFlow()
-    
+
     init {
         loadProjects()
     }
-    
+
     fun loadProjects() {
         viewModelScope.launch {
             repository.getAllProjects().collect { projects ->
@@ -39,17 +39,17 @@ class ManagementViewModel(
             }
         }
     }
-    
+
     fun updateSearchQuery(query: String) {
         _uiState.value = _uiState.value.copy(searchQuery = query)
         applyFilters() // ← Reaplica filtros en tiempo real
     }
-    
+
     fun updateSelectedStatus(status: String) {
         _uiState.value = _uiState.value.copy(selectedStatus = status)
         applyFilters()
     }
-    
+
     fun createProject(project: Project) {
         viewModelScope.launch {
             _uiState.value = _uiState.value.copy(
@@ -57,10 +57,10 @@ class ManagementViewModel(
                 createProjectSuccess = false,
                 createProjectError = null
             )
-            
+
             try {
                 val result = repository.createProject(project)
-                
+
                 result.fold(
                     onSuccess = { createdProject ->
                         _uiState.value = _uiState.value.copy(
@@ -87,12 +87,12 @@ class ManagementViewModel(
             }
         }
     }
-    
+
     fun updateProject(project: Project) {
         viewModelScope.launch {
             try {
                 val result = repository.updateProject(project)
-                
+
                 result.fold(
                     onSuccess = { updatedProject ->
                         // Los proyectos se actualizan automáticamente por el Flow del repository
@@ -110,12 +110,12 @@ class ManagementViewModel(
             }
         }
     }
-    
+
     fun deleteProject(projectId: String) {
         viewModelScope.launch {
             try {
                 val result = repository.deleteProject(projectId)
-                
+
                 result.fold(
                     onSuccess = {
                         // Los proyectos se actualizan automáticamente por el Flow del repository
@@ -133,7 +133,7 @@ class ManagementViewModel(
             }
         }
     }
-    
+
     fun searchProjects(query: String) {
         viewModelScope.launch {
             try {
@@ -149,7 +149,7 @@ class ManagementViewModel(
             }
         }
     }
-    
+
     fun getProjectsByStatus(status: ProjectStatus) {
         viewModelScope.launch {
             try {
@@ -165,36 +165,36 @@ class ManagementViewModel(
             }
         }
     }
-    
+
     fun clearError() {
         _uiState.value = _uiState.value.copy(errorMessage = null)
     }
-    
+
     fun clearCreateProjectState() {
         _uiState.value = _uiState.value.copy(
             createProjectSuccess = false,
             createProjectError = null
         )
     }
-    
+
     private fun applyFilters() {
         val currentState = _uiState.value
         val allProjects = currentState.projects
-        
+
         val filtered = allProjects.filter { project ->
-            val matchesSearch = currentState.searchQuery.isEmpty() || 
-                project.name.contains(currentState.searchQuery, ignoreCase = true) ||
-                project.description?.contains(currentState.searchQuery, ignoreCase = true) == true
-            
-            val matchesStatus = currentState.selectedStatus == "Estado" || 
-                mapProjectStatusToDisplayName(project.status) == currentState.selectedStatus
-            
+            val matchesSearch = currentState.searchQuery.isEmpty() ||
+                    project.name.contains(currentState.searchQuery, ignoreCase = true) ||
+                    project.description?.contains(currentState.searchQuery, ignoreCase = true) == true
+
+            val matchesStatus = currentState.selectedStatus == "Estado" ||
+                    mapProjectStatusToDisplayName(project.status) == currentState.selectedStatus
+
             matchesSearch && matchesStatus
         }
-        
+
         _uiState.value = currentState.copy(filteredProjects = filtered)
     }
-    
+
     // Usar función de mapeo compatible con shared_domain
     private fun mapProjectStatusToDisplayName(status: ProjectStatus): String {
         return when (status) {
@@ -205,15 +205,4 @@ class ManagementViewModel(
         }
     }
 }
-    }
-    
-    // Usar función de mapeo compatible con shared_domain
-    private fun mapProjectStatusToDisplayName(status: ProjectStatus): String {
-        return when (status) {
-            ProjectStatus.DESIGN -> "Diseño"
-            ProjectStatus.PERMITS_REVIEW -> "Revisión de Permisos"
-            ProjectStatus.CONSTRUCTION -> "Construcción"
-            ProjectStatus.DELIVERY -> "Entrega"
-        }
-    }
-}
+
