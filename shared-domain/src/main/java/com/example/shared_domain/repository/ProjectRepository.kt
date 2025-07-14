@@ -162,7 +162,7 @@ enum class TimeFrame {
     CUSTOM
 }
 
-// Data class para mantener consistencia entre Evidence y GalleryProject
+@kotlinx.serialization.Serializable
 data class GalleryProject(
     val id: String,
     val name: String,

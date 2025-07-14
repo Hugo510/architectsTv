@@ -1,5 +1,7 @@
 package com.example.app_mobile.ui.screens.evidencia
 
+import androidx.compose.animation.*
+import androidx.compose.animation.core.*
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -11,48 +13,28 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.filled.FavoriteBorder
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.scale
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.shared_domain.model.*
-import kotlin.random.Random
-
-data class GalleryProject(
-    val id: String,
-    val name: String,
-    val description: String,
-    val style: String,
-    val location: String,
-    val imageUrl: String,
-    val rating: Double,
-    val reviewCount: Int,
-    val completedDate: String,
-    val architect: String,
-    val area: String,
-    val isFavorite: Boolean = false,
-    val cardHeight: Int = 280 // Nueva propiedad para altura variable
-)
+import com.example.shared_domain.model.GalleryProject
+import org.koin.androidx.compose.getViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EvidenciaScreen(
-    onNavigateToHome: () -> Unit,
     onNavigateToProjectDetail: (String) -> Unit = {},
-    viewModel: EvidenciaViewModel = hiltViewModel() // Inyectar ViewModel
+    onNavigateToAddProject: () -> Unit = {}, // Nueva función de navegación
+    viewModel: EvidenciaViewModel = getViewModel() // Usar Koin injection
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val searchQuery by viewModel.searchQuery.collectAsState()
@@ -89,17 +71,12 @@ fun EvidenciaScreen(
                         "Galería",
                         fontWeight = FontWeight.Bold
                     ) 
-                },
-                navigationIcon = {
-                    IconButton(onClick = onNavigateToHome) {
-                        Icon(Icons.Default.Home, contentDescription = "Inicio")
-                    }
                 }
             )
         },
         floatingActionButton = {
             FloatingActionButton(
-                onClick = { /* TODO: Navegar a agregar proyecto a galería */ },
+                onClick = onNavigateToAddProject, // Conectar navegación
                 containerColor = MaterialTheme.colorScheme.primary
             ) {
                 Icon(

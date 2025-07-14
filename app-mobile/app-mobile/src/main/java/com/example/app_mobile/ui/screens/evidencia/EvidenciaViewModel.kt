@@ -148,33 +148,86 @@ class EvidenciaViewModel @Inject constructor(
         }
     }
     
-    fun createGalleryProject(project: GalleryProject) {
+    fun createGalleryProject(
+        name: String,
+        description: String,
+        style: String,
+        location: String,
+        architect: String,
+        area: String
+    ) {
         viewModelScope.launch {
-            _uiState.value = _uiState.value.copy(isLoading = true)
-            
             try {
-                val result = repository.createGalleryProject(project)
-                result.fold(
-                    onSuccess = {
-                        _uiState.value = _uiState.value.copy(
-                            message = "Proyecto agregado a la galería exitosamente",
-                            isLoading = false
-                        )
-                    },
-                    onFailure = { error ->
-                        _uiState.value = _uiState.value.copy(
-                            error = "Error al crear proyecto: ${error.message}",
-                            isLoading = false
-                        )
-                    }
+                _uiState.value = _uiState.value.copy(isLoading = true)
+                
+                val newProject = GalleryProject(
+                    id = generateProjectId(),
+                    name = name,
+                    description = description,
+                    style = style,
+                    location = location,
+                    imageUrl = "https://example.com/placeholder.jpg",
+                    rating = generateRandomRating(),
+                    reviewCount = generateRandomReviewCount(),
+                    completedDate = getCurrentDate(),
+                    architect = architect,
+                    area = "$area m²",
+                    isFavorite = false,
+                    cardHeight = generateRandomCardHeight(),
+                    projectId = "project_${generateProjectId()}",
+                    evidenceIds = emptyList(),
+                    lastUpdated = getCurrentDateTime(),
+                    category = EvidenceCategory.DELIVERY
                 )
+                
+                val result = repository.createGalleryProject(newProject)
+                
+                if (result.isSuccess) {
+                    _uiState.value = _uiState.value.copy(
+                        isLoading = false,
+                        message = "Proyecto creado exitosamente"
+                    )
+                    // Recargar la lista de proyectos
+                    loadGalleryProjects()
+                } else {
+                    _uiState.value = _uiState.value.copy(
+                        isLoading = false,
+                        error = "Error al crear el proyecto: ${result.exceptionOrNull()?.message}"
+                    )
+                }
             } catch (e: Exception) {
                 _uiState.value = _uiState.value.copy(
-                    error = "Error: ${e.message}",
-                    isLoading = false
+                    isLoading = false,
+                    error = "Error inesperado: ${e.message}"
                 )
             }
         }
+    }
+    
+    private fun generateProjectId(): String {
+        return "proj_${System.currentTimeMillis()}_${(1000..9999).random()}"
+    }
+    
+    private fun generateRandomRating(): Double {
+        return (4.0..5.0).random().let { 
+            kotlin.math.round(it * 10) / 10.0 
+        }
+    }
+    
+    private fun generateRandomReviewCount(): Int {
+        return (5..50).random()
+    }
+    
+    private fun generateRandomCardHeight(): Int {
+        return listOf(260, 280, 300, 320).random()
+    }
+    
+    private fun getCurrentDate(): String {
+        return "2024-01-15T00:00:00Z"
+    }
+    
+    private fun getCurrentDateTime(): String {
+        return "2024-01-15T${System.currentTimeMillis() % 86400000 / 1000}:00Z"
     }
     
     fun updateGalleryProject(project: GalleryProject) {

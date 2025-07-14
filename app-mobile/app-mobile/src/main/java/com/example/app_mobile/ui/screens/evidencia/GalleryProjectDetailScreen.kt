@@ -20,6 +20,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.font.FontWeight
@@ -28,8 +29,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
-import com.example.app_mobile.ui.screens.evidencia.EvidenceCategory
-import com.example.app_mobile.ui.screens.evidencia.EvidenciaViewModel
+import com.example.shared_domain.model.EvidenceCategory
+import com.example.shared_domain.model.GalleryProject
 import kotlinx.coroutines.delay
 import org.koin.androidx.compose.getViewModel
 
@@ -129,15 +130,10 @@ fun GalleryProjectDetailScreen(
                             )
                         }
                         
-                        IconButton(onClick = { /* TODO: Compartir proyecto */ }) {
-                            Icon(Icons.Default.Share, contentDescription = "Compartir")
-                        }
                     }
                 )
             }
         ) { paddingValues ->
-            // ...existing UI code but using currentProject instead of hardcoded data...
-            
             Box(modifier = Modifier.fillMaxSize()) {
                 if (uiState.isLoading) {
                     Box(
@@ -147,7 +143,6 @@ fun GalleryProjectDetailScreen(
                         CircularProgressIndicator()
                     }
                 } else {
-                    // ...existing LazyColumn code with currentProject data...
                     AnimatedVisibility(
                         visible = isVisible,
                         enter = slideInVertically(
@@ -1210,6 +1205,8 @@ private fun getEvidenceIcon(category: EvidenceCategory): ImageVector {
         EvidenceCategory.ISSUE -> Icons.Default.Warning
         EvidenceCategory.DELIVERY -> Icons.Default.DeliveryDining
         EvidenceCategory.OTHER -> Icons.Default.PhotoCamera
+    }
+}
     }
 }
 
