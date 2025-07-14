@@ -52,4 +52,5 @@ dependencies {
 
     testImplementation(libs.kotlinx.coroutines.test)
 
+    // No se requiere KSP aquí a menos que uses anotaciones de Room/Hilt/etc.
 }
