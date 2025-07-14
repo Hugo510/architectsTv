@@ -208,7 +208,7 @@ dependencies {
     implementation(libs.androidx.compose.foundation.text)
 
     //Material3 Adaptive - Para ExposedDropdownMenuBox avanzado
-    implementation(libs.androidx.compose.material3.adaptive)
+    //implementation(libs.androidx.compose.material3.adaptive)
 
     //Animation Content - Para AnimatedVisibility en componentes
     implementation(libs.androidx.compose.animation.content)
