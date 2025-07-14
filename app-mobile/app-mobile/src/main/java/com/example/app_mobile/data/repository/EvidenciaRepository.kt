@@ -9,8 +9,9 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.map
+import javax.inject.Inject
 
-class EvidenciaRepository : ProjectRepository {
+class EvidenciaRepository @Inject constructor() : ProjectRepository {
     
     // Estado centralizado para evidencia
     private val _evidence = MutableStateFlow<Map<String, Evidence>>(emptyMap())
