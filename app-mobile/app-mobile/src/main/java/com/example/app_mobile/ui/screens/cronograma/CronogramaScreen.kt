@@ -39,7 +39,7 @@ fun CronogramaScreen(
     val currentSchedule by viewModel.currentSchedule.collectAsState()
     val allTasks by viewModel.allTasks.collectAsState()
     val milestones by viewModel.milestones.collectAsState()
-    
+
     // Mostrar mensajes
     LaunchedEffect(uiState.message) {
         uiState.message?.let {
@@ -47,15 +47,15 @@ fun CronogramaScreen(
             // viewModel.clearMessage()
         }
     }
-    
+
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { 
+                title = {
                     Text(
                         "Cronogramas",
                         fontWeight = FontWeight.Bold
-                    ) 
+                    )
                 },
                 actions = {
                     // Eliminar botón de configuración, dejar TODO
@@ -92,14 +92,14 @@ fun CronogramaScreen(
                 item {
                     CronogramaHeader() // Usar componente avanzado
                 }
-                
+
                 // Información del cronograma mejorada
                 currentSchedule?.let { schedule ->
                     item {
                         ScheduleInfoCard(schedule = schedule) // Usar componente avanzado
                     }
                 }
-                
+
                 // Selector de vista mejorado
                 item {
                     ViewSelector(
@@ -107,12 +107,12 @@ fun CronogramaScreen(
                         onViewChange = viewModel::setViewType
                     )
                 }
-                
+
                 // Leyenda de estados mejorada
                 item {
                     StatusLegend() // Usar componente avanzado
                 }
-                
+
                 // Contenido principal según vista seleccionada
                 item {
                     when (uiState.selectedView) {
@@ -143,7 +143,7 @@ fun CronogramaScreen(
                         }
                     }
                 }
-                
+
                 // Hitos del proyecto mejorados
                 item {
                     // La sección de hitos solo muestra información, no navega a detalle
@@ -208,7 +208,7 @@ private fun ScheduleInfoCardSimple(schedule: ProjectSchedule) {
                     modifier = Modifier.padding(top = 4.dp)
                 )
             }
-            
+
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -234,16 +234,16 @@ private fun ViewSelectorSimple(
         Row(
             modifier = Modifier.padding(8.dp)
         ) {
-            ViewType.values().forEach { viewType ->
+            ViewType.entries.forEach { viewType ->
                 FilterChip(
                     onClick = { onViewChange(viewType) },
-                    label = { 
+                    label = {
                         Text(
                             when (viewType) {
                                 ViewType.CRONOGRAMA -> "Cronograma"
                                 ViewType.KANBAN -> "Kanban"
                             }
-                        ) 
+                        )
                     },
                     selected = selectedView == viewType,
                     modifier = Modifier.padding(horizontal = 4.dp)
@@ -267,7 +267,7 @@ private fun StatusLegendSimple() {
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.padding(bottom = 8.dp)
             )
-            
+
             LazyRow(
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
@@ -310,7 +310,7 @@ private fun CronogramaTimelineViewSimple(
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.padding(bottom = 16.dp)
             )
-            
+
             if (tasks.isEmpty()) {
                 Text(
                     text = "No hay tareas disponibles",
@@ -350,11 +350,11 @@ private fun KanbanBoardViewSimple(
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.padding(bottom = 16.dp)
             )
-            
+
             LazyRow(
                 horizontalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                items(TaskStatus.values()) { status =>
+                items(TaskStatus.entries.toTypedArray()) { status ->
                     val statusTasks = tasks.filter { it.status == status }
                     KanbanColumn(
                         status = status,
@@ -415,7 +415,7 @@ private fun TaskCard(
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier.weight(1f)
                 )
-                
+
                 // Estado y prioridad
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     // Prioridad
@@ -431,7 +431,7 @@ private fun TaskCard(
                             fontWeight = FontWeight.Medium
                         )
                     }
-                    
+
                     // Estado
                     Surface(
                         shape = RoundedCornerShape(8.dp),
@@ -447,7 +447,7 @@ private fun TaskCard(
                     }
                 }
             }
-            
+
             task.description?.let { description ->
                 Text(
                     text = description,
@@ -456,7 +456,7 @@ private fun TaskCard(
                     modifier = Modifier.padding(vertical = 8.dp)
                 )
             }
-            
+
             // Información de fechas y asignación
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -469,13 +469,13 @@ private fun TaskCard(
                 )
                 if (task.assignedTo.isNotEmpty()) {
                     Text(
-                        text = "👤 ${task.assignedTo.first()}", 
+                        text = "👤 ${task.assignedTo.first()}",
                         fontSize = 12.sp,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
             }
-            
+
             // Horas estimadas vs actuales
             task.estimatedHours?.let { estimatedHours ->
                 Row(
@@ -494,7 +494,7 @@ private fun TaskCard(
                     )
                 }
             }
-            
+
             // Progreso
             if (task.progress > 0) {
                 Spacer(modifier = Modifier.height(8.dp))
@@ -547,7 +547,7 @@ private fun KanbanColumn(
                     fontWeight = FontWeight.Bold
                 )
             }
-            
+
             // Items de la columna
             tasks.forEach { task ->
                 KanbanTaskCard(
@@ -584,7 +584,7 @@ private fun KanbanTaskCard(
                 fontSize = 14.sp,
                 fontWeight = FontWeight.Bold
             )
-            
+
             task.description?.let { description ->
                 Text(
                     text = description,
@@ -593,7 +593,7 @@ private fun KanbanTaskCard(
                     modifier = Modifier.padding(vertical = 6.dp)
                 )
             }
-            
+
             if (task.assignedTo.isNotEmpty()) {
                 Text(
                     text = "👤 ${task.assignedTo.first()}",
@@ -601,7 +601,7 @@ private fun KanbanTaskCard(
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
-            
+
             // Prioridad
             Surface(
                 shape = RoundedCornerShape(8.dp),
@@ -616,7 +616,7 @@ private fun KanbanTaskCard(
                     fontWeight = FontWeight.Medium
                 )
             }
-            
+
             if (task.progress > 0) {
                 Spacer(modifier = Modifier.height(6.dp))
                 LinearProgressIndicator(
@@ -646,7 +646,7 @@ private fun MilestonesSection(
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.padding(bottom = 16.dp)
             )
-            
+
             milestones.forEach { milestone ->
                 MilestoneCard(
                     milestone = milestone,
@@ -670,9 +670,9 @@ private fun MilestoneCard(
             .fillMaxWidth()
             .clickable(onClick = onClick),
         colors = CardDefaults.cardColors(
-            containerColor = if (milestone.isCompleted) 
+            containerColor = if (milestone.isCompleted)
                 MaterialTheme.colorScheme.primaryContainer
-            else 
+            else
                 MaterialTheme.colorScheme.surfaceVariant
         )
     ) {
@@ -682,27 +682,27 @@ private fun MilestoneCard(
         ) {
             // Icono de estado
             Icon(
-                imageVector = if (milestone.isCompleted) 
-                    Icons.Default.CheckCircle 
-                else 
+                imageVector = if (milestone.isCompleted)
+                    Icons.Default.CheckCircle
+                else
                     Icons.Default.Schedule,
                 contentDescription = null,
-                tint = if (milestone.isCompleted) 
-                    Color(0xFF4CAF50) 
-                else 
+                tint = if (milestone.isCompleted)
+                    Color(0xFF4CAF50)
+                else
                     MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.size(24.dp)
             )
-            
+
             Spacer(modifier = Modifier.width(12.dp))
-            
+
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = milestone.name,
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold
                 )
-                
+
                 milestone.description?.let { description ->
                     Text(
                         text = description,
@@ -710,17 +710,17 @@ private fun MilestoneCard(
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
-                
+
                 Text(
-                    text = if (milestone.isCompleted) 
+                    text = if (milestone.isCompleted)
                         "Completado: ${milestone.completedDate ?: "Fecha no especificada"}"
-                    else 
+                    else
                         "Fecha objetivo: ${milestone.targetDate}",
                     fontSize = 11.sp,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
-            
+
             // Importancia
             Surface(
                 shape = RoundedCornerShape(8.dp),
