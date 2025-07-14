@@ -29,6 +29,9 @@ import com.example.app_mobile.ui.screens.planos.PlanosScreen
 import com.example.app_mobile.ui.screens.evidencia.EvidenciaScreen
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.app_mobile.ui.screens.management.ManagementViewModel
+import com.example.app_mobile.ui.screens.evidencia.EvidenciaViewModel
+import com.example.app_mobile.ui.screens.evidencia.GalleryProjectDetailScreen
+import com.example.app_mobile.ui.screens.evidencia.AddGalleryProjectScreen
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -53,8 +56,9 @@ fun MobileApp() {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
     
-    // ViewModel compartido para gestión de proyectos
+    // ViewModels compartidos
     val managementViewModel: ManagementViewModel = viewModel()
+    val evidenciaViewModel: EvidenciaViewModel = viewModel()
     
     // Lista de rutas principales que muestran el bottom navigation
     val bottomNavRoutes = listOf("home", "management", "cronograma", "planos", "evidencia")
@@ -376,14 +380,69 @@ fun MobileApp() {
                     label = "evidencia_animation"
                 ) {
                     EvidenciaScreen(
+                        viewModel = evidenciaViewModel,
                         onNavigateToProjectDetail = { projectId ->
-                            // TODO: Navegar a detalle de proyecto
+                            navController.navigate("project_detail/$projectId") {
+                                launchSingleTop = true
+                            }
                         },
                         onNavigateToAddProject = {
-                            // TODO: Navegar a agregar proyecto a galería
+                            navController.navigate("add_gallery_project") {
+                                launchSingleTop = true
+                            }
                         }
                     )
                 }
+            }
+            
+            composable(
+                "project_detail/{projectId}",
+                enterTransition = {
+                    slideInVertically(
+                        initialOffsetY = { it },
+                        animationSpec = spring(
+                            dampingRatio = Spring.DampingRatioMediumBouncy,
+                            stiffness = Spring.StiffnessLow
+                        )
+                    ) + fadeIn(animationSpec = tween(500))
+                },
+                exitTransition = {
+                    slideOutVertically(
+                        targetOffsetY = { it },
+                        animationSpec = tween(400, easing = FastOutSlowInEasing)
+                    ) + fadeOut(animationSpec = tween(400))
+                }
+            ) { backStackEntry ->
+                val projectId = backStackEntry.arguments?.getString("projectId") ?: ""
+                GalleryProjectDetailScreen(
+                    projectId = projectId,
+                    viewModel = evidenciaViewModel,
+                    onNavigateBack = { navController.popBackStack() }
+                )
+            }
+            
+            composable(
+                "add_gallery_project",
+                enterTransition = {
+                    slideInVertically(
+                        initialOffsetY = { it },
+                        animationSpec = spring(
+                            dampingRatio = Spring.DampingRatioMediumBouncy,
+                            stiffness = Spring.StiffnessLow
+                        )
+                    ) + fadeIn(animationSpec = tween(500))
+                },
+                exitTransition = {
+                    slideOutVertically(
+                        targetOffsetY = { it },
+                        animationSpec = tween(400, easing = FastOutSlowInEasing)
+                    ) + fadeOut(animationSpec = tween(400))
+                }
+            ) {
+                AddGalleryProjectScreen(
+                    viewModel = evidenciaViewModel,
+                    onNavigateBack = { navController.popBackStack() }
+                )
             }
         }
     }

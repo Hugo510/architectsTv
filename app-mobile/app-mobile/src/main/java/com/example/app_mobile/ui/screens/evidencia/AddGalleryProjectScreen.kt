@@ -41,8 +41,8 @@ import org.koin.androidx.compose.getViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddGalleryProjectScreen(
-    onNavigateBack: () -> Unit,
-    viewModel: EvidenciaViewModel = getViewModel()
+    viewModel: EvidenciaViewModel, // Recibir ViewModel como parámetro
+    onNavigateBack: () -> Unit
 ) {
     var projectName by remember { mutableStateOf("") }
     var projectDescription by remember { mutableStateOf("") }

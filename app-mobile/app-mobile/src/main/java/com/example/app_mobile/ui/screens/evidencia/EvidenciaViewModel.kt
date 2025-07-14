@@ -259,8 +259,55 @@ class EvidenciaViewModel @Inject constructor(
         return "https://picsum.photos/800/600?random=${System.currentTimeMillis()}&style=$styleParam"
     }
     
-    // ...existing code...
-}
+    private fun generateRandomRating(): Double {
+        return (4.0 + Math.random() * 1.0).let { 
+            String.format("%.1f", it).toDouble() 
+        }
+    }
+    
+    private fun generateRandomReviewCount(): Int {
+        return (10 + Math.random() * 90).toInt()
+    }
+    
+    private fun getCurrentDate(): String {
+        val calendar = java.util.Calendar.getInstance()
+        val year = calendar.get(java.util.Calendar.YEAR)
+        val month = calendar.get(java.util.Calendar.MONTH) + 1
+        return "${month.toString().padStart(2, '0')}/$year"
+    }
+    
+    private fun getCurrentDateTime(): String {
+        return java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss", java.util.Locale.getDefault())
+            .format(java.util.Date())
+    }
+    
+    private fun generateProjectId(): String {
+        return "proj_${System.currentTimeMillis()}_${(1000..9999).random()}"
+    }
+    
+    private fun generateRandomCardHeight(): Int {
+        val heights = listOf(250, 280, 300, 320, 350, 380)
+        return heights.random()
+    }
+    
+    private fun loadGalleryProjects() {
+        // Método para recargar proyectos de galería
+        viewModelScope.launch {
+            try {
+                // La recarga se maneja automáticamente por el Flow del repositorio
+                _uiState.value = _uiState.value.copy(
+                    message = "Proyectos actualizados"
+                )
+            } catch (e: Exception) {
+                _uiState.value = _uiState.value.copy(
+                    error = "Error al actualizar proyectos: ${e.message}"
+                )
+            }
+        }
+    }
+    
+    fun deleteGalleryProject(projectId: String) {
+        viewModelScope.launch {
             try {
                 val result = repository.deleteGalleryProject(projectId)
                 result.fold(

@@ -38,8 +38,8 @@ import org.koin.androidx.compose.getViewModel
 @Composable
 fun GalleryProjectDetailScreen(
     projectId: String,
-    onNavigateBack: () -> Unit,
-    viewModel: EvidenciaViewModel = getViewModel() // Inyectar ViewModel
+    viewModel: EvidenciaViewModel, // Recibir ViewModel como parámetro
+    onNavigateBack: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val project by viewModel.getProjectById(projectId).collectAsState()

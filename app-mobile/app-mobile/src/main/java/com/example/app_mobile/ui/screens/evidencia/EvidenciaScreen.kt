@@ -32,9 +32,9 @@ import org.koin.androidx.compose.getViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EvidenciaScreen(
+    viewModel: EvidenciaViewModel, // Recibir ViewModel como parámetro
     onNavigateToProjectDetail: (String) -> Unit = {},
     onNavigateToAddProject: () -> Unit = {}, // Nueva función de navegación
-    viewModel: EvidenciaViewModel = getViewModel() // Usar Koin injection
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val searchQuery by viewModel.searchQuery.collectAsState()
