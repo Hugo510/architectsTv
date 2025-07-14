@@ -28,202 +28,230 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import com.example.app_mobile.ui.screens.evidencia.EvidenceCategory
+import com.example.app_mobile.ui.screens.evidencia.EvidenciaViewModel
+import kotlinx.coroutines.delay
+import org.koin.androidx.compose.getViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun GalleryProjectDetailScreen(
     projectId: String,
-    onNavigateBack: () -> Unit
+    onNavigateBack: () -> Unit,
+    viewModel: EvidenciaViewModel = getViewModel() // Inyectar ViewModel
 ) {
-    // Buscar el proyecto por ID (en una implementación real vendría de un ViewModel)
-    val project = remember(projectId) {
-        // Datos mockeados - en una implementación real vendría de un repositorio
-        GalleryProject(
-            id = projectId,
-            name = "Casa Contemporánea Tropical",
-            description = "Una residencia moderna que combina elementos naturales con gran iluminación, diseñada para integrarse perfectamente con el entorno tropical. El proyecto incluye espacios abiertos, uso de materiales sostenibles y tecnología de vanguardia para crear un hogar cómodo y eficiente energéticamente.",
-            style = "Contemporáneo",
-            location = "Durango, México",
-            imageUrl = "https://example.com/house1.jpg",
-            rating = 4.8,
-            reviewCount = 24,
-            completedDate = "2023-12-15",
-            architect = "Arq. Steve Johnson",
-            area = "320 m²",
-            cardHeight = 320
-        )
+    val uiState by viewModel.uiState.collectAsState()
+    val project by viewModel.getProjectById(projectId).collectAsState()
+    val projectEvidence by viewModel.currentProjectEvidence.collectAsState()
+    
+    // Cargar detalles del proyecto
+    LaunchedEffect(projectId) {
+        viewModel.loadProjectDetail(projectId)
     }
     
-    var isFavorite by remember { mutableStateOf(project.isFavorite) }
     var selectedImageIndex by remember { mutableStateOf<Int?>(null) }
     var isFullScreenVisible by remember { mutableStateOf(false) }
-    
-    // Animación de entrada para toda la pantalla
     var isVisible by remember { mutableStateOf(false) }
     
     LaunchedEffect(Unit) {
         isVisible = true
     }
     
-    // Imágenes mockeadas del proyecto
-    val projectImages = remember {
-        listOf(
-            "Fachada Principal" to "🏡",
-            "Sala de Estar" to "🛋️", 
-            "Cocina Moderna" to "🍽️",
-            "Dormitorio Principal" to "🛏️",
-            "Baño Principal" to "🛁",
-            "Jardín Posterior" to "🌿",
-            "Vista Nocturna" to "🌙",
-            "Planos Arquitectónicos" to "📐"
+    // Generar imágenes desde evidencia real + placeholders
+    val projectImages = remember(projectEvidence) {
+        val evidenceImages = projectEvidence.take(4).map { evidence =>
+            evidence.title to getEvidenceIcon(evidence.category)
+        }
+        
+        val placeholderImages = listOf(
+            "Fachada Principal" to Icons.Default.Home,
+            "Sala de Estar" to Icons.Default.Chair,
+            "Cocina Moderna" to Icons.Default.Kitchen,
+            "Dormitorio Principal" to Icons.Default.Bed,
+            "Baño Principal" to Icons.Default.Bathtub,
+            "Jardín Posterior" to Icons.Default.Grass,
+            "Vista Nocturna" to Icons.Default.NightsStay,
+            "Planos Arquitectónicos" to Icons.Default.Architecture
         )
+        
+        if (evidenceImages.isNotEmpty()) {
+            evidenceImages + placeholderImages.drop(evidenceImages.size)
+        } else {
+            placeholderImages
+        }
     }
     
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { 
-                    Text(
-                        "Detalle del Proyecto",
-                        fontWeight = FontWeight.Bold
-                    ) 
-                },
-                navigationIcon = {
-                    IconButton(onClick = onNavigateBack) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Volver")
-                    }
-                },
-                actions = {
-                    // Botón de favorito animado
-                    var favoriteScale by remember { mutableStateOf(1f) }
-                    
-                    IconButton(
-                        onClick = { 
-                            isFavorite = !isFavorite
-                            favoriteScale = 1.3f
-                        },
-                        modifier = Modifier.scale(favoriteScale)
-                    ) {
-                        LaunchedEffect(favoriteScale) {
-                            if (favoriteScale > 1f) {
-                                animate(
-                                    initialValue = 1.3f,
-                                    targetValue = 1f,
-                                    animationSpec = spring(
-                                        dampingRatio = Spring.DampingRatioMediumBouncy,
-                                        stiffness = Spring.StiffnessLow
-                                    )
-                                ) { value, _ ->
-                                    favoriteScale = value
+    project?.let { currentProject ->
+        Scaffold(
+            topBar = {
+                TopAppBar(
+                    title = { 
+                        Text(
+                            "Detalle del Proyecto",
+                            fontWeight = FontWeight.Bold
+                        ) 
+                    },
+                    navigationIcon = {
+                        IconButton(onClick = onNavigateBack) {
+                            Icon(Icons.Default.ArrowBack, contentDescription = "Volver")
+                        }
+                    },
+                    actions = {
+                        // Botón de favorito sincronizado con ViewModel
+                        var favoriteScale by remember { mutableStateOf(1f) }
+                        
+                        IconButton(
+                            onClick = { 
+                                viewModel.toggleProjectFavorite(projectId)
+                                favoriteScale = 1.3f
+                            },
+                            modifier = Modifier.scale(favoriteScale)
+                        ) {
+                            LaunchedEffect(favoriteScale) {
+                                if (favoriteScale > 1f) {
+                                    animate(
+                                        initialValue = 1.3f,
+                                        targetValue = 1f,
+                                        animationSpec = spring(
+                                            dampingRatio = Spring.DampingRatioMediumBouncy,
+                                            stiffness = Spring.StiffnessLow
+                                        )
+                                    ) { value, _ ->
+                                        favoriteScale = value
+                                    }
                                 }
                             }
-                        }
-                        
-                        Icon(
-                            imageVector = if (isFavorite) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
-                            contentDescription = "Favorito",
-                            tint = if (isFavorite) Color.Red else MaterialTheme.colorScheme.onSurface
-                        )
-                    }
-                    
-                    IconButton(onClick = { /* TODO: Compartir proyecto */ }) {
-                        Icon(Icons.Default.Share, contentDescription = "Compartir")
-                    }
-                }
-            )
-        }
-    ) { paddingValues ->
-        Box(modifier = Modifier.fillMaxSize()) {
-            AnimatedVisibility(
-                visible = isVisible,
-                enter = slideInVertically(
-                    initialOffsetY = { it },
-                    animationSpec = tween(600, easing = FastOutSlowInEasing)
-                ) + fadeIn(animationSpec = tween(400))
-            ) {
-                LazyColumn(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(paddingValues),
-                    verticalArrangement = Arrangement.spacedBy(20.dp)
-                ) {
-                    // Imagen principal del proyecto con animación
-                    item {
-                        AnimatedVisibility(
-                            visible = isVisible,
-                            enter = slideInVertically(
-                                initialOffsetY = { -it / 2 },
-                                animationSpec = tween(800, delayMillis = 200)
-                            ) + fadeIn(animationSpec = tween(600, delayMillis = 200))
-                        ) {
-                            ModernProjectMainImage(project = project)
-                        }
-                    }
-                    
-                    // Información básica con animación
-                    item {
-                        AnimatedVisibility(
-                            visible = isVisible,
-                            enter = slideInHorizontally(
-                                initialOffsetX = { -it },
-                                animationSpec = tween(800, delayMillis = 400)
-                            ) + fadeIn(animationSpec = tween(600, delayMillis = 400))
-                        ) {
-                            ModernProjectBasicInfo(project = project)
-                        }
-                    }
-                    
-                    // Galería de imágenes con animación
-                    item {
-                        AnimatedVisibility(
-                            visible = isVisible,
-                            enter = slideInHorizontally(
-                                initialOffsetX = { it },
-                                animationSpec = tween(800, delayMillis = 600)
-                            ) + fadeIn(animationSpec = tween(600, delayMillis = 600))
-                        ) {
-                            ModernProjectImageGallery(
-                                images = projectImages,
-                                onImageClick = { index ->
-                                    selectedImageIndex = index
-                                    isFullScreenVisible = true
-                                }
+                            
+                            Icon(
+                                imageVector = if (currentProject.isFavorite) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
+                                contentDescription = "Favorito",
+                                tint = if (currentProject.isFavorite) Color.Red else MaterialTheme.colorScheme.onSurface
                             )
                         }
-                    }
-                    
-                    // Especificaciones con animación
-                    item {
-                        AnimatedVisibility(
-                            visible = isVisible,
-                            enter = slideInVertically(
-                                initialOffsetY = { it / 2 },
-                                animationSpec = tween(800, delayMillis = 800)
-                            ) + fadeIn(animationSpec = tween(600, delayMillis = 800))
-                        ) {
-                            ModernProjectSpecifications(project = project)
+                        
+                        IconButton(onClick = { /* TODO: Compartir proyecto */ }) {
+                            Icon(Icons.Default.Share, contentDescription = "Compartir")
                         }
                     }
-                    
-                    item {
-                        Spacer(modifier = Modifier.height(32.dp))
+                )
+            }
+        ) { paddingValues ->
+            // ...existing UI code but using currentProject instead of hardcoded data...
+            
+            Box(modifier = Modifier.fillMaxSize()) {
+                if (uiState.isLoading) {
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        CircularProgressIndicator()
+                    }
+                } else {
+                    // ...existing LazyColumn code with currentProject data...
+                    AnimatedVisibility(
+                        visible = isVisible,
+                        enter = slideInVertically(
+                            initialOffsetY = { it },
+                            animationSpec = tween(600, easing = FastOutSlowInEasing)
+                        ) + fadeIn(animationSpec = tween(400))
+                    ) {
+                        LazyColumn(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(paddingValues),
+                            verticalArrangement = Arrangement.spacedBy(20.dp)
+                        ) {
+                            // Imagen principal del proyecto con animación
+                            item {
+                                AnimatedVisibility(
+                                    visible = isVisible,
+                                    enter = slideInVertically(
+                                        initialOffsetY = { -it / 2 },
+                                        animationSpec = tween(800, delayMillis = 200)
+                                ) + fadeIn(animationSpec = tween(600, delayMillis = 200))
+                                ) {
+                                    ModernProjectMainImage(project = currentProject)
+                                }
+                            }
+                            
+                            // Información básica con animación
+                            item {
+                                AnimatedVisibility(
+                                    visible = isVisible,
+                                    enter = slideInHorizontally(
+                                        initialOffsetX = { -it },
+                                        animationSpec = tween(800, delayMillis = 400)
+                                    ) + fadeIn(animationSpec = tween(600, delayMillis = 400))
+                                ) {
+                                    ModernProjectBasicInfo(project = currentProject)
+                                }
+                            }
+                            
+                            // Galería de imágenes con animación
+                            item {
+                                AnimatedVisibility(
+                                    visible = isVisible,
+                                    enter = slideInHorizontally(
+                                        initialOffsetX = { it },
+                                        animationSpec = tween(800, delayMillis = 600)
+                                    ) + fadeIn(animationSpec = tween(600, delayMillis = 600))
+                                ) {
+                                    ModernProjectImageGallery(
+                                        images = projectImages,
+                                        onImageClick = { index ->
+                                            selectedImageIndex = index
+                                            isFullScreenVisible = true
+                                        }
+                                    )
+                                }
+                            }
+                            
+                            // Especificaciones con animación
+                            item {
+                                AnimatedVisibility(
+                                    visible = isVisible,
+                                    enter = slideInVertically(
+                                        initialOffsetY = { it / 2 },
+                                        animationSpec = tween(800, delayMillis = 800)
+                                    ) + fadeIn(animationSpec = tween(600, delayMillis = 800))
+                                ) {
+                                    ModernProjectSpecifications(project = currentProject)
+                                }
+                            }
+                            
+                            item {
+                                Spacer(modifier = Modifier.height(32.dp))
+                            }
+                        }
                     }
                 }
+                
+                // Overlay de imagen fullscreen
+                if (isFullScreenVisible && selectedImageIndex != null) {
+                    FullScreenImageViewer(
+                        images = projectImages,
+                        initialIndex = selectedImageIndex!!,
+                        onDismiss = {
+                            isFullScreenVisible = false
+                            selectedImageIndex = null
+                        },
+                        onImageChange = { index ->
+                            selectedImageIndex = index
+                        }
+                    )
+                }
             }
-            
-            // Overlay de imagen fullscreen
-            if (isFullScreenVisible && selectedImageIndex != null) {
-                FullScreenImageViewer(
-                    images = projectImages,
-                    initialIndex = selectedImageIndex!!,
-                    onDismiss = {
-                        isFullScreenVisible = false
-                        selectedImageIndex = null
-                    },
-                    onImageChange = { index ->
-                        selectedImageIndex = index
-                    }
-                )
+        }
+    } ?: run {
+        // Estado de carga o error
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            if (uiState.isLoading) {
+                CircularProgressIndicator()
+            } else {
+                Text("Proyecto no encontrado")
             }
         }
     }
@@ -246,7 +274,7 @@ private fun ModernProjectMainImage(project: GalleryProject) {
                     Brush.linearGradient(
                         colors = when (project.style) {
                             "Contemporáneo" -> listOf(Color(0xFF667EEA), Color(0xFF764BA2))
-                            "Minimalista" -> listOf(Color(0xFF9FACE6), Color(0x74B9FF))
+                            "Minimalista" -> listOf(Color(0xFF9FACE6), Color(0xFF74B9FF))
                             "Industrial" -> listOf(Color(0xFF74B9FF), Color(0xFF0984E3))
                             "Moderno" -> listOf(Color(0xFF81ECEC), Color(0xFF6C5CE7))
                             "Clásico" -> listOf(Color(0xFFFFBF93), Color(0xFFFF7675))
@@ -276,7 +304,7 @@ private fun ModernProjectMainImage(project: GalleryProject) {
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
-                // Emoji con shadow effect
+                // Icono profesional en lugar de emoji
                 Box(
                     modifier = Modifier
                         .background(
@@ -286,17 +314,19 @@ private fun ModernProjectMainImage(project: GalleryProject) {
                         .padding(24.dp),
                     contentAlignment = Alignment.Center
                 ) {
-                    Text(
-                        text = when (project.style) {
-                            "Contemporáneo" -> "🏡"
-                            "Minimalista" -> "🏢"
-                            "Industrial" -> "🏭"
-                            "Moderno" -> "🏠"
-                            "Clásico" -> "🏛️"
-                            "Rústico" -> "🏘️"
-                            else -> "🏗️"
+                    Icon(
+                        imageVector = when (project.style) {
+                            "Contemporáneo" -> Icons.Default.Home
+                            "Minimalista" -> Icons.Default.Business
+                            "Industrial" -> Icons.Default.Factory
+                            "Moderno" -> Icons.Default.Apartment
+                            "Clásico" -> Icons.Default.AccountBalance
+                            "Rústico" -> Icons.Default.Cottage
+                            else -> Icons.Default.Construction
                         },
-                        fontSize = 64.sp
+                        contentDescription = project.style,
+                        tint = Color.White,
+                        modifier = Modifier.size(64.dp)
                     )
                 }
                 
@@ -437,17 +467,17 @@ private fun ModernProjectBasicInfo(project: GalleryProject) {
             ) {
                 ModernInfoChip(
                     label = project.style,
-                    icon = "🎨",
+                    icon = Icons.Default.Palette,
                     color = Color(0xFF667EEA)
                 )
                 ModernInfoChip(
                     label = project.area,
-                    icon = "📐",
+                    icon = Icons.Default.SquareFoot,
                     color = Color(0xFF81ECEC)
                 )
                 ModernInfoChip(
                     label = "Completado",
-                    icon = "✅",
+                    icon = Icons.Default.CheckCircle,
                     color = Color(0xFF00B894)
                 )
             }
@@ -494,10 +524,10 @@ private fun ModernProjectImageGallery(
                 contentPadding = PaddingValues(horizontal = 4.dp)
             ) {
                 items(images.size) { index ->
-                    val (title, emoji) = images[index]
+                    val (title, icon) = images[index]
                     ModernImageGalleryItem(
                         title = title,
-                        emoji = emoji,
+                        icon = icon,
                         index = index,
                         onClick = { onImageClick(index) }
                     )
@@ -510,7 +540,7 @@ private fun ModernProjectImageGallery(
 @Composable
 private fun ModernImageGalleryItem(
     title: String,
-    emoji: String,
+    icon: ImageVector,
     index: Int,
     onClick: () -> Unit
 ) {
@@ -538,7 +568,7 @@ private fun ModernImageGalleryItem(
     ) {
         LaunchedEffect(isPressed) {
             if (isPressed) {
-                kotlinx.coroutines.delay(100)
+                delay(100)
                 isPressed = false
             }
         }
@@ -549,8 +579,8 @@ private fun ModernImageGalleryItem(
                 .background(
                     Brush.linearGradient(
                         colors = listOf(
-                            MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
-                            MaterialTheme.colorScheme.secondary.copy(alpha = 0.1f)
+                            MaterialTheme.colorScheme.primary.copy(alpha = 0.2f),
+                            MaterialTheme.colorScheme.secondary.copy(alpha = 0.2f)
                         )
                     )
                 ),
@@ -560,19 +590,21 @@ private fun ModernImageGalleryItem(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
-                // Emoji con shadow effect
+                // Icono profesional en lugar de emoji
                 Box(
                     modifier = Modifier
                         .background(
-                            Color.White.copy(alpha = 0.3f),
+                            MaterialTheme.colorScheme.primary.copy(alpha = 0.2f),
                             CircleShape
                         )
                         .padding(12.dp),
                     contentAlignment = Alignment.Center
                 ) {
-                    Text(
-                        text = emoji,
-                        fontSize = 28.sp
+                    Icon(
+                        imageVector = icon,
+                        contentDescription = title,
+                        tint = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.size(24.dp)
                     )
                 }
                 
@@ -688,7 +720,7 @@ private fun ModernSpecificationItem(
     var isVisible by remember { mutableStateOf(false) }
     
     LaunchedEffect(Unit) {
-        kotlinx.coroutines.delay(delay.toLong())
+        delay(delay.toLong())
         isVisible = true
     }
     
@@ -747,7 +779,7 @@ private fun ModernSpecificationItem(
 @Composable
 private fun ModernInfoChip(
     label: String,
-    icon: String,
+    icon: ImageVector,
     color: Color
 ) {
     Card(
@@ -761,11 +793,13 @@ private fun ModernInfoChip(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp)
         ) {
-            Text(
-                text = icon,
-                fontSize = 14.sp,
-                modifier = Modifier.padding(end = 8.dp)
+            Icon(
+                imageVector = icon,
+                contentDescription = null,
+                tint = color.copy(alpha = 0.9f),
+                modifier = Modifier.size(16.dp)
             )
+            Spacer(modifier = Modifier.width(8.dp))
             Text(
                 text = label,
                 fontSize = 13.sp,
@@ -1134,6 +1168,48 @@ private fun ImageInfoFooter(
                 )
             }
         }
+    }
+}
+
+private fun getEvidenceEmoji(category: EvidenceCategory): String {
+    return when (category) {
+        EvidenceCategory.FOUNDATION -> "🏗️"
+        EvidenceCategory.STRUCTURE -> "🏢"
+        EvidenceCategory.WALLS -> "🧱"
+        EvidenceCategory.ROOFING -> "🏠"
+        EvidenceCategory.ELECTRICAL -> "⚡"
+        EvidenceCategory.PLUMBING -> "🚿"
+        EvidenceCategory.HVAC -> "❄️"
+        EvidenceCategory.FINISHES -> "🎨"
+        EvidenceCategory.EXTERIOR -> "🏡"
+        EvidenceCategory.INTERIOR -> "🛋️"
+        EvidenceCategory.SAFETY -> "⚠️"
+        EvidenceCategory.QUALITY_CONTROL -> "✅"
+        EvidenceCategory.PROGRESS -> "📊"
+        EvidenceCategory.ISSUE -> "⚠️"
+        EvidenceCategory.DELIVERY -> "🎉"
+        EvidenceCategory.OTHER -> "📸"
+    }
+}
+
+private fun getEvidenceIcon(category: EvidenceCategory): ImageVector {
+    return when (category) {
+        EvidenceCategory.FOUNDATION -> Icons.Default.Foundation
+        EvidenceCategory.STRUCTURE -> Icons.Default.Business
+        EvidenceCategory.WALLS -> Icons.Default.Wall
+        EvidenceCategory.ROOFING -> Icons.Default.Roofing
+        EvidenceCategory.ELECTRICAL -> Icons.Default.ElectricalServices
+        EvidenceCategory.PLUMBING -> Icons.Default.Plumbing
+        EvidenceCategory.HVAC -> Icons.Default.AcUnit
+        EvidenceCategory.FINISHES -> Icons.Default.Palette
+        EvidenceCategory.EXTERIOR -> Icons.Default.Home
+        EvidenceCategory.INTERIOR -> Icons.Default.Chair
+        EvidenceCategory.SAFETY -> Icons.Default.Security
+        EvidenceCategory.QUALITY_CONTROL -> Icons.Default.VerifiedUser
+        EvidenceCategory.PROGRESS -> Icons.Default.Timeline
+        EvidenceCategory.ISSUE -> Icons.Default.Warning
+        EvidenceCategory.DELIVERY -> Icons.Default.DeliveryDining
+        EvidenceCategory.OTHER -> Icons.Default.PhotoCamera
     }
 }
 

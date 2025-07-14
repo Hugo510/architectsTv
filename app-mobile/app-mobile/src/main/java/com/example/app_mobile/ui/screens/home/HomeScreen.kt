@@ -329,7 +329,7 @@ private fun ProjectCard(
         Row(
             modifier = Modifier.padding(16.dp)
         ) {
-            // Imagen del proyecto (placeholder)
+            // Icono del proyecto en lugar de emoji
             Box(
                 modifier = Modifier
                     .size(80.dp)
@@ -337,9 +337,11 @@ private fun ProjectCard(
                     .background(MaterialTheme.colorScheme.surfaceVariant),
                 contentAlignment = Alignment.Center
             ) {
-                Text(
-                    text = "🏗️",
-                    fontSize = 32.sp
+                Icon(
+                    imageVector = Icons.Default.Construction,
+                    contentDescription = "Proyecto",
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.size(32.dp)
                 )
             }
             

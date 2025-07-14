@@ -384,17 +384,36 @@ private fun ProjectCard(
         Row(
             modifier = Modifier.padding(16.dp)
         ) {
-            // Imagen del proyecto (placeholder)
+            // Icono profesional del proyecto
             Box(
                 modifier = Modifier
                     .size(80.dp)
                     .clip(RoundedCornerShape(8.dp))
-                    .background(MaterialTheme.colorScheme.surfaceVariant),
+                    .background(
+                        when (project.status) {
+                            ProjectStatus.DESIGN -> Color(0xFF9CA3FF).copy(alpha = 0.2f)
+                            ProjectStatus.PERMITS_REVIEW -> Color(0xFFFBB6CE).copy(alpha = 0.2f)
+                            ProjectStatus.CONSTRUCTION -> Color(0xFF68D391).copy(alpha = 0.2f)
+                            ProjectStatus.DELIVERY -> Color(0xFFA0AEC0).copy(alpha = 0.2f)
+                        }
+                    ),
                 contentAlignment = Alignment.Center
             ) {
-                Text(
-                    text = "🏗️",
-                    fontSize = 32.sp
+                Icon(
+                    imageVector = when (project.status) {
+                        ProjectStatus.DESIGN -> Icons.Default.Architecture
+                        ProjectStatus.PERMITS_REVIEW -> Icons.Default.Assignment
+                        ProjectStatus.CONSTRUCTION -> Icons.Default.Construction
+                        ProjectStatus.DELIVERY -> Icons.Default.DeliveryDining
+                    },
+                    contentDescription = "Proyecto",
+                    tint = when (project.status) {
+                        ProjectStatus.DESIGN -> Color(0xFF9CA3FF)
+                        ProjectStatus.PERMITS_REVIEW -> Color(0xFFFBB6CE)
+                        ProjectStatus.CONSTRUCTION -> Color(0xFF68D391)
+                        ProjectStatus.DELIVERY -> Color(0xFFA0AEC0)
+                    },
+                    modifier = Modifier.size(32.dp)
                 )
             }
             

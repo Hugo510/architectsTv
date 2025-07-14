@@ -13,21 +13,11 @@ data class Evidence(
     val media: EvidenceMedia,
     val location: EvidenceLocation? = null,
     val capturedBy: String,
-    val capturedAt: String, // ISO 8601
+    val capturedAt: String,
     val tags: List<String> = emptyList(),
     val status: EvidenceStatus = EvidenceStatus.ACTIVE,
     val metadata: EvidenceMetadata
-) {
-    init {
-        require(title.isNotBlank()) { "Evidence title cannot be blank" }
-        require(projectId.isNotBlank()) { "Project ID cannot be blank" }
-        require(capturedBy.isNotBlank()) { "Captured by cannot be blank" }
-    }
-    
-    val isImage: Boolean get() = type == EvidenceType.PHOTO
-    val isVideo: Boolean get() = type == EvidenceType.VIDEO
-    val isDocument: Boolean get() = type == EvidenceType.DOCUMENT
-}
+)
 
 @Serializable
 enum class EvidenceType {
@@ -35,7 +25,6 @@ enum class EvidenceType {
     VIDEO,
     DOCUMENT,
     AUDIO,
-    NOTE,
     OTHER
 }
 
@@ -69,24 +58,35 @@ enum class EvidenceStatus {
 @Serializable
 data class EvidenceMedia(
     val files: List<MediaFile>,
-    val thumbnailUrl: String? = null
-) {
-    init {
-        require(files.isNotEmpty()) { "Evidence must have at least one media file" }
-    }
-    
-    val primaryFile: MediaFile get() = files.first()
-    val totalSize: Long get() = files.sumOf { it.size }
-    val fileCount: Int get() = files.size
-}
+    val thumbnailUrl: String? = null,
+    val duration: Int? = null // for video/audio in seconds
+)
 
 @Serializable
 data class MediaFile(
     val id: String,
     val fileName: String,
     val url: String,
-    val size: Long, // bytes
+    val size: Long,
     val mimeType: String,
+    val width: Int? = null,
+    val height: Int? = null
+)
+
+@Serializable
+data class EvidenceLocation(
+    val area: String,
+    val reference: String? = null,
+    val coordinates: String? = null
+)
+
+@Serializable
+data class EvidenceMetadata(
+    val createdAt: String,
+    val updatedAt: String,
+    val version: Int = 1,
+    val checksum: String? = null
+
     val width: Int? = null,
     val height: Int? = null,
     val duration: Int? = null // seconds for video/audio

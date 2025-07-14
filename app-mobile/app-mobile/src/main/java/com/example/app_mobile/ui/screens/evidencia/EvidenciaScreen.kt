@@ -51,10 +51,14 @@ data class GalleryProject(
 @Composable
 fun EvidenciaScreen(
     onNavigateToHome: () -> Unit,
-    onNavigateToProjectDetail: (String) -> Unit = {} // Nuevo parámetro
+    onNavigateToProjectDetail: (String) -> Unit = {},
+    viewModel: EvidenciaViewModel = hiltViewModel() // Inyectar ViewModel
 ) {
-    var searchQuery by remember { mutableStateOf("") }
-    var selectedStyle by remember { mutableStateOf("Estilos") }
+    val uiState by viewModel.uiState.collectAsState()
+    val searchQuery by viewModel.searchQuery.collectAsState()
+    val selectedStyle by viewModel.selectedStyle.collectAsState()
+    val filteredProjects by viewModel.filteredProjects.collectAsState()
+    
     var isStyleDropdownExpanded by remember { mutableStateOf(false) }
     
     val styleOptions = listOf(
@@ -62,133 +66,18 @@ fun EvidenciaScreen(
         "Clásico", "Moderno", "Rústico", "Colonial"
     )
     
-    // Datos mockeados con alturas variables para efecto staggered
-    val galleryProjects = remember {
-        listOf(
-            GalleryProject(
-                id = "1",
-                name = "Casa Contemporánea Tropical",
-                description = "Residencia moderna con elementos naturales y gran iluminación que se integra perfectamente con el entorno tropical",
-                style = "Contemporáneo",
-                location = "Durango, México",
-                imageUrl = "https://example.com/house1.jpg",
-                rating = 4.8,
-                reviewCount = 24,
-                completedDate = "2023-12-15",
-                architect = "Arq. Steve Johnson",
-                area = "320 m²",
-                cardHeight = 320
-            ),
-            GalleryProject(
-                id = "2",
-                name = "Villa Minimalista",
-                description = "Diseño limpio y funcional",
-                style = "Minimalista",
-                location = "Durango, México",
-                imageUrl = "https://example.com/house2.jpg",
-                rating = 4.9,
-                reviewCount = 18,
-                completedDate = "2023-11-20",
-                architect = "Arq. María López",
-                area = "280 m²",
-                cardHeight = 260
-            ),
-            GalleryProject(
-                id = "3",
-                name = "Casa Social Moderna",
-                description = "Vivienda accesible con diseño contemporáneo que maximiza espacios y funcionalidad",
-                style = "Moderno",
-                location = "Durango, México",
-                imageUrl = "https://example.com/house3.jpg",
-                rating = 4.7,
-                reviewCount = 32,
-                completedDate = "2023-10-30",
-                architect = "Arq. Carlos Mendoza",
-                area = "180 m²",
-                cardHeight = 300
-            ),
-            GalleryProject(
-                id = "4",
-                name = "Loft Industrial",
-                description = "Espacios amplios con elementos de acero",
-                style = "Industrial",
-                location = "Durango, México",
-                imageUrl = "https://example.com/house4.jpg",
-                rating = 4.6,
-                reviewCount = 15,
-                completedDate = "2023-09-12",
-                architect = "Arq. Ana Ruiz",
-                area = "450 m²",
-                cardHeight = 240
-            ),
-            GalleryProject(
-                id = "5",
-                name = "Residencia Clásica Elegante",
-                description = "Elegancia tradicional con toques modernos que respeta la arquitectura histórica mientras incorpora comodidades contemporáneas",
-                style = "Clásico",
-                location = "Durango, México",
-                imageUrl = "https://example.com/house5.jpg",
-                rating = 4.8,
-                reviewCount = 28,
-                completedDate = "2023-08-25",
-                architect = "Arq. Roberto Silva",
-                area = "380 m²",
-                cardHeight = 340
-            ),
-            GalleryProject(
-                id = "6",
-                name = "Cabaña Rústica",
-                description = "Lo natural y lo contemporáneo",
-                style = "Rústico",
-                location = "Durango, México",
-                imageUrl = "https://example.com/house6.jpg",
-                rating = 4.9,
-                reviewCount = 22,
-                completedDate = "2023-07-18",
-                architect = "Arq. Laura García",
-                area = "250 m²",
-                cardHeight = 220
-            ),
-            GalleryProject(
-                id = "7",
-                name = "Penthouse Moderno",
-                description = "Lujo y modernidad en las alturas con vistas panorámicas espectaculares",
-                style = "Moderno",
-                location = "Durango, México",
-                imageUrl = "https://example.com/house7.jpg",
-                rating = 4.9,
-                reviewCount = 35,
-                completedDate = "2023-06-10",
-                architect = "Arq. Diego Ramírez",
-                area = "450 m²",
-                cardHeight = 360
-            ),
-            GalleryProject(
-                id = "8",
-                name = "Casa Ecológica",
-                description = "Sostenibilidad y diseño",
-                style = "Contemporáneo",
-                location = "Durango, México",
-                imageUrl = "https://example.com/house8.jpg",
-                rating = 4.7,
-                reviewCount = 19,
-                completedDate = "2023-05-22",
-                architect = "Arq. Elena Vásquez",
-                area = "290 m²",
-                cardHeight = 280
-            )
-        )
+    // Mostrar mensajes y errores
+    LaunchedEffect(uiState.message) {
+        uiState.message?.let {
+            // Implementar SnackbarHost si es necesario
+            viewModel.clearMessage()
+        }
     }
     
-    // Filtrar proyectos basado en búsqueda y estilo
-    val filteredProjects = remember(searchQuery, selectedStyle) {
-        galleryProjects.filter { project =>
-            val matchesSearch = searchQuery.isEmpty() || 
-                project.name.contains(searchQuery, ignoreCase = true) ||
-                project.description.contains(searchQuery, ignoreCase = true)
-            val matchesStyle = selectedStyle == "Estilos" || 
-                project.style == selectedStyle
-            matchesSearch && matchesStyle
+    LaunchedEffect(uiState.error) {
+        uiState.error?.let {
+            // Implementar SnackbarHost si es necesario
+            viewModel.clearError()
         }
     }
     
@@ -221,70 +110,85 @@ fun EvidenciaScreen(
             }
         }
     ) { paddingValues ->
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-                .padding(horizontal = 16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            // Header con logo y título estilo Airbnb
-            item {
-                Spacer(modifier = Modifier.height(8.dp))
-                GalleryHeader()
-            }
-            
-            // Buscador y filtro de estilos
-            item {
-                SearchAndStyleFilter(
-                    searchQuery = searchQuery,
-                    onSearchQueryChange = { searchQuery = it },
-                    selectedStyle = selectedStyle,
-                    onStyleChange = { selectedStyle = it },
-                    styleOptions = styleOptions,
-                    isDropdownExpanded = isStyleDropdownExpanded,
-                    onDropdownExpandedChange = { isStyleDropdownExpanded = it }
-                )
-            }
-            
-            // Chips de estilos populares
-            item {
-                PopularStylesSection(
-                    selectedStyle = selectedStyle,
-                    onStyleSelected = { selectedStyle = it }
-                )
-            }
-            
-            // Contador de resultados
-            item {
-                Text(
-                    text = "${filteredProjects.size} obras ${if (filteredProjects.size == 1) "encontrada" else "encontradas"}",
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Medium,
-                    color = MaterialTheme.colorScheme.onBackground
-                )
-            }
-            
-            // Grid staggered de proyectos estilo Pinterest/Instagram
-            item {
-                LazyVerticalStaggeredGrid(
-                    columns = StaggeredGridCells.Fixed(2),
-                    horizontalArrangement = Arrangement.spacedBy(12.dp),
-                    verticalItemSpacing = 16.dp,
-                    modifier = Modifier.height(800.dp)
-                ) {
-                    items(filteredProjects) { project =>
-                        ModernGalleryProjectCard(
-                            project = project,
-                            onClick = { onNavigateToProjectDetail(project.id) } // Navegar a detalle
-                        )
+        Box(modifier = Modifier.fillMaxSize()) {
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues)
+                    .padding(horizontal = 16.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                // Header con logo y título estilo Airbnb
+                item {
+                    Spacer(modifier = Modifier.height(8.dp))
+                    GalleryHeader()
+                }
+                
+                // Buscador y filtro de estilos
+                item {
+                    SearchAndStyleFilter(
+                        searchQuery = searchQuery,
+                        onSearchQueryChange = viewModel::updateSearchQuery,
+                        selectedStyle = selectedStyle,
+                        onStyleChange = viewModel::updateSelectedStyle,
+                        styleOptions = styleOptions,
+                        isDropdownExpanded = isStyleDropdownExpanded,
+                        onDropdownExpandedChange = { isStyleDropdownExpanded = it }
+                    )
+                }
+                
+                // Chips de estilos populares
+                item {
+                    PopularStylesSection(
+                        selectedStyle = selectedStyle,
+                        onStyleSelected = viewModel::updateSelectedStyle
+                    )
+                }
+                
+                // Contador de resultados
+                item {
+                    Text(
+                        text = "${filteredProjects.size} obras ${if (filteredProjects.size == 1) "encontrada" else "encontradas"}",
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Medium,
+                        color = MaterialTheme.colorScheme.onBackground
+                    )
+                }
+                
+                // Grid staggered de proyectos estilo Pinterest/Instagram
+                item {
+                    LazyVerticalStaggeredGrid(
+                        columns = StaggeredGridCells.Fixed(2),
+                        horizontalArrangement = Arrangement.spacedBy(12.dp),
+                        verticalItemSpacing = 16.dp,
+                        modifier = Modifier.height(800.dp)
+                    ) {
+                        items(filteredProjects) { project =>
+                            ModernGalleryProjectCard(
+                                project = project,
+                                onClick = { onNavigateToProjectDetail(project.id) },
+                                onToggleFavorite = { viewModel.toggleProjectFavorite(project.id) } // Nueva funcionalidad
+                            )
+                        }
                     }
+                }
+                
+                // Spacer para el FAB
+                item {
+                    Spacer(modifier = Modifier.height(80.dp))
                 }
             }
             
-            // Spacer para el FAB
-            item {
-                Spacer(modifier = Modifier.height(80.dp))
+            // Overlay de carga
+            if (uiState.isLoading) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(Color.Black.copy(alpha = 0.5f)),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator()
+                }
             }
         }
     }
@@ -552,7 +456,8 @@ private fun PopularStylesSection(
 @Composable
 private fun ModernGalleryProjectCard(
     project: GalleryProject,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    onToggleFavorite: () -> Unit = {}
 ) {
     var isFavorite by remember { mutableStateOf(project.isFavorite) }
     
@@ -574,9 +479,9 @@ private fun ModernGalleryProjectCard(
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .weight(1f) // Toma el espacio restante dinámicamente
+                    .weight(1f)
             ) {
-                // Placeholder de imagen con gradientes más modernos
+                // Placeholder con icono profesional
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
@@ -598,20 +503,22 @@ private fun ModernGalleryProjectCard(
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.Center
                     ) {
-                        Text(
-                            text = when (project.style) {
-                                "Contemporáneo" -> "🏡"
-                                "Minimalista" -> "🏢"
-                                "Industrial" -> "🏭"
-                                "Moderno" -> "🏠"
-                                "Clásico" -> "🏛️"
-                                "Rústico" -> "🏘️"
-                                else -> "🏗️"
+                        Icon(
+                            imageVector = when (project.style) {
+                                "Contemporáneo" -> Icons.Default.Home
+                                "Minimalista" -> Icons.Default.Business
+                                "Industrial" -> Icons.Default.Factory
+                                "Moderno" -> Icons.Default.Apartment
+                                "Clásico" -> Icons.Default.AccountBalance
+                                "Rústico" -> Icons.Default.Cottage
+                                else -> Icons.Default.Construction
                             },
-                            fontSize = if (project.cardHeight > 300) 56.sp else 40.sp
+                            contentDescription = project.style,
+                            tint = Color.White.copy(alpha = 0.8f),
+                            modifier = Modifier.size(if (project.cardHeight > 300) 56.dp else 40.dp)
                         )
                         
-                        // Añadir texto estilo para cards más grandes
+                        // Texto del estilo para cards grandes
                         if (project.cardHeight > 300) {
                             Text(
                                 text = project.style,
@@ -642,7 +549,7 @@ private fun ModernGalleryProjectCard(
                 
                 // Botón de favorito estilo moderno
                 IconButton(
-                    onClick = { isFavorite = !isFavorite },
+                    onClick = onToggleFavorite, // Usar función del ViewModel
                     modifier = Modifier
                         .align(Alignment.TopEnd)
                         .padding(12.dp)
@@ -653,9 +560,9 @@ private fun ModernGalleryProjectCard(
                         .size(36.dp)
                 ) {
                     Icon(
-                        imageVector = if (isFavorite) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
+                        imageVector = if (project.isFavorite) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
                         contentDescription = "Favorito",
-                        tint = if (isFavorite) Color.Red else Color.Gray,
+                        tint = if (project.isFavorite) Color.Red else Color.Gray,
                         modifier = Modifier.size(20.dp)
                     )
                 }

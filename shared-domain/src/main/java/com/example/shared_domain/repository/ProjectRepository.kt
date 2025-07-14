@@ -41,6 +41,16 @@ interface ProjectRepository {
     suspend fun deleteEvidence(id: String): Result<Unit>
     suspend fun getEvidenceByCategory(projectId: String, category: EvidenceCategory): Flow<List<Evidence>>
     suspend fun getEvidenceByDateRange(projectId: String, startDate: String, endDate: String): Flow<List<Evidence>>
+    
+    // Gallery Project operations
+    suspend fun getAllGalleryProjects(): Flow<List<GalleryProject>>
+    suspend fun getGalleryProjectById(id: String): GalleryProject?
+    suspend fun createGalleryProject(project: GalleryProject): Result<GalleryProject>
+    suspend fun updateGalleryProject(project: GalleryProject): Result<GalleryProject>
+    suspend fun deleteGalleryProject(id: String): Result<Unit>
+    suspend fun toggleGalleryProjectFavorite(id: String): Result<GalleryProject>
+    suspend fun searchGalleryProjects(query: String): Flow<List<GalleryProject>>
+    suspend fun getGalleryProjectsByStyle(style: String): Flow<List<GalleryProject>>
 }
 
 /**
@@ -151,3 +161,26 @@ enum class TimeFrame {
     LAST_30_DAYS,
     CUSTOM
 }
+
+// Data class para mantener consistencia entre Evidence y GalleryProject
+data class GalleryProject(
+    val id: String,
+    val name: String,
+    val description: String,
+    val style: String,
+    val location: String,
+    val imageUrl: String,
+    val rating: Double,
+    val reviewCount: Int,
+    val completedDate: String,
+    val architect: String,
+    val area: String,
+    val isFavorite: Boolean = false,
+    val cardHeight: Int = 280,
+    // Campos adicionales para integridad con Evidence
+    val projectId: String? = null,
+    val evidenceIds: List<String> = emptyList(),
+    val lastUpdated: String = "",
+    val category: EvidenceCategory? = null,
+    val status: ProjectStatus = ProjectStatus.DELIVERY // Proyectos en galería están completados
+)

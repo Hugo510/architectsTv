@@ -171,19 +171,19 @@ fun ScheduleInfoCard(
                 ScheduleStatCard(
                     label = "Total Tareas",
                     value = schedule.totalTasks.toString(),
-                    icon = "📋",
+                    icon = Icons.Default.Assignment,
                     modifier = Modifier.weight(1f)
                 )
                 ScheduleStatCard(
                     label = "Completadas",
                     value = schedule.completedTasks.toString(),
-                    icon = "✅",
+                    icon = Icons.Default.CheckCircle,
                     modifier = Modifier.weight(1f)
                 )
                 ScheduleStatCard(
                     label = "Progreso",
                     value = "${(schedule.totalProgress * 100).toInt()}%",
-                    icon = "📊",
+                    icon = Icons.Default.TrendingUp,
                     modifier = Modifier.weight(1f)
                 )
             }
@@ -234,7 +234,7 @@ fun ScheduleInfoCard(
 private fun ScheduleStatCard(
     label: String,
     value: String,
-    icon: String,
+    icon: ImageVector,
     modifier: Modifier = Modifier
 ) {
     Card(
@@ -248,10 +248,13 @@ private fun ScheduleStatCard(
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier.padding(12.dp)
         ) {
-            Text(
-                text = icon,
-                fontSize = 20.sp,
-                modifier = Modifier.padding(bottom = 4.dp)
+            Icon(
+                imageVector = icon,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.primary,
+                modifier = Modifier
+                    .size(24.dp)
+                    .padding(bottom = 4.dp)
             )
             Text(
                 text = value,
@@ -401,7 +404,7 @@ fun StatusLegend(
                         status = ProjectStatus.DESIGN,
                         label = "Diseño",
                         color = Color(0xFF9CA3FF),
-                        icon = "📐"
+                        icon = Icons.Default.Architecture
                     )
                 }
                 item {
@@ -409,7 +412,7 @@ fun StatusLegend(
                         status = ProjectStatus.PERMITS_REVIEW,
                         label = "Permisos",
                         color = Color(0xFFFBB6CE),
-                        icon = "📋"
+                        icon = Icons.Default.Assignment
                     )
                 }
                 item {
@@ -417,7 +420,7 @@ fun StatusLegend(
                         status = ProjectStatus.CONSTRUCTION,
                         label = "Construcción",
                         color = Color(0xFF68D391),
-                        icon = "🏗️"
+                        icon = Icons.Default.Construction
                     )
                 }
                 item {
@@ -425,7 +428,7 @@ fun StatusLegend(
                         status = ProjectStatus.DELIVERY,
                         label = "Entrega",
                         color = Color(0xFFA0AEC0),
-                        icon = "🎉"
+                        icon = Icons.Default.DeliveryDining
                     )
                 }
             }
@@ -438,7 +441,7 @@ private fun ProjectStatusLegendCard(
     status: ProjectStatus,
     label: String,
     color: Color,
-    icon: String
+    icon: ImageVector
 ) {
     Card(
         colors = CardDefaults.cardColors(
@@ -451,10 +454,13 @@ private fun ProjectStatusLegendCard(
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier.padding(12.dp)
         ) {
-            Text(
-                text = icon,
-                fontSize = 24.sp,
-                modifier = Modifier.padding(bottom = 4.dp)
+            Icon(
+                imageVector = icon,
+                contentDescription = null,
+                tint = color,
+                modifier = Modifier
+                    .size(24.dp)
+                    .padding(bottom = 4.dp)
             )
             Box(
                 modifier = Modifier
@@ -563,7 +569,7 @@ private fun EmptyMilestonesState() {
 private fun MilestoneCard(
     milestone: Milestone,
     onClick: () -> Unit,
-    onToggle: () -> Unit = {} // Nuevo parámetro
+    onToggle: () -> Unit = {}
 ) {
     val cardColor by animateColorAsState(
         targetValue = if (milestone.isCompleted) 
@@ -591,7 +597,7 @@ private fun MilestoneCard(
             modifier = Modifier.padding(16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Icono animado clickeable para toggle
+            // Icono profesional
             IconButton(
                 onClick = onToggle,
                 modifier = Modifier.size(32.dp)
@@ -600,15 +606,13 @@ private fun MilestoneCard(
                     imageVector = if (milestone.isCompleted) 
                         Icons.Default.CheckCircle 
                     else 
-                        Icons.Default.Schedule,
-                    contentDescription = if (milestone.isCompleted) "Marcar como pendiente" else "Marcar como completado",
+                        Icons.Default.RadioButtonUnchecked,
+                    contentDescription = if (milestone.isCompleted) "Completado" else "Pendiente",
                     tint = if (milestone.isCompleted) 
                         Color(0xFF4CAF50) 
                     else 
                         MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier
-                        .size(28.dp)
-                        .scale(iconScale)
+                    modifier = Modifier.size(28.dp)
                 )
             }
             
