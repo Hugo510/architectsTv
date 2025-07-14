@@ -79,11 +79,11 @@ fun MobileApp() {
             AnimatedVisibility(
                 visible = showBottomNav,
                 enter = slideInVertically(
-                    initialOffsetY = { it },
+                    initialOffsetY = { offset -> offset },
                     animationSpec = tween(durationMillis = 300, easing = FastOutSlowInEasing)
                 ) + fadeIn(animationSpec = tween(300)),
                 exit = slideOutVertically(
-                    targetOffsetY = { it },
+                    targetOffsetY = { offset -> offset },
                     animationSpec = tween(durationMillis = 300, easing = FastOutSlowInEasing)
                 ) + fadeOut(animationSpec = tween(300))
             ) {
@@ -102,13 +102,13 @@ fun MobileApp() {
                 "home",
                 enterTransition = {
                     slideInHorizontally(
-                        initialOffsetX = { -it },
+                        initialOffsetX = { offset -> -offset },
                         animationSpec = tween(durationMillis = 400, easing = FastOutSlowInEasing)
                     ) + fadeIn(animationSpec = tween(400))
                 },
                 exitTransition = {
                     slideOutHorizontally(
-                        targetOffsetX = { -it },
+                        targetOffsetX = { offset -> -offset },
                         animationSpec = tween(durationMillis = 400, easing = FastOutSlowInEasing)
                     ) + fadeOut(animationSpec = tween(400))
                 }
@@ -148,15 +148,15 @@ fun MobileApp() {
                 enterTransition = {
                     when (initialState.destination.route) {
                         "home" -> slideInHorizontally(
-                            initialOffsetX = { it },
+                            initialOffsetX = { offset -> offset },
                             animationSpec = tween(400, easing = FastOutSlowInEasing)
                         )
                         "cronograma" -> slideInHorizontally(
-                            initialOffsetX = { -it },
+                            initialOffsetX = { offset -> -offset },
                             animationSpec = tween(400, easing = FastOutSlowInEasing)
                         )
                         else -> slideInVertically(
-                            initialOffsetY = { it },
+                            initialOffsetY = { offset -> offset },
                             animationSpec = tween(400, easing = FastOutSlowInEasing)
                         )
                     } + fadeIn(animationSpec = tween(400))
@@ -164,15 +164,15 @@ fun MobileApp() {
                 exitTransition = {
                     when (targetState.destination.route) {
                         "home" -> slideOutHorizontally(
-                            targetOffsetX = { it },
+                            targetOffsetX = { offset -> offset },
                             animationSpec = tween(400, easing = FastOutSlowInEasing)
                         )
                         "cronograma" -> slideOutHorizontally(
-                            targetOffsetX = { -it },
+                            targetOffsetX = { offset -> -offset },
                             animationSpec = tween(400, easing = FastOutSlowInEasing)
                         )
                         else -> slideOutVertically(
-                            targetOffsetY = { it },
+                            targetOffsetY = { offset -> offset },
                             animationSpec = tween(400, easing = FastOutSlowInEasing)
                         )
                     } + fadeOut(animationSpec = tween(400))
@@ -209,7 +209,7 @@ fun MobileApp() {
                 "create_project",
                 enterTransition = {
                     slideInVertically(
-                        initialOffsetY = { it },
+                        initialOffsetY = { offset -> offset },
                         animationSpec = spring(
                             dampingRatio = Spring.DampingRatioMediumBouncy,
                             stiffness = Spring.StiffnessLow
@@ -218,7 +218,7 @@ fun MobileApp() {
                 },
                 exitTransition = {
                     slideOutVertically(
-                        targetOffsetY = { it },
+                        targetOffsetY = { offset -> offset },
                         animationSpec = tween(400, easing = FastOutSlowInEasing)
                     ) + fadeOut(animationSpec = tween(400))
                 }
@@ -238,15 +238,15 @@ fun MobileApp() {
                 enterTransition = {
                     when (initialState.destination.route) {
                         "management" -> slideInHorizontally(
-                            initialOffsetX = { it },
+                            initialOffsetX = { offset -> offset },
                             animationSpec = tween(400, easing = FastOutSlowInEasing)
                         )
                         "planos" -> slideInHorizontally(
-                            initialOffsetX = { -it },
+                            initialOffsetX = { offset -> -offset },
                             animationSpec = tween(400, easing = FastOutSlowInEasing)
                         )
                         else -> slideInVertically(
-                            initialOffsetY = { it },
+                            initialOffsetY = { offset -> offset },
                             animationSpec = tween(400, easing = FastOutSlowInEasing)
                         )
                     } + fadeIn(animationSpec = tween(400))
@@ -254,15 +254,15 @@ fun MobileApp() {
                 exitTransition = {
                     when (targetState.destination.route) {
                         "management" -> slideOutHorizontally(
-                            targetOffsetX = { it },
+                            targetOffsetX = { offset -> offset },
                             animationSpec = tween(400, easing = FastOutSlowInEasing)
                         )
                         "planos" -> slideOutHorizontally(
-                            targetOffsetX = { -it },
+                            targetOffsetX = { offset -> -offset },
                             animationSpec = tween(400, easing = FastOutSlowInEasing)
                         )
                         else -> slideOutVertically(
-                            targetOffsetY = { it },
+                            targetOffsetY = { offset -> offset },
                             animationSpec = tween(400, easing = FastOutSlowInEasing)
                         )
                     } + fadeOut(animationSpec = tween(400))
@@ -297,13 +297,13 @@ fun MobileApp() {
                 enterTransition = {
                     // TODO: Puedes personalizar la animación si lo deseas
                     slideInVertically(
-                        initialOffsetY = { it },
+                        initialOffsetY = { offset -> offset },
                         animationSpec = tween(400, easing = FastOutSlowInEasing)
                     ) + fadeIn(animationSpec = tween(400))
                 },
                 exitTransition = {
                     slideOutVertically(
-                        targetOffsetY = { it },
+                        targetOffsetY = { offset -> offset },
                         animationSpec = tween(400, easing = FastOutSlowInEasing)
                     ) + fadeOut(animationSpec = tween(400))
                 }
@@ -321,13 +321,13 @@ fun MobileApp() {
                 enterTransition = {
                     // TODO: Puedes personalizar la animación si lo deseas
                     slideInVertically(
-                        initialOffsetY = { it },
+                        initialOffsetY = { offset -> offset },
                         animationSpec = tween(400, easing = FastOutSlowInEasing)
                     ) + fadeIn(animationSpec = tween(400))
                 },
                 exitTransition = {
                     slideOutVertically(
-                        targetOffsetY = { it },
+                        targetOffsetY = { offset -> offset },
                         animationSpec = tween(400, easing = FastOutSlowInEasing)
                     ) + fadeOut(animationSpec = tween(400))
                 }
@@ -342,15 +342,15 @@ fun MobileApp() {
                 enterTransition = {
                     when (initialState.destination.route) {
                         "cronograma" -> slideInHorizontally(
-                            initialOffsetX = { it },
+                            initialOffsetX = { offset -> offset },
                             animationSpec = tween(400, easing = FastOutSlowInEasing)
                         )
                         "evidencia" -> slideInHorizontally(
-                            initialOffsetX = { -it },
+                            initialOffsetX = { offset -> -offset },
                             animationSpec = tween(400, easing = FastOutSlowInEasing)
                         )
                         else -> slideInVertically(
-                            initialOffsetY = { it },
+                            initialOffsetY = { offset -> offset },
                             animationSpec = tween(400, easing = FastOutSlowInEasing)
                         )
                     } + fadeIn(animationSpec = tween(400))
@@ -358,15 +358,15 @@ fun MobileApp() {
                 exitTransition = {
                     when (targetState.destination.route) {
                         "cronograma" -> slideOutHorizontally(
-                            targetOffsetX = { it },
+                            targetOffsetX = { offset -> offset },
                             animationSpec = tween(400, easing = FastOutSlowInEasing)
                         )
                         "evidencia" -> slideOutHorizontally(
-                            targetOffsetX = { -it },
+                            targetOffsetX = { offset -> -offset },
                             animationSpec = tween(400, easing = FastOutSlowInEasing)
                         )
                         else -> slideOutVertically(
-                            targetOffsetY = { it },
+                            targetOffsetY = { offset -> offset },
                             animationSpec = tween(400, easing = FastOutSlowInEasing)
                         )
                     } + fadeOut(animationSpec = tween(400))
@@ -399,13 +399,13 @@ fun MobileApp() {
                 "evidencia",
                 enterTransition = {
                     slideInHorizontally(
-                        initialOffsetX = { it },
+                        initialOffsetX = { offset -> offset },
                         animationSpec = tween(400, easing = FastOutSlowInEasing)
                     ) + fadeIn(animationSpec = tween(400))
                 },
                 exitTransition = {
                     slideOutHorizontally(
-                        targetOffsetX = { it },
+                        targetOffsetX = { offset -> offset },
                         animationSpec = tween(400, easing = FastOutSlowInEasing)
                     ) + fadeOut(animationSpec = tween(400))
                 }
@@ -449,7 +449,7 @@ fun MobileApp() {
                 "project_detail/{projectId}",
                 enterTransition = {
                     slideInVertically(
-                        initialOffsetY = { it },
+                        initialOffsetY = { offset -> offset },
                         animationSpec = spring(
                             dampingRatio = Spring.DampingRatioMediumBouncy,
                             stiffness = Spring.StiffnessLow
@@ -458,7 +458,7 @@ fun MobileApp() {
                 },
                 exitTransition = {
                     slideOutVertically(
-                        targetOffsetY = { it },
+                        targetOffsetY = { offset -> offset },
                         animationSpec = tween(400, easing = FastOutSlowInEasing)
                     ) + fadeOut(animationSpec = tween(400))
                 }
@@ -475,7 +475,7 @@ fun MobileApp() {
                 "add_gallery_project",
                 enterTransition = {
                     slideInVertically(
-                        initialOffsetY = { it },
+                        initialOffsetY = { offset -> offset },
                         animationSpec = spring(
                             dampingRatio = Spring.DampingRatioMediumBouncy,
                             stiffness = Spring.StiffnessLow
@@ -484,7 +484,7 @@ fun MobileApp() {
                 },
                 exitTransition = {
                     slideOutVertically(
-                        targetOffsetY = { it },
+                        targetOffsetY = { offset -> offset },
                         animationSpec = tween(400, easing = FastOutSlowInEasing)
                     ) + fadeOut(animationSpec = tween(400))
                 }
