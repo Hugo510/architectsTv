@@ -3,6 +3,7 @@ package com.example.app_mobile.data.repository
 import com.example.shared_domain.model.*
 import com.example.shared_domain.repository.GalleryProject
 import com.example.shared_domain.repository.ProjectRepository
+import com.example.shared_domain.repository.GalleryProjectMetadata
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

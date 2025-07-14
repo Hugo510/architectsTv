@@ -1,6 +1,7 @@
 package com.example.app_mobile.data.repository
 
 import com.example.shared_domain.model.*
+import com.example.shared_domain.repository.GalleryProject
 import com.example.shared_domain.repository.ProjectRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -320,7 +321,8 @@ class ManagementRepository : ProjectRepository {
     // Gallery operations - delegadas a repositorio especializado
     override suspend fun getAllGalleryProjects(): Flow<List<GalleryProject>> = flowOf(emptyList())
     override suspend fun getGalleryProjectById(id: String): GalleryProject? = null
-    override suspend fun createGalleryProject(project: GalleryProject): Result<GalleryProject> = 
+
+    override suspend fun createGalleryProject(project: GalleryProject): Result<GalleryProject> =
         Result.failure(UnsupportedOperationException("Use EvidenciaRepository for gallery operations"))
     override suspend fun updateGalleryProject(project: GalleryProject): Result<GalleryProject> = 
         Result.failure(UnsupportedOperationException("Use EvidenciaRepository for gallery operations"))
