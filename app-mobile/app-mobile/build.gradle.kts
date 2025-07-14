@@ -4,6 +4,8 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.kotlin.kapt)
     alias(libs.plugins.hilt.android)
+    // Agregar plugin de serialización
+    alias(libs.plugins.kotlin.serialization)
 }
 
 android {
@@ -84,6 +86,25 @@ dependencies {
     
     // Coroutines
     implementation(libs.kotlinx.coroutines.android)
+    implementation(libs.kotlinx.coroutines.core)
+    
+    // NUEVAS DEPENDENCIAS AGREGADAS:
+    
+    // Kotlinx Serialization - CRÍTICA para shared-domain
+    implementation(libs.kotlinx.serialization.json)
+    
+    // Compose Animation - Para las animaciones avanzadas del Kanban/Timeline
+    implementation(libs.androidx.compose.animation)
+    implementation(libs.androidx.compose.animation.core)
+    
+    // Collections Immutable - Para mejor rendimiento con StateFlow
+    implementation(libs.kotlinx.collections.immutable)
+    
+    // Lifecycle State - Para manejar estados del ciclo de vida
+    implementation(libs.androidx.lifecycle.runtime.compose)
+    
+    // Permission handling - Para futuras funcionalidades de evidencia
+    implementation(libs.accompanist.permissions)
     
     // Date/Time support
     coreLibraryDesugaring(libs.android.desugar.jdk.libs)
@@ -91,12 +112,16 @@ dependencies {
     // Shared Domain Module
     implementation(project(":shared-domain"))
     
-    // Testing
+    // Testing mejorado
     testImplementation(libs.junit)
+    testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(libs.turbine) // Para testing de StateFlow
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.ui.test.junit4)
+    androidTestImplementation(libs.hilt.android.testing)
+    kaptAndroidTest(libs.hilt.compiler)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 }

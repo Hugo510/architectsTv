@@ -574,6 +574,13 @@ private fun MilestoneCard(
         label = "card_color_animation"
     )
     
+    // Agregar la variable faltante
+    val iconScale by animateFloatAsState(
+        targetValue = if (milestone.isCompleted) 1.1f else 1f,
+        animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy),
+        label = "icon_scale_animation"
+    )
+    
     Card(
         onClick = onClick,
         modifier = Modifier.fillMaxWidth(),
