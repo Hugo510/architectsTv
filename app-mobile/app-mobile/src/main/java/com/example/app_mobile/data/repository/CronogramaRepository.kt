@@ -6,6 +6,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.flowOf
 
 class CronogramaRepository : ProjectRepository {
     
@@ -405,4 +406,18 @@ class CronogramaRepository : ProjectRepository {
     override suspend fun deleteEvidence(id: String): Result<Unit> = TODO()
     override suspend fun getEvidenceByCategory(projectId: String, category: EvidenceCategory): Flow<List<Evidence>> = TODO()
     override suspend fun getEvidenceByDateRange(projectId: String, startDate: String, endDate: String): Flow<List<Evidence>> = TODO()
+
+    // Métodos de galería requeridos por ProjectRepository (no implementados en este repositorio)
+    override suspend fun getAllGalleryProjects(): Flow<List<GalleryProject>> = flowOf(emptyList())
+    override suspend fun getGalleryProjectById(id: String): GalleryProject? = null
+    override suspend fun createGalleryProject(project: GalleryProject): Result<GalleryProject> =
+        Result.failure(UnsupportedOperationException("Use EvidenciaRepository for gallery operations"))
+    override suspend fun updateGalleryProject(project: GalleryProject): Result<GalleryProject> =
+        Result.failure(UnsupportedOperationException("Use EvidenciaRepository for gallery operations"))
+    override suspend fun deleteGalleryProject(id: String): Result<Unit> =
+        Result.failure(UnsupportedOperationException("Use EvidenciaRepository for gallery operations"))
+    override suspend fun toggleGalleryProjectFavorite(id: String): Result<GalleryProject> =
+        Result.failure(UnsupportedOperationException("Use EvidenciaRepository for gallery operations"))
+    override suspend fun searchGalleryProjects(query: String): Flow<List<GalleryProject>> = flowOf(emptyList())
+    override suspend fun getGalleryProjectsByStyle(style: String): Flow<List<GalleryProject>> = flowOf(emptyList())
 }
