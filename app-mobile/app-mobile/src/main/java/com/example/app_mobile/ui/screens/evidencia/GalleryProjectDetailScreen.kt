@@ -2,6 +2,7 @@ package com.example.app_mobile.ui.screens.evidencia
 
 import androidx.compose.animation.*
 import androidx.compose.animation.core.*
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
@@ -30,9 +31,8 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.example.shared_domain.model.EvidenceCategory
-import com.example.shared_domain.model.GalleryProject
+import com.example.shared_domain.repository.GalleryProject
 import kotlinx.coroutines.delay
-import org.koin.androidx.compose.getViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -44,26 +44,26 @@ fun GalleryProjectDetailScreen(
     val uiState by viewModel.uiState.collectAsState()
     val project by viewModel.getProjectById(projectId).collectAsState()
     val projectEvidence by viewModel.currentProjectEvidence.collectAsState()
-    
+
     // Cargar detalles del proyecto
     LaunchedEffect(projectId) {
         viewModel.loadProjectDetail(projectId)
     }
-    
+
     var selectedImageIndex by remember { mutableStateOf<Int?>(null) }
     var isFullScreenVisible by remember { mutableStateOf(false) }
     var isVisible by remember { mutableStateOf(false) }
-    
+
     LaunchedEffect(Unit) {
         isVisible = true
     }
-    
+
     // Generar imágenes desde evidencia real + placeholders
     val projectImages = remember(projectEvidence) {
-        val evidenceImages = projectEvidence.take(4).map { evidence =>
+        val evidenceImages = projectEvidence.take(4).map { evidence ->
             evidence.title to getEvidenceIcon(evidence.category)
         }
-        
+
         val placeholderImages = listOf(
             "Fachada Principal" to Icons.Default.Home,
             "Sala de Estar" to Icons.Default.Chair,
@@ -74,23 +74,23 @@ fun GalleryProjectDetailScreen(
             "Vista Nocturna" to Icons.Default.NightsStay,
             "Planos Arquitectónicos" to Icons.Default.Architecture
         )
-        
+
         if (evidenceImages.isNotEmpty()) {
             evidenceImages + placeholderImages.drop(evidenceImages.size)
         } else {
             placeholderImages
         }
     }
-    
+
     project?.let { currentProject ->
         Scaffold(
             topBar = {
                 TopAppBar(
-                    title = { 
+                    title = {
                         Text(
                             "Detalle del Proyecto",
                             fontWeight = FontWeight.Bold
-                        ) 
+                        )
                     },
                     navigationIcon = {
                         IconButton(onClick = onNavigateBack) {
@@ -100,9 +100,9 @@ fun GalleryProjectDetailScreen(
                     actions = {
                         // Botón de favorito sincronizado con ViewModel
                         var favoriteScale by remember { mutableStateOf(1f) }
-                        
+
                         IconButton(
-                            onClick = { 
+                            onClick = {
                                 viewModel.toggleProjectFavorite(projectId)
                                 favoriteScale = 1.3f
                             },
@@ -122,14 +122,14 @@ fun GalleryProjectDetailScreen(
                                     }
                                 }
                             }
-                            
+
                             Icon(
                                 imageVector = if (currentProject.isFavorite) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
                                 contentDescription = "Favorito",
                                 tint = if (currentProject.isFavorite) Color.Red else MaterialTheme.colorScheme.onSurface
                             )
                         }
-                        
+
                     }
                 )
             }
@@ -163,12 +163,12 @@ fun GalleryProjectDetailScreen(
                                     enter = slideInVertically(
                                         initialOffsetY = { -it / 2 },
                                         animationSpec = tween(800, delayMillis = 200)
-                                ) + fadeIn(animationSpec = tween(600, delayMillis = 200))
+                                    ) + fadeIn(animationSpec = tween(600, delayMillis = 200))
                                 ) {
                                     ModernProjectMainImage(project = currentProject)
                                 }
                             }
-                            
+
                             // Información básica con animación
                             item {
                                 AnimatedVisibility(
@@ -181,7 +181,7 @@ fun GalleryProjectDetailScreen(
                                     ModernProjectBasicInfo(project = currentProject)
                                 }
                             }
-                            
+
                             // Galería de imágenes con animación
                             item {
                                 AnimatedVisibility(
@@ -200,7 +200,7 @@ fun GalleryProjectDetailScreen(
                                     )
                                 }
                             }
-                            
+
                             // Especificaciones con animación
                             item {
                                 AnimatedVisibility(
@@ -213,14 +213,14 @@ fun GalleryProjectDetailScreen(
                                     ModernProjectSpecifications(project = currentProject)
                                 }
                             }
-                            
+
                             item {
                                 Spacer(modifier = Modifier.height(32.dp))
                             }
                         }
                     }
                 }
-                
+
                 // Overlay de imagen fullscreen
                 if (isFullScreenVisible && selectedImageIndex != null) {
                     FullScreenImageViewer(
@@ -294,7 +294,7 @@ private fun ModernProjectMainImage(project: GalleryProject) {
                         )
                     )
             )
-            
+
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
@@ -324,9 +324,9 @@ private fun ModernProjectMainImage(project: GalleryProject) {
                         modifier = Modifier.size(64.dp)
                     )
                 }
-                
+
                 Spacer(modifier = Modifier.height(16.dp))
-                
+
                 Card(
                     colors = CardDefaults.cardColors(
                         containerColor = Color.Black.copy(alpha = 0.3f)
@@ -388,7 +388,7 @@ private fun ModernProjectBasicInfo(project: GalleryProject) {
                             fontWeight = FontWeight.ExtraBold,
                             color = MaterialTheme.colorScheme.onSurface
                         )
-                        
+
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
                             modifier = Modifier.padding(top = 8.dp)
@@ -407,7 +407,7 @@ private fun ModernProjectBasicInfo(project: GalleryProject) {
                             )
                         }
                     }
-                    
+
                     // Rating con diseño moderno
                     Card(
                         colors = CardDefaults.cardColors(
@@ -441,9 +441,9 @@ private fun ModernProjectBasicInfo(project: GalleryProject) {
                     }
                 }
             }
-            
+
             Spacer(modifier = Modifier.height(20.dp))
-            
+
             // Descripción con mejor typography
             Text(
                 text = project.description,
@@ -452,9 +452,9 @@ private fun ModernProjectBasicInfo(project: GalleryProject) {
                 lineHeight = 22.sp,
                 letterSpacing = 0.1.sp
             )
-            
+
             Spacer(modifier = Modifier.height(20.dp))
-            
+
             // Tags modernos con animación
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -482,7 +482,7 @@ private fun ModernProjectBasicInfo(project: GalleryProject) {
 
 @Composable
 private fun ModernProjectImageGallery(
-    images: List<Pair<String, String>>,
+    images: List<Pair<String, ImageVector>>,
     onImageClick: (Int) -> Unit = {}
 ) {
     Card(
@@ -513,7 +513,7 @@ private fun ModernProjectImageGallery(
                     color = MaterialTheme.colorScheme.onSurface
                 )
             }
-            
+
             LazyRow(
                 horizontalArrangement = Arrangement.spacedBy(16.dp),
                 contentPadding = PaddingValues(horizontal = 4.dp)
@@ -545,7 +545,7 @@ private fun ModernImageGalleryItem(
         animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy),
         label = "scale_animation"
     )
-    
+
     Card(
         onClick = {
             isPressed = true
@@ -567,7 +567,7 @@ private fun ModernImageGalleryItem(
                 isPressed = false
             }
         }
-        
+
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -602,9 +602,9 @@ private fun ModernImageGalleryItem(
                         modifier = Modifier.size(24.dp)
                     )
                 }
-                
+
                 Spacer(modifier = Modifier.height(8.dp))
-                
+
                 Text(
                     text = title,
                     fontSize = 11.sp,
@@ -615,7 +615,7 @@ private fun ModernImageGalleryItem(
                     lineHeight = 14.sp
                 )
             }
-            
+
             // Número de imagen
             Card(
                 modifier = Modifier
@@ -668,7 +668,7 @@ private fun ModernProjectSpecifications(project: GalleryProject) {
                     color = MaterialTheme.colorScheme.onSurface
                 )
             }
-            
+
             val specifications = listOf(
                 "Área Total" to project.area,
                 "Estilo" to project.style,
@@ -679,7 +679,7 @@ private fun ModernProjectSpecifications(project: GalleryProject) {
                 "Estacionamiento" to "2 autos",
                 "Jardín" to "Sí"
             )
-            
+
             specifications.chunked(2).forEachIndexed { rowIndex, rowSpecs ->
                 Row(
                     modifier = Modifier
@@ -695,7 +695,7 @@ private fun ModernProjectSpecifications(project: GalleryProject) {
                             delay = (rowIndex * 2 + itemIndex) * 100
                         )
                     }
-                    
+
                     if (rowSpecs.size == 1) {
                         Spacer(modifier = Modifier.weight(1f))
                     }
@@ -713,12 +713,12 @@ private fun ModernSpecificationItem(
     delay: Int = 0
 ) {
     var isVisible by remember { mutableStateOf(false) }
-    
+
     LaunchedEffect(Unit) {
         delay(delay.toLong())
         isVisible = true
     }
-    
+
     AnimatedVisibility(
         visible = isVisible,
         enter = slideInVertically(
@@ -807,7 +807,7 @@ private fun ModernInfoChip(
 
 @Composable
 private fun FullScreenImageViewer(
-    images: List<Pair<String, String>>,
+    images: List<Pair<String, ImageVector>>,
     initialIndex: Int,
     onDismiss: () -> Unit,
     onImageChange: (Int) -> Unit
@@ -816,14 +816,14 @@ private fun FullScreenImageViewer(
     val configuration = LocalConfiguration.current
     val screenHeight = configuration.screenHeightDp.dp
     val screenWidth = configuration.screenWidthDp.dp
-    
+
     // Animación de entrada/salida
     var isVisible by remember { mutableStateOf(false) }
-    
+
     LaunchedEffect(Unit) {
         isVisible = true
     }
-    
+
     Dialog(
         onDismissRequest = onDismiss,
         properties = DialogProperties(
@@ -859,7 +859,7 @@ private fun FullScreenImageViewer(
                     screenWidth = screenWidth,
                     screenHeight = screenHeight
                 )
-                
+
                 // Header con información de la imagen
                 FullScreenHeader(
                     image = images[currentIndex],
@@ -868,7 +868,7 @@ private fun FullScreenImageViewer(
                     onClose = onDismiss,
                     modifier = Modifier.align(Alignment.TopCenter)
                 )
-                
+
                 // Controles de navegación
                 if (images.size > 1) {
                     NavigationControls(
@@ -888,7 +888,7 @@ private fun FullScreenImageViewer(
                         },
                         modifier = Modifier.align(Alignment.Center)
                     )
-                    
+
                     // Indicadores de página
                     PageIndicators(
                         currentIndex = currentIndex,
@@ -896,7 +896,7 @@ private fun FullScreenImageViewer(
                         modifier = Modifier.align(Alignment.BottomCenter)
                     )
                 }
-                
+
                 // Información adicional en la parte inferior
                 ImageInfoFooter(
                     image = images[currentIndex],
@@ -909,13 +909,13 @@ private fun FullScreenImageViewer(
 
 @Composable
 private fun ImageDisplayArea(
-    image: Pair<String, String>,
+    image: Pair<String, ImageVector>,
     modifier: Modifier = Modifier,
     screenWidth: androidx.compose.ui.unit.Dp,
     screenHeight: androidx.compose.ui.unit.Dp
 ) {
-    val (title, emoji) = image
-    
+    val (title, icon) = image
+
     Card(
         modifier = modifier
             .size(
@@ -939,12 +939,14 @@ private fun ImageDisplayArea(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
-                Text(
-                    text = emoji,
-                    fontSize = 120.sp,
-                    modifier = Modifier.padding(bottom = 16.dp)
+                Icon(
+                    imageVector = icon,
+                    contentDescription = title,
+                    tint = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier
+                        .size(120.dp)
+                        .padding(bottom = 16.dp)
                 )
-                
                 Text(
                     text = title,
                     fontSize = 24.sp,
@@ -959,7 +961,7 @@ private fun ImageDisplayArea(
 
 @Composable
 private fun FullScreenHeader(
-    image: Pair<String, String>,
+    image: Pair<String, ImageVector>,
     currentIndex: Int,
     totalImages: Int,
     onClose: () -> Unit,
@@ -993,7 +995,7 @@ private fun FullScreenHeader(
                     color = Color.White.copy(alpha = 0.7f)
                 )
             }
-            
+
             IconButton(
                 onClick = onClose,
                 modifier = Modifier
@@ -1044,7 +1046,7 @@ private fun NavigationControls(
         } else {
             Spacer(modifier = Modifier.width(56.dp + 24.dp))
         }
-        
+
         // Botón siguiente
         if (currentIndex < totalImages - 1) {
             FloatingActionButton(
@@ -1090,9 +1092,9 @@ private fun PageIndicators(
                         .size(if (isSelected) 12.dp else 8.dp)
                         .clip(CircleShape)
                         .background(
-                            if (isSelected) 
-                                Color.White 
-                            else 
+                            if (isSelected)
+                                Color.White
+                            else
                                 Color.White.copy(alpha = 0.4f)
                         )
                         .animateContentSize(
@@ -1108,7 +1110,7 @@ private fun PageIndicators(
 
 @Composable
 private fun ImageInfoFooter(
-    image: Pair<String, String>,
+    image: Pair<String, ImageVector>,
     modifier: Modifier = Modifier
 ) {
     Card(
@@ -1127,7 +1129,7 @@ private fun ImageInfoFooter(
                 color = Color.White,
                 modifier = Modifier.padding(bottom = 8.dp)
             )
-            
+
             Row(
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -1144,7 +1146,7 @@ private fun ImageInfoFooter(
                     color = Color.White.copy(alpha = 0.7f)
                 )
             }
-            
+
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.padding(top = 4.dp)
@@ -1191,7 +1193,7 @@ private fun getEvidenceIcon(category: EvidenceCategory): ImageVector {
     return when (category) {
         EvidenceCategory.FOUNDATION -> Icons.Default.Foundation
         EvidenceCategory.STRUCTURE -> Icons.Default.Business
-        EvidenceCategory.WALLS -> Icons.Default.Wall
+        EvidenceCategory.WALLS -> Icons.Default.Dashboard // Cambiado de Wall a Dashboard
         EvidenceCategory.ROOFING -> Icons.Default.Roofing
         EvidenceCategory.ELECTRICAL -> Icons.Default.ElectricalServices
         EvidenceCategory.PLUMBING -> Icons.Default.Plumbing
@@ -1207,6 +1209,3 @@ private fun getEvidenceIcon(category: EvidenceCategory): ImageVector {
         EvidenceCategory.OTHER -> Icons.Default.PhotoCamera
     }
 }
-    }
-}
-
