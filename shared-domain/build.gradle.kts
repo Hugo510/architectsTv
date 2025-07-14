@@ -3,11 +3,6 @@ plugins {
     alias(libs.plugins.kotlin.serialization)
 }
 
-repositories {
-    mavenCentral()
-    google()
-}
-
 java {
     sourceCompatibility = JavaVersion.VERSION_11
     targetCompatibility = JavaVersion.VERSION_11
@@ -22,6 +17,11 @@ dependencies {
     
     // DateTime API
     implementation(libs.kotlinx.datetime)
+    
+    // Testing
+    testImplementation(libs.junit)
+    testImplementation(libs.kotlinx.coroutines.test)
+}
     
     // Testing
     testImplementation(libs.junit)
