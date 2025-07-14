@@ -47,8 +47,8 @@ fun MobileApp() {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
     
-    // Lista de rutas que deben mostrar el bottom navigation
-    val bottomNavRoutes = listOf("management", "cronograma", "planos", "evidencia", "home")
+    // Lista de rutas principales que muestran el bottom navigation
+    val bottomNavRoutes = listOf("home", "management", "cronograma", "planos", "evidencia")
     val showBottomNav = currentRoute in bottomNavRoutes
     
     Scaffold(
@@ -60,11 +60,19 @@ fun MobileApp() {
     ) { paddingValues ->
         NavHost(
             navController = navController,
-            startDestination = "management",
+            startDestination = "home", // Cambiar inicio a home
             modifier = Modifier.padding(
                 bottom = if (showBottomNav) paddingValues.calculateBottomPadding() else 0.dp
             )
         ) {
+            composable("home") {
+                HomeScreen(
+                    onNavigateToProjects = { navController.navigate("management") },
+                    onNavigateToManagement = { navController.navigate("management") },
+                    onNavigateToCast = { /* TODO: Implementar cast */ }
+                )
+            }
+            
             composable("management") {
                 ManagementScreen(
                     onNavigateToHome = { navController.navigate("home") },
@@ -84,7 +92,18 @@ fun MobileApp() {
             
             composable("cronograma") {
                 CronogramaScreen(
-                    onNavigateToHome = { navController.navigate("home") }
+                    onNavigateToTaskDetail = { taskId ->
+                        // TODO: Navegar a detalle de tarea
+                    },
+                    onNavigateToCreateTask = {
+                        // TODO: Navegar a crear tarea
+                    },
+                    onNavigateToMilestoneDetail = { milestoneId ->
+                        // TODO: Navegar a detalle de hito
+                    },
+                    onNavigateToScheduleSettings = {
+                        // TODO: Navegar a configuración de cronograma
+                    }
                 )
             }
             
@@ -96,15 +115,12 @@ fun MobileApp() {
             
             composable("evidencia") {
                 EvidenciaScreen(
-                    onNavigateToHome = { navController.navigate("home") }
-                )
-            }
-            
-            composable("home") {
-                HomeScreen(
-                    onNavigateToProjects = { navController.navigate("management") },
-                    onNavigateToManagement = { navController.navigate("management") },
-                    onNavigateToCast = { /* TODO: Implementar cast */ }
+                    onNavigateToProjectDetail = { projectId ->
+                        // TODO: Navegar a detalle de proyecto
+                    },
+                    onNavigateToAddProject = {
+                        // TODO: Navegar a agregar proyecto a galería
+                    }
                 )
             }
         }

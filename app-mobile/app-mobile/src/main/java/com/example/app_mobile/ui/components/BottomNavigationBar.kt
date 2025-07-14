@@ -3,10 +3,12 @@ package com.example.app_mobile.ui.components
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Architecture
 import androidx.compose.material.icons.filled.Engineering
+import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.PhotoCamera
 import androidx.compose.material.icons.filled.Schedule
 import androidx.compose.material.icons.outlined.Architecture
 import androidx.compose.material.icons.outlined.Engineering
+import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.PhotoCamera
 import androidx.compose.material.icons.outlined.Schedule
 import androidx.compose.material3.*
@@ -25,6 +27,12 @@ data class BottomNavItem(
 
 object BottomNavItems {
     val items = listOf(
+        BottomNavItem(
+            route = "home",
+            title = "Home",
+            selectedIcon = Icons.Filled.Home,
+            unselectedIcon = Icons.Outlined.Home
+        ),
         BottomNavItem(
             route = "management",
             title = "Gestión",

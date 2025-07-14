@@ -26,11 +26,6 @@ fun PlanosScreen(
                         "Planos",
                         fontWeight = FontWeight.Bold
                     ) 
-                },
-                navigationIcon = {
-                    IconButton(onClick = onNavigateToHome) {
-                        Icon(Icons.Default.Home, contentDescription = "Inicio")
-                    }
                 }
             )
         },
@@ -108,3 +103,4 @@ fun PlanosScreen(
         }
     }
 }
+
