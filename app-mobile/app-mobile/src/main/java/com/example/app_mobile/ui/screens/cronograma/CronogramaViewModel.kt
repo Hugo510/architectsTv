@@ -96,7 +96,10 @@ class CronogramaViewModel(
     fun createSchedule(
         projectId: String,
         name: String,
-        description: String? = null
+        description: String? = null,
+        startDate: String = "2024-01-01", // valor por defecto o puedes pedirlo como parámetro
+        endDate: String = "2024-12-31",   // valor por defecto o puedes pedirlo como parámetro
+        status: ProjectStatus = ProjectStatus.DESIGN // valor por defecto o puedes pedirlo como parámetro
     ) {
         viewModelScope.launch {
             setLoading(true)
@@ -112,7 +115,10 @@ class CronogramaViewModel(
                         createdAt = getCurrentTimestamp(),
                         updatedAt = getCurrentTimestamp(),
                         version = 1
-                    )
+                    ),
+                    startDate = startDate,
+                    endDate = endDate,
+                    status = status
                 )
 
                 repository.createSchedule(newSchedule)
@@ -403,7 +409,7 @@ class CronogramaViewModel(
             .map { tasks ->
                 tasks.filter { task ->
                     task.status != TaskStatus.COMPLETED &&
-                    task.status != TaskStatus.CANCELLED
+                            task.status != TaskStatus.CANCELLED
                     // Aquí se podría agregar lógica de fechas
                 }.take(5)
             }
