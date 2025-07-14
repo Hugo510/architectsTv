@@ -175,61 +175,65 @@ dependencies {
     
     // DEPENDENCIAS CRÍTICAS FALTANTES IDENTIFICADAS:
     
-    // LazyVerticalStaggeredGrid - CRÍTICA para EvidenciaScreen
-    implementation(libs.androidx.compose.foundation.layout.staggeredgrid)
+    # Material Icons Extended - CRÍTICA para todos los Icons.Default.* en el código
+    implementation(libs.androidx.compose.material.icons.extended)
+    implementation(libs.androidx.compose.material.icons.core)
     
-    // BorderStroke y Foundation extras - Para EnhancedStyleChip
-    implementation(libs.androidx.compose.foundation.border)
+    # Animation Core Android - Para spring animations en KanbanViewComponents
+    implementation(libs.androidx.compose.animation.core.android)
     
-    // UI Utils para configuración de pantalla
-    implementation(libs.androidx.compose.ui.util)
-    
-    // Dialog y Window components - Para FullScreenImageViewer
-    implementation(libs.androidx.compose.ui.window)
-    
-    // Platform utilities - Para LocalConfiguration
-    implementation(libs.androidx.compose.ui.platform)
-    
-    // Haptic feedback - Para todas las interacciones táctiles
-    implementation(libs.androidx.compose.ui.haptic)
-    
-    // Graphics vector - Para iconos avanzados
-    implementation(libs.androidx.compose.ui.graphics.vector)
-    
-    // Foundation gestures - Para detectTapGestures
+    # Foundation Gestures - Para detectDragGesturesAfterLongPress en Kanban
     implementation(libs.androidx.compose.foundation.gestures)
     
-    // Runtime saveable - Para remember y state management
+    # UI Graphics avanzados - Para gradientes y efectos visuales
+    implementation(libs.androidx.compose.ui.graphics.shapes)
+    implementation(libs.androidx.compose.ui.graphics.vector)
+    
+    # UI Platform - Para LocalConfiguration en responsive design
+    implementation(libs.androidx.compose.ui.platform)
+    
+    # UI Window - Para DialogProperties en modales
+    implementation(libs.androidx.compose.ui.window)
+    
+    # UI Util - Para configuraciones de pantalla y responsive design
+    implementation(libs.androidx.compose.ui.util)
+    
+    # Runtime Saveable - Para remember y state management
     implementation(libs.androidx.compose.runtime.saveable)
     
-    // LiveData support - Para mejor state management
-    implementation(libs.androidx.lifecycle.livedata.ktx)
-    
-    // Animation content - Para AnimatedVisibility y transiciones
-    implementation(libs.androidx.compose.animation.content)
-    
-    // Graphics shapes - Para formas personalizadas
-    implementation(libs.androidx.compose.ui.graphics.shapes)
-    
-    // Material3 adaptive - Para ExposedDropdownMenuBox
-    implementation(libs.androidx.compose.material3.adaptive)
-    
-    // Foundation text - Para KeyboardActions y focus management
+    # Foundation Text - Para KeyboardActions y focus management
     implementation(libs.androidx.compose.foundation.text)
     
-    // Foundation lazy - Para optimización de LazyColumn/LazyRow
+    # Material3 Adaptive - Para ExposedDropdownMenuBox avanzado
+    implementation(libs.androidx.compose.material3.adaptive)
+    
+    # Animation Content - Para AnimatedVisibility en componentes
+    implementation(libs.androidx.compose.animation.content)
+    
+    # LiveData KTX - Para state management avanzado
+    implementation(libs.androidx.lifecycle.livedata.ktx)
+    
+    # Foundation Lazy - Para LazyColumn/LazyRow optimizations
     implementation(libs.androidx.compose.foundation.lazy)
     
-    // Animation core adicional - Para spring animations
-    implementation(libs.androidx.compose.animation.core.desktop)
+    # Navigation Animation - Para transiciones suaves
+    implementation(libs.androidx.navigation.animation)
     
-    // DEPENDENCIAS PARA DEBUGGING Y DESARROLLO:
+    # DEPENDENCIAS PARA FUNCIONALIDADES ESPECÍFICAS DEL CÓDIGO:
     
-    // UI tooling para preview avanzado
-    debugImplementation(libs.androidx.ui.tooling)
-    debugImplementation(libs.androidx.ui.test.manifest)
+    # Compose Foundation avanzada - Para BorderStroke y efectos
+    implementation(libs.androidx.compose.foundation.border)
+    
+    # Layout Staggered Grid - Para layouts avanzados
+    implementation(libs.androidx.compose.foundation.layout)
+    
+    # Accompanist específicos para funcionalidades detectadas
+    implementation(libs.accompanist.placeholder.material)
+    implementation(libs.accompanist.navigation.animation)
+    implementation(libs.accompanist.insets)
+    implementation(libs.accompanist.insets.ui)
+    
+    # DEPENDENCIAS PARA DEBUGGING Y TESTING MEJORADO:
     debugImplementation(libs.androidx.compose.ui.test.manifest.debug)
-    
-    // Testing para las nuevas funcionalidades
     androidTestImplementation(libs.androidx.compose.ui.test.junit4.android)
 }

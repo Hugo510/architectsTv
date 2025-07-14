@@ -54,6 +54,22 @@ window-insets = "1.7.8"
 compose-foundation-layout = "1.7.8"
 lazy-layouts = "1.7.8"
 animation-graphics-android = "1.7.8"
+# NUEVAS VERSIONES CRÍTICAS FALTANTES
+material-icons-extended = "1.7.8"
+animation-core-android = "1.7.8"
+foundation-gestures = "1.7.8"
+ui-graphics-shapes = "1.7.8"
+ui-platform = "1.7.8"
+ui-window = "1.7.8"
+ui-util = "1.7.8"
+runtime-saveable = "1.7.8"
+foundation-text = "1.7.8"
+material3-adaptive = "1.7.8"
+animation-content = "1.7.8"
+lifecycle-livedata = "2.9.1"
+compose-foundation-lazy = "1.7.8"
+compose-ui-graphics-vector = "1.7.8"
+material-icons-core = "1.7.8"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -158,59 +174,59 @@ androidx-compose-foundation-layout-staggeredgrid = { group = "androidx.compose.f
 
 # DEPENDENCIAS CRÍTICAS FALTANTES IDENTIFICADAS EN EL CÓDIGO:
 
-# BorderStroke - Usado en EnhancedStyleChip y otros componentes
-androidx-compose-foundation-border = { group = "androidx.compose.foundation", name = "foundation", version.ref = "border-stroke" }
+# Material Icons Extended - CRÍTICA para Icons.Default.*
+androidx-compose-material-icons-extended = { group = "androidx.compose.material", name = "material-icons-extended", version.ref = "material-icons-extended" }
 
-# LazyVerticalStaggeredGrid - Usado en EvidenciaScreen
-androidx-compose-foundation-layout = { group = "androidx.compose.foundation", name = "foundation-layout", version.ref = "compose-foundation-layout" }
+# Animation Core Android - Para spring animations y AnimatedVisibility
+androidx-compose-animation-core-android = { group = "androidx.compose.animation", name = "animation-core-android", version.ref = "animation-core-android" }
 
-# WindowInsets y configuración de pantalla
-androidx-compose-ui-util = { group = "androidx.compose.ui", name = "ui-util", version.ref = "window-insets" }
+# Foundation Gestures - Para detectDragGesturesAfterLongPress
+androidx-compose-foundation-gestures = { group = "androidx.compose.foundation", name = "foundation", version.ref = "foundation-gestures" }
 
-# Lazy layouts mejorados
-androidx-compose-foundation-lazy = { group = "androidx.compose.foundation", name = "foundation", version.ref = "lazy-layouts" }
+# UI Graphics Shapes - Para formas personalizadas y gradientes
+androidx-compose-ui-graphics-shapes = { group = "androidx.compose.ui", name = "ui-graphics", version.ref = "ui-graphics-shapes" }
 
-# Animation core para spring y animaciones avanzadas
-androidx-compose-animation-core-desktop = { group = "androidx.compose.animation", name = "animation-core", version.ref = "compose-animation" }
+# UI Platform - Para LocalConfiguration access
+androidx-compose-ui-platform = { group = "androidx.compose.ui", name = "ui", version.ref = "ui-platform" }
 
-# Material3 additional components - Para ExposedDropdownMenuBox
-androidx-compose-material3-adaptive = { group = "androidx.compose.material3", name = "material3-adaptive", version.ref = "material3" }
+# UI Window - Para DialogProperties
+androidx-compose-ui-window = { group = "androidx.compose.ui", name = "ui", version.ref = "ui-window" }
 
-# Focus management y keyboard controller
-androidx-compose-foundation-text = { group = "androidx.compose.foundation", name = "foundation", version.ref = "foundation" }
+# UI Util - Para configuraciones de pantalla
+androidx-compose-ui-util = { group = "androidx.compose.ui", name = "ui-util", version.ref = "ui-util" }
 
-# DialogProperties y Dialog components
-androidx-compose-ui-window = { group = "androidx.compose.ui", name = "ui", version.ref = "foundation" }
+# Runtime Saveable - Para remember y mutableStateOf
+androidx-compose-runtime-saveable = { group = "androidx.compose.runtime", name = "runtime-saveable", version.ref = "runtime-saveable" }
 
-# Configuration para responsive design
-androidx-compose-ui-platform = { group = "androidx.compose.ui", name = "ui", version.ref = "foundation" }
+# Foundation Text - Para KeyboardActions y focus management
+androidx-compose-foundation-text = { group = "androidx.compose.foundation", name = "foundation", version.ref = "foundation-text" }
 
-# Haptic feedback support
-androidx-compose-ui-haptic = { group = "androidx.compose.ui", name = "ui", version.ref = "foundation" }
+# Material3 Adaptive - Para ExposedDropdownMenuBox advanced features
+androidx-compose-material3-adaptive = { group = "androidx.compose.material3", name = "material3-adaptive", version.ref = "material3-adaptive" }
 
-# Graphics avanzados para gradientes complejos
-androidx-compose-ui-graphics-vector = { group = "androidx.compose.ui", name = "ui-graphics", version.ref = "compose-graphics" }
+# Animation Content - Para AnimatedVisibility y content transitions
+androidx-compose-animation-content = { group = "androidx.compose.animation", name = "animation", version.ref = "animation-content" }
 
-# NUEVAS DEPENDENCIAS PARA FUNCIONALIDADES ESPECÍFICAS:
+# LiveData KTX - Para state management avanzado
+androidx-lifecycle-livedata-ktx = { group = "androidx.lifecycle", name = "lifecycle-livedata-ktx", version.ref = "lifecycle-livedata" }
 
-# Para manejo de estados más complejos
-androidx-lifecycle-livedata-ktx = { group = "androidx.lifecycle", name = "lifecycle-livedata-ktx", version.ref = "lifecycleViewModelKtx" }
+# Foundation Lazy - Para LazyColumn/LazyRow optimizations
+androidx-compose-foundation-lazy = { group = "androidx.compose.foundation", name = "foundation", version.ref = "compose-foundation-lazy" }
 
-# Para animaciones de contenido
-androidx-compose-animation-content = { group = "androidx.compose.animation", name = "animation", version.ref = "compose-animation" }
+# UI Graphics Vector - Para iconos vectoriales avanzados
+androidx-compose-ui-graphics-vector = { group = "androidx.compose.ui", name = "ui-graphics", version.ref = "compose-ui-graphics-vector" }
 
-# Para efectos visuales avanzados
-androidx-compose-ui-graphics-shapes = { group = "androidx.compose.ui", name = "ui-graphics", version.ref = "compose-graphics" }
+# Material Icons Core - Base para material icons
+androidx-compose-material-icons-core = { group = "androidx.compose.material", name = "material-icons-core", version.ref = "material-icons-core" }
 
-# Para manejo de gestures
-androidx-compose-foundation-gestures = { group = "androidx.compose.foundation", name = "foundation", version.ref = "foundation" }
+# DEPENDENCIAS ADICIONALES PARA FUNCIONALIDADES ESPECÍFICAS:
 
-# Para state holders
-androidx-compose-runtime-saveable = { group = "androidx.compose.runtime", name = "runtime-saveable", version.ref = "foundation" }
-
-# DEPENDENCIAS PARA TESTING DE LAS NUEVAS FUNCIONALIDADES:
+# Compose UI Test para desarrollo
 androidx-compose-ui-test-junit4-android = { group = "androidx.compose.ui", name = "ui-test-junit4-android", version.ref = "foundation" }
 androidx-compose-ui-test-manifest-debug = { group = "androidx.compose.ui", name = "ui-test-manifest", version.ref = "foundation" }
+
+# Navigation Animation para transiciones entre pantallas
+androidx-navigation-animation = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigationCompose" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
