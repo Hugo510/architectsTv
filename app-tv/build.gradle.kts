@@ -86,7 +86,7 @@ dependencies {
     implementation(libs.play.services.cast.framework)
 
     // Shared Domain Module
-    implementation(project(":shared-domain"))
+    //implementation(project(":shared-domain"))
     
     implementation(project(":feature-ui-tv:feature-ui-tv"))
     implementation(project(":feature-projection:feature-projection"))

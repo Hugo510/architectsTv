@@ -174,66 +174,66 @@ dependencies {
     debugImplementation(libs.androidx.ui.test.manifest)
     
     // DEPENDENCIAS CRÍTICAS FALTANTES IDENTIFICADAS:
-    
-    # Material Icons Extended - CRÍTICA para todos los Icons.Default.* en el código
+
+    // Material Icons Extended - CRÍTICA para todos los Icons.Default.* en el código
     implementation(libs.androidx.compose.material.icons.extended)
     implementation(libs.androidx.compose.material.icons.core)
-    
-    # Animation Core Android - Para spring animations en KanbanViewComponents
+
+    //Animation Core Android - Para spring animations en KanbanViewComponents
     implementation(libs.androidx.compose.animation.core.android)
-    
-    # Foundation Gestures - Para detectDragGesturesAfterLongPress en Kanban
+
+    //Foundation Gestures - Para detectDragGesturesAfterLongPress en Kanban
     implementation(libs.androidx.compose.foundation.gestures)
-    
-    # UI Graphics avanzados - Para gradientes y efectos visuales
+
+    //UI Graphics avanzados - Para gradientes y efectos visuales
     implementation(libs.androidx.compose.ui.graphics.shapes)
     implementation(libs.androidx.compose.ui.graphics.vector)
-    
-    # UI Platform - Para LocalConfiguration en responsive design
+
+    //UI Platform - Para LocalConfiguration en responsive design
     implementation(libs.androidx.compose.ui.platform)
-    
-    # UI Window - Para DialogProperties en modales
+
+    //UI Window - Para DialogProperties en modales
     implementation(libs.androidx.compose.ui.window)
-    
-    # UI Util - Para configuraciones de pantalla y responsive design
+
+    //UI Util - Para configuraciones de pantalla y responsive design
     implementation(libs.androidx.compose.ui.util)
-    
-    # Runtime Saveable - Para remember y state management
+
+    //Runtime Saveable - Para remember y state management
     implementation(libs.androidx.compose.runtime.saveable)
-    
-    # Foundation Text - Para KeyboardActions y focus management
+
+    //Foundation Text - Para KeyboardActions y focus management
     implementation(libs.androidx.compose.foundation.text)
-    
-    # Material3 Adaptive - Para ExposedDropdownMenuBox avanzado
+
+    //Material3 Adaptive - Para ExposedDropdownMenuBox avanzado
     implementation(libs.androidx.compose.material3.adaptive)
-    
-    # Animation Content - Para AnimatedVisibility en componentes
+
+    //Animation Content - Para AnimatedVisibility en componentes
     implementation(libs.androidx.compose.animation.content)
-    
-    # LiveData KTX - Para state management avanzado
+
+    //LiveData KTX - Para state management avanzado
     implementation(libs.androidx.lifecycle.livedata.ktx)
-    
-    # Foundation Lazy - Para LazyColumn/LazyRow optimizations
+
+    //Foundation Lazy - Para LazyColumn/LazyRow optimizations
     implementation(libs.androidx.compose.foundation.lazy)
-    
-    # Navigation Animation - Para transiciones suaves
+
+    //Navigation Animation - Para transiciones suaves
     implementation(libs.androidx.navigation.animation)
-    
-    # DEPENDENCIAS PARA FUNCIONALIDADES ESPECÍFICAS DEL CÓDIGO:
-    
-    # Compose Foundation avanzada - Para BorderStroke y efectos
+
+    //DEPENDENCIAS PARA FUNCIONALIDADES ESPECÍFICAS DEL CÓDIGO:
+
+    //Compose Foundation avanzada - Para BorderStroke y efectos
     implementation(libs.androidx.compose.foundation.border)
-    
-    # Layout Staggered Grid - Para layouts avanzados
+
+    //Layout Staggered Grid - Para layouts avanzados
     implementation(libs.androidx.compose.foundation.layout)
-    
-    # Accompanist específicos para funcionalidades detectadas
+
+    //Accompanist específicos para funcionalidades detectadas
     implementation(libs.accompanist.placeholder.material)
     implementation(libs.accompanist.navigation.animation)
     implementation(libs.accompanist.insets)
     implementation(libs.accompanist.insets.ui)
-    
-    # DEPENDENCIAS PARA DEBUGGING Y TESTING MEJORADO:
+
+    //DEPENDENCIAS PARA DEBUGGING Y TESTING MEJORADO:
     debugImplementation(libs.androidx.compose.ui.test.manifest.debug)
     androidTestImplementation(libs.androidx.compose.ui.test.junit4.android)
 }
