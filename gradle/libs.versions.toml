@@ -64,7 +64,7 @@ ui-window = "1.8.3"
 ui-util = "1.8.3"
 runtime-saveable = "1.8.3"
 foundation-text = "1.8.3"
-material3-adaptive = "1.7.8"
+# material3-adaptive = "1.7.8"
 animation-content = "1.8.3"
 lifecycle-livedata = "2.9.1"
 compose-foundation-lazy = "1.8.3"
@@ -162,8 +162,8 @@ accompanist-flowlayout = { group = "com.google.accompanist", name = "accompanist
 accompanist-swiperefresh = { group = "com.google.accompanist", name = "accompanist-swiperefresh", version.ref = "accompanist" }
 accompanist-placeholder-material = { group = "com.google.accompanist", name = "accompanist-placeholder-material", version.ref = "accompanist" }
 accompanist-navigation-animation = { group = "com.google.accompanist", name = "accompanist-navigation-animation", version.ref = "accompanist" }
-accompanist-insets = { group = "com.google.accompanist", name = "accompanist-insets", version.ref = "accompanist" }
-accompanist-insets-ui = { group = "com.google.accompanist", name = "accompanist-insets-ui", version.ref = "accompanist" }
+# accompanist-insets = { group = "com.google.accompanist", name = "accompanist-insets", version.ref = "accompanist" }
+# accompanist-insets-ui = { group = "com.google.accompanist", name = "accompanist-insets-ui", version.ref = "accompanist" }
 
 # Koin DI - Alternativa para EvidenciaViewModel
 koin-android = { group = "io.insert-koin", name = "koin-android", version.ref = "koin" }
@@ -202,7 +202,7 @@ androidx-compose-runtime-saveable = { group = "androidx.compose.runtime", name =
 androidx-compose-foundation-text = { group = "androidx.compose.foundation", name = "foundation", version.ref = "foundation-text" }
 
 # Material3 Adaptive - Para ExposedDropdownMenuBox advanced features
-androidx-compose-material3-adaptive = { group = "androidx.compose.material3", name = "material3-adaptive", version.ref = "material3-adaptive" }
+# androidx-compose-material3-adaptive = { group = "androidx.compose.material3", name = "material3-adaptive", version.ref = "material3-adaptive" }
 
 # Animation Content - Para AnimatedVisibility y content transitions
 androidx-compose-animation-content = { group = "androidx.compose.animation", name = "animation", version.ref = "animation-content" }
