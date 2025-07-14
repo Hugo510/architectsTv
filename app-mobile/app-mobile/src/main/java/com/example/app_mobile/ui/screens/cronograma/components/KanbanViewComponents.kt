@@ -43,23 +43,23 @@ class DragDropState {
     var dragPosition by mutableStateOf(Offset.Zero)
     var dragOffset by mutableStateOf(Offset.Zero)
     var dropTargetColumn by mutableStateOf<ProjectStatus?>(null)
-    
+
     fun startDrag(task: KanbanTask, position: Offset) {
         draggedTask = task
         dragPosition = position
         dragOffset = Offset.Zero
     }
-    
+
     fun updateDrag(offset: Offset) {
         dragOffset = offset
     }
-    
+
     fun endDrag() {
         draggedTask = null
         dragOffset = Offset.Zero
         dropTargetColumn = null
     }
-    
+
     fun setDropTarget(column: ProjectStatus?) {
         dropTargetColumn = column
     }
@@ -73,7 +73,7 @@ fun KanbanBoardView(
     modifier: Modifier = Modifier
 ) {
     val dragDropState = remember { DragDropState() }
-    
+
     // Convertir tareas a KanbanTask con estados de proyecto
     val kanbanTasks = remember(tasks) {
         tasks.map { task ->
@@ -83,7 +83,7 @@ fun KanbanBoardView(
             )
         }
     }
-    
+
     Card(
         modifier = modifier.fillMaxWidth()
     ) {
@@ -92,9 +92,9 @@ fun KanbanBoardView(
                 modifier = Modifier.padding(16.dp)
             ) {
                 KanbanViewHeader()
-                
+
                 Spacer(modifier = Modifier.height(16.dp))
-                
+
                 LazyRow(
                     horizontalArrangement = Arrangement.spacedBy(16.dp),
                     contentPadding = PaddingValues(horizontal = 8.dp)
@@ -105,8 +105,8 @@ fun KanbanBoardView(
                     ) { status ->
                         KanbanColumn(
                             status = status,
-                            tasks = kanbanTasks.filter { 
-                                it.projectStatus == status && it.task.id != dragDropState.draggedTask?.task?.id 
+                            tasks = kanbanTasks.filter {
+                                it.projectStatus == status && it.task.id != dragDropState.draggedTask?.task?.id
                             },
                             onTaskClick = onTaskClick,
                             dragDropState = dragDropState,
@@ -115,7 +115,7 @@ fun KanbanBoardView(
                     }
                 }
             }
-            
+
             // Overlay para la tarea siendo arrastrada
             dragDropState.draggedTask?.let { draggedTask ->
                 DraggedTaskOverlay(
@@ -155,7 +155,7 @@ private fun KanbanViewHeader() {
                     color = MaterialTheme.colorScheme.onPrimaryContainer
                 )
             }
-            
+
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 IconButton(
                     onClick = { /* TODO: Implementar configuración de columnas */ },
@@ -189,20 +189,20 @@ fun KanbanColumn(
 ) {
     val columnColor = getProjectStatusColor(status)
     val isDropTarget = dragDropState.dropTargetColumn == status
-    
+
     // Animación para el estado de drop
     val animatedElevation by animateDpAsState(
         targetValue = if (isDropTarget && dragDropState.draggedTask != null) 8.dp else 4.dp,
         animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy),
         label = "elevation_animation"
     )
-    
+
     val animatedAlpha by animateFloatAsState(
         targetValue = if (isDropTarget && dragDropState.draggedTask != null) 0.4f else 0.1f,
         animationSpec = tween(200),
         label = "alpha_animation"
     )
-    
+
     Card(
         modifier = modifier
             .width(300.dp)
@@ -242,9 +242,9 @@ fun KanbanColumn(
                 taskCount = tasks.size,
                 color = columnColor
             )
-            
+
             Spacer(modifier = Modifier.height(16.dp))
-            
+
             // Lista de tareas con mejor espaciado
             if (tasks.isEmpty()) {
                 KanbanEmptyState(status = status)
@@ -286,7 +286,7 @@ private fun KanbanColumnHeader(
                 fontSize = 20.sp,
                 modifier = Modifier.padding(end = 8.dp)
             )
-            
+
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = getProjectStatusDisplayName(status),
@@ -300,7 +300,7 @@ private fun KanbanColumnHeader(
                     color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
                 )
             }
-            
+
             // Badge con contador mejorado
             if (taskCount > 0) {
                 Card(
@@ -329,37 +329,37 @@ fun DraggableTaskCard(
     modifier: Modifier = Modifier
 ) {
     var isDragging by remember { mutableStateOf(false) }
-    
+
     val animatedElevation by animateDpAsState(
         targetValue = if (isDragging) 12.dp else 3.dp,
         animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy),
         label = "elevation_animation"
     )
-    
+
     val animatedAlpha by animateFloatAsState(
         targetValue = if (isDragging) 0.7f else 1f,
         animationSpec = tween(200),
         label = "alpha_animation"
     )
-    
+
     val animatedScale by animateFloatAsState(
         targetValue = if (isDragging) 1.02f else 1f,
         animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy),
         label = "scale_animation"
     )
-    
+
     Card(
         onClick = onClick,
         modifier = modifier
             .fillMaxWidth()
-            .graphicsLayer { 
+            .graphicsLayer {
                 scaleX = animatedScale
                 scaleY = animatedScale
-                alpha = animatedAlpha 
+                alpha = animatedAlpha
             }
             .pointerInput(kanbanTask.task.id) {
                 detectDragGesturesAfterLongPress(
-                    onDragStart = { offset -> 
+                    onDragStart = { offset ->
                         isDragging = true
                         dragDropState.startDrag(kanbanTask, offset)
                     },
@@ -385,13 +385,13 @@ fun DraggableTaskCard(
             modifier = Modifier.padding(14.dp)
         ) {
             KanbanTaskHeader(task = kanbanTask.task)
-            
-            if (kanbanTask.task.description != null) {
-                KanbanTaskDescription(description = kanbanTask.task.description)
+
+            kanbanTask.task.description?.let { desc ->
+                KanbanTaskDescription(description = desc)
             }
-            
+
             KanbanTaskFooter(task = kanbanTask.task)
-            
+
             if (kanbanTask.task.progress > 0) {
                 KanbanTaskProgress(
                     progress = kanbanTask.task.progress,
@@ -410,11 +410,11 @@ private fun DraggedTaskOverlay(
     Card(
         modifier = Modifier
             .width(260.dp)
-            .offset { 
+            .offset {
                 IntOffset(
                     x = position.x.roundToInt(),
                     y = position.y.roundToInt()
-                ) 
+                )
             }
             .shadow(12.dp, RoundedCornerShape(8.dp))
             .zIndex(10f),
@@ -433,7 +433,7 @@ private fun DraggedTaskOverlay(
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
-            
+
             task.task.description?.let { description ->
                 Text(
                     text = description,
@@ -443,7 +443,7 @@ private fun DraggedTaskOverlay(
                     overflow = TextOverflow.Ellipsis
                 )
             }
-            
+
             Surface(
                 shape = RoundedCornerShape(8.dp),
                 color = getPriorityColor(task.task.priority),
@@ -474,7 +474,7 @@ private fun KanbanTaskHeader(task: ScheduleTask) {
             fontWeight = FontWeight.Bold,
             modifier = Modifier.weight(1f)
         )
-        
+
         // Indicador de prioridad
         if (task.priority == TaskPriority.CRITICAL || task.priority == TaskPriority.HIGH) {
             Box(
@@ -514,7 +514,7 @@ private fun KanbanTaskFooter(task: ScheduleTask) {
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
-        
+
         // Prioridad badge
         Surface(
             shape = RoundedCornerShape(8.dp),
@@ -546,7 +546,7 @@ private fun KanbanTaskProgress(
             color = getProjectStatusColor(status),
             trackColor = MaterialTheme.colorScheme.surfaceVariant
         )
-        
+
         Text(
             text = "${(progress * 100).toInt()}%",
             fontSize = 10.sp,
