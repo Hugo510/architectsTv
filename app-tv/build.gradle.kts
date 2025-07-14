@@ -3,7 +3,6 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.ksp)
-    alias(libs.plugins.hilt.android)
 }
 
 android {
@@ -51,7 +50,7 @@ dependencies {
     implementation(libs.androidx.ui)
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
-    
+
     // Asegurar que tenemos las dependencias de animación
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.material3)
@@ -86,7 +85,7 @@ dependencies {
     implementation(libs.play.services.cast.framework)
 
     // Shared Domain Module
-    implementation(project(":shared-domain"))
+    //implementation(project(":shared-domain"))
     
     implementation(project(":feature-ui-tv:feature-ui-tv"))
     implementation(project(":feature-projection:feature-projection"))

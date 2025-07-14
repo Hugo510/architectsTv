@@ -3,7 +3,6 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.ksp)
-    alias(libs.plugins.hilt.android)
     kotlin("plugin.serialization") version libs.versions.kotlin.get()
 }
 
@@ -152,10 +151,6 @@ dependencies {
     
     // Material3 Adaptive - Para ExposedDropdownMenuBox avanzado
     // implementation(libs.androidx.compose.material3.adaptive)
-    
-    // Koin DI - Para EvidenciaViewModel como se muestra en el código
-    implementation(libs.koin.android)
-    implementation(libs.koin.androidx.compose)
     
     // Koin BOM y core
     implementation(platform(libs.koin.bom))

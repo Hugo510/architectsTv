@@ -166,8 +166,7 @@ accompanist-navigation-animation = { group = "com.google.accompanist", name = "a
 # accompanist-insets-ui = { group = "com.google.accompanist", name = "accompanist-insets-ui", version.ref = "accompanist" }
 
 # Koin DI - Alternativa para EvidenciaViewModel
-koin-android = { group = "io.insert-koin", name = "koin-android", version.ref = "koin" }
-koin-androidx-compose = { group = "io.insert-koin", name = "koin-androidx-compose", version.ref = "koin" }
+
 # Koin BOM y core
 koin-bom = { module = "io.insert-koin:koin-bom", version.ref = "koin-bom" }
 koin-core = { module = "io.insert-koin:koin-core" }
@@ -240,8 +239,3 @@ kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 android-library = { id = "com.android.library", version.ref = "agp" }
 ksp = { id = "com.google.devtools.ksp", version = "2.0.21-1.0.27" }
-# hilt-android = { id = "com.google.dagger.hilt.android", version.ref = "hiltAndroid" }
-
-# Compose Foundation avanzada - Para BorderStroke y efectos
-# No agregar androidx.compose.foundation.border, usar foundation
-# No agregar androidx.compose.foundation.border, usar foundation
