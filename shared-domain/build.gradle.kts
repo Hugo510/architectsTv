@@ -11,8 +11,6 @@ android {
     defaultConfig {
         minSdk = 24
         targetSdk = 35
-        versionCode = 1
-        versionName = "1.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -49,8 +47,10 @@ dependencies {
     testImplementation(libs.junit)
     testImplementation(libs.kotlinx.coroutines.test)
 
-    
-    // Testing
-    testImplementation(libs.junit)
+    // Desugaring para soporte de nuevas APIs de Java en Android
+    coreLibraryDesugaring(libs.android.desugar.jdk.libs)
+}
+    testImplementation(libs.kotlinx.coroutines.test)
+}
     testImplementation(libs.kotlinx.coroutines.test)
 }
