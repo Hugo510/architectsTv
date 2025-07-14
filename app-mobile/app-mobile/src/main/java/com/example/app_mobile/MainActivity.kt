@@ -15,6 +15,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.IntOffset
+import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -124,7 +125,7 @@ fun MobileApp() {
                         )
                     },
                     label = "home_animation"
-                ) {
+                ) { _ ->
                     HomeScreen(
                         repository = managementRepository, // Inyectar repository compartido
                         onNavigateToProjects = { 
@@ -189,7 +190,7 @@ fun MobileApp() {
                         ) + fadeOut()
                     },
                     label = "management_animation"
-                ) {
+                ) { _ ->
                     ManagementScreen(
                         viewModel = managementViewModel,
                         onNavigateToHome = { 
@@ -279,7 +280,7 @@ fun MobileApp() {
                         ) + fadeOut()
                     },
                     label = "cronograma_animation"
-                ) {
+                ) { _ ->
                     CronogramaScreen(
                         onNavigateToTaskDetail = { taskId ->
                             navController.navigate("task_detail/$taskId")
@@ -383,7 +384,7 @@ fun MobileApp() {
                         ) + fadeOut()
                     },
                     label = "planos_animation"
-                ) {
+                ) { _ ->
                     PlanosScreen(
                         onNavigateToHome = { 
                             navController.navigate("home") {
@@ -427,7 +428,7 @@ fun MobileApp() {
                         ) + fadeOut()
                     },
                     label = "evidencia_animation"
-                ) {
+                ) { _ ->
                     EvidenciaScreen(
                         viewModel = evidenciaViewModel,
                         onNavigateToProjectDetail = { projectId ->
