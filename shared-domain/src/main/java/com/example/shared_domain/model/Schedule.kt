@@ -120,12 +120,3 @@ data class ScheduleMetadata(
     val version: Int = 1,
     val lastModifiedBy: String? = null
 )
-
-@Serializable
-enum class ProjectStatus {
-    NOT_STARTED,
-    IN_PROGRESS,
-    COMPLETED,
-    ON_HOLD,
-    CANCELLED
-}
