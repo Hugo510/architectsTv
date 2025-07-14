@@ -387,3 +387,5 @@ fun CreateProjectScreen(
             Spacer(modifier = Modifier.height(80.dp))
         }
     }
+}
+
