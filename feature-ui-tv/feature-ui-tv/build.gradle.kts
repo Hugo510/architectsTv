@@ -2,7 +2,7 @@ plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
-    // alias(libs.plugins.kotlin.kapt)
+    // No hay referencias a kapt, solo ksp
     alias(libs.plugins.ksp)
 }
 

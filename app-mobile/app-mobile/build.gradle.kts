@@ -157,6 +157,10 @@ dependencies {
     implementation(libs.koin.android)
     implementation(libs.koin.androidx.compose)
     
+    // Koin BOM y core
+    implementation(platform(libs.koin.bom))
+    implementation(libs.koin.core)
+
     // Date/Time support
     coreLibraryDesugaring(libs.android.desugar.jdk.libs)
     
