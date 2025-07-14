@@ -49,8 +49,7 @@ dependencies {
 
     // Desugaring para soporte de nuevas APIs de Java en Android
     coreLibraryDesugaring(libs.android.desugar.jdk.libs)
-}
+
     testImplementation(libs.kotlinx.coroutines.test)
-}
-    testImplementation(libs.kotlinx.coroutines.test)
+
 }
