@@ -222,7 +222,7 @@ dependencies {
     //DEPENDENCIAS PARA FUNCIONALIDADES ESPECÍFICAS DEL CÓDIGO:
 
     //Compose Foundation avanzada - Para BorderStroke y efectos
-    implementation(libs.androidx.compose.foundation.border)
+    implementation(libs.androidx.compose.foundation)
 
     //Layout Staggered Grid - Para layouts avanzados
     implementation(libs.androidx.compose.foundation.layout)
