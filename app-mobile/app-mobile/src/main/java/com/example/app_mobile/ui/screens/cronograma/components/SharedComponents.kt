@@ -2,8 +2,11 @@ package com.example.app_mobile.ui.screens.cronograma.components
 
 import androidx.compose.animation.*
 import androidx.compose.animation.core.*
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -17,8 +20,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -197,7 +200,7 @@ fun ScheduleInfoCard(
             )
             
             LinearProgressIndicator(
-                progress = { animatedProgress },
+                progress = animatedProgress,
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(8.dp)
@@ -312,7 +315,7 @@ private fun ViewSelectorButton(
     selected: Boolean,
     onClick: () -> Unit,
     label: String,
-    icon: androidx.compose.ui.graphics.vector.ImageVector,
+    icon: ImageVector,
     modifier: Modifier = Modifier
 ) {
     val animatedScale by animateFloatAsState(
@@ -441,7 +444,7 @@ private fun ProjectStatusLegendCard(
         colors = CardDefaults.cardColors(
             containerColor = color.copy(alpha = 0.2f)
         ),
-        border = androidx.compose.foundation.BorderStroke(1.dp, color.copy(alpha = 0.5f)),
+        border = BorderStroke(1.dp, color.copy(alpha = 0.5f)),
         modifier = Modifier.width(100.dp)
     ) {
         Column(
@@ -610,9 +613,9 @@ private fun MilestoneCard(
                     color = MaterialTheme.colorScheme.onSurface
                 )
                 
-                if (milestone.description != null) {
+                milestone.description?.let { description ->
                     Text(
-                        text = milestone.description,
+                        text = description,
                         fontSize = 13.sp,
                         color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
                         modifier = Modifier.padding(top = 2.dp),
@@ -622,7 +625,7 @@ private fun MilestoneCard(
                 
                 Text(
                     text = if (milestone.isCompleted) 
-                        "✅ Completado: ${milestone.completedDate}"
+                        "✅ Completado: ${milestone.completedDate ?: "Sin fecha"}"
                     else 
                         "📅 Fecha objetivo: ${milestone.targetDate}",
                     fontSize = 12.sp,

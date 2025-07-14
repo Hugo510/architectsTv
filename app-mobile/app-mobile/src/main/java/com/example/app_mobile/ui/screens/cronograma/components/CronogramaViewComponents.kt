@@ -3,8 +3,13 @@ package com.example.app_mobile.ui.screens.cronograma.components
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -22,6 +27,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.shared_domain.model.*
@@ -51,7 +57,7 @@ fun CronogramaTimelineView(
             LazyColumn(
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                tasksByPhase.forEach { (phase, phaseTasks) =>
+                tasksByPhase.forEach { (phase, phaseTasks) ->
                     item(key = phase.name) {
                         ProjectPhaseSection(
                             phase = phase,
@@ -149,7 +155,7 @@ private fun ProjectPhaseSection(
         colors = CardDefaults.cardColors(
             containerColor = phaseColor.copy(alpha = 0.05f)
         ),
-        border = androidx.compose.foundation.BorderStroke(
+        border = BorderStroke(
             width = 2.dp,
             color = phaseColor.copy(alpha = 0.3f)
         ),
@@ -224,7 +230,7 @@ private fun PhaseHeader(
             colors = CardDefaults.cardColors(
                 containerColor = phaseColor.copy(alpha = 0.2f)
             ),
-            border = androidx.compose.foundation.BorderStroke(2.dp, phaseColor)
+            border = BorderStroke(2.dp, phaseColor)
         ) {
             Box(
                 contentAlignment = Alignment.Center,
@@ -330,7 +336,7 @@ fun TaskTimelineCard(
             containerColor = MaterialTheme.colorScheme.surface
         ),
         elevation = CardDefaults.cardElevation(defaultElevation = 3.dp),
-        border = androidx.compose.foundation.BorderStroke(
+        border = BorderStroke(
             width = 1.dp,
             color = taskStatusColor.copy(alpha = 0.3f)
         )
@@ -445,7 +451,135 @@ private fun PhaseEmptyState(phase: ProjectStatus) {
     }
 }
 
-// Helper functions
+@Composable
+private fun TaskHeader(task: ScheduleTask) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            text = task.name,
+            fontSize = 14.sp,
+            fontWeight = FontWeight.Medium,
+            modifier = Modifier.weight(1f)
+        )
+        
+        Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+            if (task.priority == TaskPriority.CRITICAL || task.priority == TaskPriority.HIGH) {
+                PriorityChip(priority = task.priority)
+            }
+            
+            TaskStatusChip(status = task.status)
+        }
+    }
+}
+
+@Composable
+private fun TaskDescription(description: String) {
+    Text(
+        text = description,
+        fontSize = 12.sp,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+        modifier = Modifier.padding(top = 4.dp),
+        maxLines = 2
+    )
+}
+
+@Composable
+private fun TaskMetadata(task: ScheduleTask) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 6.dp),
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        Text(
+            text = "📅 ${task.startDate} - ${task.endDate}",
+            fontSize = 11.sp,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+        
+        if (task.assignedTo.isNotEmpty()) {
+            Text(
+                text = "👤 ${task.assignedTo.first()}",
+                fontSize = 11.sp,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
+    }
+}
+
+@Composable
+private fun TaskProgress(
+    progress: Double,
+    phase: ProjectStatus
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 6.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        LinearProgressIndicator(
+            progress = { progress.toFloat() },
+            modifier = Modifier.weight(1f),
+            color = getProjectStatusColor(phase)
+        )
+        
+        Spacer(modifier = Modifier.width(8.dp))
+        
+        Text(
+            text = "${(progress * 100).toInt()}%",
+            fontSize = 11.sp,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+    }
+}
+
+@Composable
+private fun PriorityChip(priority: TaskPriority) {
+    Surface(
+        shape = RoundedCornerShape(6.dp),
+        color = getPriorityColor(priority)
+    ) {
+        Text(
+            text = getDisplayPriority(priority),
+            modifier = Modifier.padding(horizontal = 4.dp, vertical = 2.dp),
+            fontSize = 9.sp,
+            color = Color.White,
+            fontWeight = FontWeight.Medium
+        )
+    }
+}
+
+@Composable
+private fun TaskStatusChip(status: TaskStatus) {
+    Surface(
+        shape = RoundedCornerShape(6.dp),
+        color = getTaskStatusColor(status)
+    ) {
+        Text(
+            text = getDisplayStatus(status),
+            modifier = Modifier.padding(horizontal = 4.dp, vertical = 2.dp),
+            fontSize = 9.sp,
+            color = Color.White,
+            fontWeight = FontWeight.Medium
+        )
+    }
+}
+
+// Helper functions - moved to end and organized
+private fun mapTaskCategoryToProjectStatus(category: TaskCategory): ProjectStatus {
+    return when (category) {
+        TaskCategory.DESIGN -> ProjectStatus.DESIGN
+        TaskCategory.PERMITS -> ProjectStatus.PERMITS_REVIEW
+        TaskCategory.CONSTRUCTION, TaskCategory.INSPECTION -> ProjectStatus.CONSTRUCTION
+        TaskCategory.DELIVERY -> ProjectStatus.DELIVERY
+        else -> ProjectStatus.DESIGN
+    }
+}
+
 private fun getPhaseIcon(phase: ProjectStatus): String {
     return when (phase) {
         ProjectStatus.DESIGN -> "📐"
@@ -455,22 +589,58 @@ private fun getPhaseIcon(phase: ProjectStatus): String {
     }
 }
 
-// ...existing code...
+private fun getProjectStatusColor(status: ProjectStatus): Color {
+    return when (status) {
+        ProjectStatus.DESIGN -> Color(0xFF9CA3FF)
+        ProjectStatus.PERMITS_REVIEW -> Color(0xFFFBB6CE)
+        ProjectStatus.CONSTRUCTION -> Color(0xFF68D391)
+        ProjectStatus.DELIVERY -> Color(0xFFA0AEC0)
+    }
+}
+
+private fun getProjectStatusDisplayName(status: ProjectStatus): String {
+    return when (status) {
+        ProjectStatus.DESIGN -> "Diseño"
+        ProjectStatus.PERMITS_REVIEW -> "Revisión de Permisos"
+        ProjectStatus.CONSTRUCTION -> "Construcción"
+        ProjectStatus.DELIVERY -> "Entrega"
+    }
+}
+
+private fun getTaskStatusColor(status: TaskStatus): Color {
+    return when (status) {
+        TaskStatus.NOT_STARTED -> Color(0xFF2196F3)
+        TaskStatus.IN_PROGRESS -> Color(0xFFFF9800)
+        TaskStatus.COMPLETED -> Color(0xFF4CAF50)
+        TaskStatus.ON_HOLD -> Color(0xFFF44336)
+        TaskStatus.CANCELLED -> Color(0xFF9E9E9E)
+    }
+}
+
+private fun getPriorityColor(priority: TaskPriority): Color {
+    return when (priority) {
+        TaskPriority.LOW -> Color(0xFF4CAF50)
+        TaskPriority.MEDIUM -> Color(0xFFFF9800)
+        TaskPriority.HIGH -> Color(0xFFFF5722)
+        TaskPriority.CRITICAL -> Color(0xFFF44336)
+    }
+}
+
+private fun getDisplayStatus(status: TaskStatus): String {
+    return when (status) {
+        TaskStatus.NOT_STARTED -> "Por Iniciar"
+        TaskStatus.IN_PROGRESS -> "En Proceso"
+        TaskStatus.COMPLETED -> "Completado"
+        TaskStatus.ON_HOLD -> "En Pausa"
+        TaskStatus.CANCELLED -> "Cancelado"
+    }
+}
+
 private fun getDisplayPriority(priority: TaskPriority): String {
     return when (priority) {
         TaskPriority.LOW -> "Baja"
         TaskPriority.MEDIUM -> "Media"
         TaskPriority.HIGH -> "Alta"
         TaskPriority.CRITICAL -> "Crítica"
-    }
-}
-
-private fun mapTaskCategoryToProjectStatus(category: TaskCategory): ProjectStatus {
-    return when (category) {
-        TaskCategory.DESIGN -> ProjectStatus.DESIGN
-        TaskCategory.PERMITS -> ProjectStatus.PERMITS_REVIEW
-        TaskCategory.CONSTRUCTION, TaskCategory.INSPECTION -> ProjectStatus.CONSTRUCTION
-        TaskCategory.DELIVERY -> ProjectStatus.DELIVERY
-        else -> ProjectStatus.DESIGN
     }
 }

@@ -1,5 +1,7 @@
 package com.example.app_mobile.ui.screens.cronograma.components
 
+import androidx.compose.animation.core.*
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectDragGesturesAfterLongPress
 import androidx.compose.foundation.layout.*
@@ -7,26 +9,61 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import com.example.shared_domain.model.*
+import kotlin.math.roundToInt
 
 // Modelo de tarea extendido para incluir estado de proyecto
 data class KanbanTask(
     val task: ScheduleTask,
     val projectStatus: ProjectStatus
 )
+
+// Estado global para drag & drop
+class DragDropState {
+    var draggedTask by mutableStateOf<KanbanTask?>(null)
+    var dragPosition by mutableStateOf(Offset.Zero)
+    var dragOffset by mutableStateOf(Offset.Zero)
+    var dropTargetColumn by mutableStateOf<ProjectStatus?>(null)
+    
+    fun startDrag(task: KanbanTask, position: Offset) {
+        draggedTask = task
+        dragPosition = position
+        dragOffset = Offset.Zero
+    }
+    
+    fun updateDrag(offset: Offset) {
+        dragOffset = offset
+    }
+    
+    fun endDrag() {
+        draggedTask = null
+        dragOffset = Offset.Zero
+        dropTargetColumn = null
+    }
+    
+    fun setDropTarget(column: ProjectStatus?) {
+        dropTargetColumn = column
+    }
+}
 
 @Composable
 fun KanbanBoardView(
@@ -35,9 +72,7 @@ fun KanbanBoardView(
     onTaskMove: (ScheduleTask, ProjectStatus) -> Unit = { _, _ -> },
     modifier: Modifier = Modifier
 ) {
-    // Estado para manejar el drag & drop
-    var draggedTask by remember { mutableStateOf<KanbanTask?>(null) }
-    var dragOffset by remember { mutableStateOf(Pair(0f, 0f)) }
+    val dragDropState = remember { DragDropState() }
     
     // Convertir tareas a KanbanTask con estados de proyecto
     val kanbanTasks = remember(tasks) {
@@ -52,55 +87,41 @@ fun KanbanBoardView(
     Card(
         modifier = modifier.fillMaxWidth()
     ) {
-        Column(
-            modifier = Modifier.padding(16.dp)
-        ) {
-            KanbanViewHeader()
-            
-            Spacer(modifier = Modifier.height(16.dp))
-            
-            LazyRow(
-                horizontalArrangement = Arrangement.spacedBy(16.dp),
-                contentPadding = PaddingValues(horizontal = 8.dp)
+        Box {
+            Column(
+                modifier = Modifier.padding(16.dp)
             ) {
-                items(
-                    items = ProjectStatus.values().toList(),
-                    key = { it.name }
-                ) { status ->
-                    KanbanColumn(
-                        status = status,
-                        tasks = kanbanTasks.filter { it.projectStatus == status },
-                        onTaskClick = onTaskClick,
-                        onTaskMove = { task, newStatus -> 
-                            onTaskMove(task.task, newStatus)
-                        },
-                        draggedTask = draggedTask,
-                        onDragStart = { task ->
-                            draggedTask = task
-                        },
-                        onDragEnd = {
-                            draggedTask = null
-                        },
-                        onDrop = { droppedTask, targetStatus ->
-                            onTaskMove(droppedTask.task, targetStatus)
-                            draggedTask = null
-                        }
-                    )
+                KanbanViewHeader()
+                
+                Spacer(modifier = Modifier.height(16.dp))
+                
+                LazyRow(
+                    horizontalArrangement = Arrangement.spacedBy(16.dp),
+                    contentPadding = PaddingValues(horizontal = 8.dp)
+                ) {
+                    items(
+                        items = ProjectStatus.values().toList(),
+                        key = { it.name }
+                    ) { status ->
+                        KanbanColumn(
+                            status = status,
+                            tasks = kanbanTasks.filter { 
+                                it.projectStatus == status && it.task.id != dragDropState.draggedTask?.task?.id 
+                            },
+                            onTaskClick = onTaskClick,
+                            dragDropState = dragDropState,
+                            onTaskMove = onTaskMove
+                        )
+                    }
                 }
             }
             
             // Overlay para la tarea siendo arrastrada
-            if (draggedTask != null) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .zIndex(1f)
-                ) {
-                    DraggedTaskOverlay(
-                        task = draggedTask!!,
-                        offset = dragOffset
-                    )
-                }
+            dragDropState.draggedTask?.let { draggedTask ->
+                DraggedTaskOverlay(
+                    task = draggedTask,
+                    position = dragDropState.dragPosition + dragDropState.dragOffset
+                )
             }
         }
     }
@@ -162,25 +183,22 @@ fun KanbanColumn(
     status: ProjectStatus,
     tasks: List<KanbanTask>,
     onTaskClick: (ScheduleTask) -> Unit,
-    onTaskMove: (KanbanTask, ProjectStatus) -> Unit,
-    draggedTask: KanbanTask?,
-    onDragStart: (KanbanTask) -> Unit,
-    onDragEnd: () -> Unit,
-    onDrop: (KanbanTask, ProjectStatus) -> Unit,
+    dragDropState: DragDropState,
+    onTaskMove: (ScheduleTask, ProjectStatus) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    var isDropTarget by remember { mutableStateOf(false) }
     val columnColor = getProjectStatusColor(status)
+    val isDropTarget = dragDropState.dropTargetColumn == status
     
     // Animación para el estado de drop
     val animatedElevation by animateDpAsState(
-        targetValue = if (isDropTarget && draggedTask != null) 8.dp else 4.dp,
+        targetValue = if (isDropTarget && dragDropState.draggedTask != null) 8.dp else 4.dp,
         animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy),
         label = "elevation_animation"
     )
     
     val animatedAlpha by animateFloatAsState(
-        targetValue = if (isDropTarget && draggedTask != null) 0.4f else 0.1f,
+        targetValue = if (isDropTarget && dragDropState.draggedTask != null) 0.4f else 0.1f,
         animationSpec = tween(200),
         label = "alpha_animation"
     )
@@ -191,25 +209,28 @@ fun KanbanColumn(
             .heightIn(min = 200.dp)
             .pointerInput(status) {
                 detectDragGesturesAfterLongPress(
-                    onDragStart = { },
+                    onDragStart = { _ ->
+                        dragDropState.setDropTarget(status)
+                    },
                     onDragEnd = {
-                        if (isDropTarget && draggedTask != null) {
-                            onDrop(draggedTask, status)
+                        val draggedTask = dragDropState.draggedTask
+                        if (isDropTarget && draggedTask != null && draggedTask.projectStatus != status) {
+                            onTaskMove(draggedTask.task, status)
                         }
-                        isDropTarget = false
-                        onDragEnd()
+                        dragDropState.endDrag()
                     }
-                ) { _, _ ->
-                    isDropTarget = true
+                ) { _, dragAmount ->
+                    dragDropState.updateDrag(dragDropState.dragOffset + Offset(dragAmount.x, dragAmount.y))
+                    dragDropState.setDropTarget(status)
                 }
             },
         colors = CardDefaults.cardColors(
             containerColor = columnColor.copy(alpha = animatedAlpha)
         ),
-        border = if (isDropTarget && draggedTask != null) {
-            androidx.compose.foundation.BorderStroke(3.dp, columnColor)
+        border = if (isDropTarget && dragDropState.draggedTask != null) {
+            BorderStroke(3.dp, columnColor)
         } else {
-            androidx.compose.foundation.BorderStroke(1.dp, columnColor.copy(alpha = 0.3f))
+            BorderStroke(1.dp, columnColor.copy(alpha = 0.3f))
         },
         elevation = CardDefaults.cardElevation(defaultElevation = animatedElevation)
     ) {
@@ -229,14 +250,12 @@ fun KanbanColumn(
                 KanbanEmptyState(status = status)
             } else {
                 tasks.forEach { kanbanTask ->
-                    if (draggedTask?.task?.id != kanbanTask.task.id) {
-                        DraggableTaskCard(
-                            kanbanTask = kanbanTask,
-                            onClick = { onTaskClick(kanbanTask.task) },
-                            onDragStart = { onDragStart(kanbanTask) },
-                            modifier = Modifier.padding(bottom = 8.dp)
-                        )
-                    }
+                    DraggableTaskCard(
+                        kanbanTask = kanbanTask,
+                        onClick = { onTaskClick(kanbanTask.task) },
+                        dragDropState = dragDropState,
+                        modifier = Modifier.padding(bottom = 8.dp)
+                    )
                 }
             }
         }
@@ -253,7 +272,7 @@ private fun KanbanColumnHeader(
         colors = CardDefaults.cardColors(
             containerColor = color.copy(alpha = 0.2f)
         ),
-        border = androidx.compose.foundation.BorderStroke(1.dp, color.copy(alpha = 0.5f))
+        border = BorderStroke(1.dp, color.copy(alpha = 0.5f))
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -306,7 +325,7 @@ private fun KanbanColumnHeader(
 fun DraggableTaskCard(
     kanbanTask: KanbanTask,
     onClick: () -> Unit,
-    onDragStart: () -> Unit,
+    dragDropState: DragDropState,
     modifier: Modifier = Modifier
 ) {
     var isDragging by remember { mutableStateOf(false) }
@@ -333,24 +352,29 @@ fun DraggableTaskCard(
         onClick = onClick,
         modifier = modifier
             .fillMaxWidth()
-            .scale(animatedScale)
-            .graphicsLayer { alpha = animatedAlpha }
+            .graphicsLayer { 
+                scaleX = animatedScale
+                scaleY = animatedScale
+                alpha = animatedAlpha 
+            }
             .pointerInput(kanbanTask.task.id) {
                 detectDragGesturesAfterLongPress(
-                    onDragStart = { 
+                    onDragStart = { offset -> 
                         isDragging = true
-                        onDragStart()
+                        dragDropState.startDrag(kanbanTask, offset)
                     },
                     onDragEnd = {
                         isDragging = false
                     }
-                ) { _, _ -> }
+                ) { _, dragAmount ->
+                    dragDropState.updateDrag(dragDropState.dragOffset + Offset(dragAmount.x, dragAmount.y))
+                }
             },
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surface
         ),
         elevation = CardDefaults.cardElevation(defaultElevation = animatedElevation),
-        border = androidx.compose.foundation.BorderStroke(
+        border = BorderStroke(
             width = if (isDragging) 2.dp else 1.dp,
             color = getProjectStatusColor(kanbanTask.projectStatus).copy(
                 alpha = if (isDragging) 0.8f else 0.3f
@@ -381,17 +405,23 @@ fun DraggableTaskCard(
 @Composable
 private fun DraggedTaskOverlay(
     task: KanbanTask,
-    offset: Pair<Float, Float>
+    position: Offset
 ) {
     Card(
         modifier = Modifier
             .width(260.dp)
-            .offset(offset.first.dp, offset.second.dp)
-            .shadow(8.dp, RoundedCornerShape(8.dp))
-            .zIndex(1f),
+            .offset { 
+                IntOffset(
+                    x = position.x.roundToInt(),
+                    y = position.y.roundToInt()
+                ) 
+            }
+            .shadow(12.dp, RoundedCornerShape(8.dp))
+            .zIndex(10f),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.9f)
-        )
+        ),
+        border = BorderStroke(2.dp, MaterialTheme.colorScheme.primary)
     ) {
         Column(
             modifier = Modifier.padding(12.dp)
@@ -399,15 +429,32 @@ private fun DraggedTaskOverlay(
             Text(
                 text = task.task.name,
                 fontSize = 14.sp,
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.Bold,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
             )
             
-            if (task.task.description != null) {
+            task.task.description?.let { description ->
                 Text(
-                    text = task.task.description,
+                    text = description,
                     fontSize = 12.sp,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    maxLines = 1
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+            }
+            
+            Surface(
+                shape = RoundedCornerShape(8.dp),
+                color = getPriorityColor(task.task.priority),
+                modifier = Modifier.padding(top = 4.dp)
+            ) {
+                Text(
+                    text = getDisplayPriority(task.task.priority),
+                    modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
+                    fontSize = 10.sp,
+                    color = Color.White,
+                    fontWeight = FontWeight.Medium
                 )
             }
         }
@@ -447,7 +494,8 @@ private fun KanbanTaskDescription(description: String) {
         fontSize = 12.sp,
         color = MaterialTheme.colorScheme.onSurfaceVariant,
         modifier = Modifier.padding(vertical = 6.dp),
-        maxLines = 2
+        maxLines = 2,
+        overflow = TextOverflow.Ellipsis
     )
 }
 
@@ -495,14 +543,17 @@ private fun KanbanTaskProgress(
         LinearProgressIndicator(
             progress = { progress.toFloat() },
             modifier = Modifier.fillMaxWidth(),
-            color = getProjectStatusColor(status)
+            color = getProjectStatusColor(status),
+            trackColor = MaterialTheme.colorScheme.surfaceVariant
         )
         
         Text(
             text = "${(progress * 100).toInt()}%",
             fontSize = 10.sp,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.align(Alignment.End).padding(top = 2.dp)
+            modifier = Modifier
+                .align(Alignment.End)
+                .padding(top = 2.dp)
         )
     }
 }

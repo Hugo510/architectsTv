@@ -141,4 +141,3 @@ data class ProjectMetadata(
         require(version > 0) { "Version must be positive" }
     }
 }
-}
