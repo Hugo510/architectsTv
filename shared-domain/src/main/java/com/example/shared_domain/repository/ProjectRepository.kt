@@ -172,15 +172,55 @@ data class GalleryProject(
     val imageUrl: String,
     val rating: Double,
     val reviewCount: Int,
-    val completedDate: String,
+    val completedDate: String, // ISO 8601 format
     val architect: String,
     val area: String,
     val isFavorite: Boolean = false,
     val cardHeight: Int = 280,
-    // Campos adicionales para integridad con Evidence
-    val projectId: String? = null,
-    val evidenceIds: List<String> = emptyList(),
-    val lastUpdated: String = "",
+    // Campos para integridad con otros modelos
+    val projectId: String? = null, // Referencia al proyecto original
+    val evidenceIds: List<String> = emptyList(), // Lista de evidencias asociadas
+    val lastUpdated: String, // ISO 8601 format
     val category: EvidenceCategory? = null,
-    val status: ProjectStatus = ProjectStatus.DELIVERY // Proyectos en galería están completados
-)
+    val status: ProjectStatus = ProjectStatus.DELIVERY, // Proyectos en galería están completados
+    val metadata: GalleryProjectMetadata? = null
+) {
+    init {
+        require(id.isNotBlank()) { "Gallery project ID cannot be blank" }
+        require(name.isNotBlank()) { "Gallery project name cannot be blank" }
+        require(description.isNotBlank()) { "Gallery project description cannot be blank" }
+        require(style.isNotBlank()) { "Gallery project style cannot be blank" }
+        require(location.isNotBlank()) { "Gallery project location cannot be blank" }
+        require(architect.isNotBlank()) { "Gallery project architect cannot be blank" }
+        require(area.isNotBlank()) { "Gallery project area cannot be blank" }
+        require(rating in 0.0..5.0) { "Rating must be between 0.0 and 5.0" }
+        require(reviewCount >= 0) { "Review count cannot be negative" }
+        require(cardHeight > 0) { "Card height must be positive" }
+        require(completedDate.isNotBlank()) { "Completed date cannot be blank" }
+        require(lastUpdated.isNotBlank()) { "Last updated cannot be blank" }
+    }
+    
+    val isValidProject: Boolean get() = projectId?.isNotBlank() == true
+    val hasEvidence: Boolean get() = evidenceIds.isNotEmpty()
+    val averageRating: String get() = String.format("%.1f", rating)
+}
+
+@kotlinx.serialization.Serializable
+data class GalleryProjectMetadata(
+    val createdAt: String, // ISO 8601 format
+    val updatedAt: String, // ISO 8601 format
+    val version: Int = 1,
+    val tags: List<String> = emptyList(),
+    val viewCount: Int = 0,
+    val shareCount: Int = 0,
+    val featured: Boolean = false,
+    val verified: Boolean = false
+) {
+    init {
+        require(createdAt.isNotBlank()) { "Created at cannot be blank" }
+        require(updatedAt.isNotBlank()) { "Updated at cannot be blank" }
+        require(version > 0) { "Version must be positive" }
+        require(viewCount >= 0) { "View count cannot be negative" }
+        require(shareCount >= 0) { "Share count cannot be negative" }
+    }
+}

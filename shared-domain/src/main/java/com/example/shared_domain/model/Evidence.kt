@@ -13,11 +13,19 @@ data class Evidence(
     val media: EvidenceMedia,
     val location: EvidenceLocation? = null,
     val capturedBy: String,
-    val capturedAt: String,
+    val capturedAt: String, // ISO 8601 format
     val tags: List<String> = emptyList(),
     val status: EvidenceStatus = EvidenceStatus.ACTIVE,
     val metadata: EvidenceMetadata
-)
+) {
+    init {
+        require(id.isNotBlank()) { "Evidence ID cannot be blank" }
+        require(projectId.isNotBlank()) { "Project ID cannot be blank" }
+        require(title.isNotBlank()) { "Evidence title cannot be blank" }
+        require(capturedBy.isNotBlank()) { "Captured by cannot be blank" }
+        require(capturedAt.isNotBlank()) { "Captured at cannot be blank" }
+    }
+}
 
 @Serializable
 enum class EvidenceType {
@@ -60,7 +68,12 @@ data class EvidenceMedia(
     val files: List<MediaFile>,
     val thumbnailUrl: String? = null,
     val duration: Int? = null // for video/audio in seconds
-)
+) {
+    init {
+        require(files.isNotEmpty()) { "Evidence must have at least one media file" }
+        require(duration?.let { it > 0 } ?: true) { "Duration must be positive if specified" }
+    }
+}
 
 @Serializable
 data class MediaFile(
@@ -70,28 +83,11 @@ data class MediaFile(
     val size: Long,
     val mimeType: String,
     val width: Int? = null,
-    val height: Int? = null
-)
-
-@Serializable
-data class EvidenceLocation(
-    val area: String,
-    val reference: String? = null,
-    val coordinates: String? = null
-)
-
-@Serializable
-data class EvidenceMetadata(
-    val createdAt: String,
-    val updatedAt: String,
-    val version: Int = 1,
-    val checksum: String? = null
-
-    val width: Int? = null,
     val height: Int? = null,
     val duration: Int? = null // seconds for video/audio
 ) {
     init {
+        require(id.isNotBlank()) { "File ID cannot be blank" }
         require(fileName.isNotBlank()) { "File name cannot be blank" }
         require(url.isNotBlank()) { "File URL cannot be blank" }
         require(size > 0) { "File size must be positive" }
@@ -135,22 +131,35 @@ data class EvidenceLocation(
 
 @Serializable
 data class EvidenceMetadata(
-    val createdAt: String,
-    val updatedAt: String,
+    val createdAt: String, // ISO 8601 format
+    val updatedAt: String, // ISO 8601 format
     val version: Int = 1,
     val viewCount: Int = 0,
     val downloadCount: Int = 0,
-    val lastViewed: String? = null,
+    val lastViewed: String? = null, // ISO 8601 format
     val weather: WeatherInfo? = null,
-    val equipment: EquipmentInfo? = null
-)
+    val equipment: EquipmentInfo? = null,
+    val checksum: String? = null // For file integrity verification
+) {
+    init {
+        require(createdAt.isNotBlank()) { "Created at cannot be blank" }
+        require(updatedAt.isNotBlank()) { "Updated at cannot be blank" }
+        require(version > 0) { "Version must be positive" }
+        require(viewCount >= 0) { "View count cannot be negative" }
+        require(downloadCount >= 0) { "Download count cannot be negative" }
+    }
+}
 
 @Serializable
 data class WeatherInfo(
     val temperature: Double? = null, // Celsius
     val humidity: Double? = null, // Percentage
     val conditions: String? = null // e.g., "Sunny", "Rainy", "Cloudy"
-)
+) {
+    init {
+        require(humidity?.let { it in 0.0..100.0 } ?: true) { "Humidity must be between 0 and 100" }
+    }
+}
 
 @Serializable
 data class EquipmentInfo(

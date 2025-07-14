@@ -37,14 +37,26 @@ class EvidenciaRepository : ProjectRepository {
     
     override suspend fun createGalleryProject(project: GalleryProject): Result<GalleryProject> {
         return try {
+            // Validar integridad de datos
+            validateGalleryProject(project)
+            
+            val enhancedProject = project.copy(
+                lastUpdated = getCurrentTimestamp(),
+                metadata = project.metadata ?: GalleryProjectMetadata(
+                    createdAt = getCurrentTimestamp(),
+                    updatedAt = getCurrentTimestamp(),
+                    version = 1
+                )
+            )
+            
             val updatedProjects = _galleryProjects.value.toMutableMap()
-            updatedProjects[project.id] = project
+            updatedProjects[enhancedProject.id] = enhancedProject
             _galleryProjects.value = updatedProjects
             
             // Crear evidencia asociada si no existe
-            createAssociatedEvidence(project)
+            createAssociatedEvidence(enhancedProject)
             
-            Result.success(project)
+            Result.success(enhancedProject)
         } catch (e: Exception) {
             Result.failure(e)
         }
@@ -52,14 +64,31 @@ class EvidenciaRepository : ProjectRepository {
     
     override suspend fun updateGalleryProject(project: GalleryProject): Result<GalleryProject> {
         return try {
+            validateGalleryProject(project)
+            
+            val currentProject = _galleryProjects.value[project.id]
+                ?: return Result.failure(IllegalArgumentException("Project not found"))
+            
+            val updatedProject = project.copy(
+                lastUpdated = getCurrentTimestamp(),
+                metadata = project.metadata?.copy(
+                    updatedAt = getCurrentTimestamp(),
+                    version = currentProject.metadata?.version?.plus(1) ?: 1
+                ) ?: GalleryProjectMetadata(
+                    createdAt = currentProject.metadata?.createdAt ?: getCurrentTimestamp(),
+                    updatedAt = getCurrentTimestamp(),
+                    version = (currentProject.metadata?.version ?: 0) + 1
+                )
+            )
+            
             val updatedProjects = _galleryProjects.value.toMutableMap()
-            updatedProjects[project.id] = project
+            updatedProjects[project.id] = updatedProject
             _galleryProjects.value = updatedProjects
             
             // Actualizar evidencia relacionada
-            updateAssociatedEvidence(project)
+            updateAssociatedEvidence(updatedProject)
             
-            Result.success(project)
+            Result.success(updatedProject)
         } catch (e: Exception) {
             Result.failure(e)
         }
@@ -130,6 +159,8 @@ class EvidenciaRepository : ProjectRepository {
     
     override suspend fun createEvidence(evidence: Evidence): Result<Evidence> {
         return try {
+            validateEvidence(evidence)
+            
             val updatedEvidence = _evidence.value.toMutableMap()
             updatedEvidence[evidence.id] = evidence
             _evidence.value = updatedEvidence
@@ -193,9 +224,56 @@ class EvidenciaRepository : ProjectRepository {
         }
     }
     
-    // Helper methods para mantener integridad de datos
+    // Métodos de validación
+    private fun validateGalleryProject(project: GalleryProject) {
+        require(project.id.isNotBlank()) { "Project ID cannot be blank" }
+        require(project.name.length >= 3) { "Project name must be at least 3 characters" }
+        require(project.description.length >= 10) { "Project description must be at least 10 characters" }
+        require(project.rating in 0.0..5.0) { "Rating must be between 0.0 and 5.0" }
+        require(project.reviewCount >= 0) { "Review count cannot be negative" }
+        
+        // Validar formato de área
+        val areaNumber = project.area.replace(Regex("[^\\d.]"), "").toDoubleOrNull()
+        require(areaNumber != null && areaNumber > 0) { "Area must be a positive number" }
+        
+        // Validar estilo
+        val validStyles = listOf("Contemporáneo", "Minimalista", "Industrial", "Moderno", "Clásico", "Rústico", "Colonial")
+        require(project.style in validStyles) { "Invalid architectural style" }
+        
+        // Validar fechas ISO 8601
+        validateISODate(project.completedDate, "Completed date")
+        validateISODate(project.lastUpdated, "Last updated")
+    }
+    
+    private fun validateEvidence(evidence: Evidence) {
+        require(evidence.id.isNotBlank()) { "Evidence ID cannot be blank" }
+        require(evidence.projectId.isNotBlank()) { "Project ID cannot be blank" }
+        require(evidence.title.length >= 3) { "Evidence title must be at least 3 characters" }
+        require(evidence.capturedBy.isNotBlank()) { "Captured by cannot be blank" }
+        
+        // Validar fechas
+        validateISODate(evidence.capturedAt, "Captured at")
+        validateISODate(evidence.metadata.createdAt, "Created at")
+        validateISODate(evidence.metadata.updatedAt, "Updated at")
+        
+        // Validar archivos de media
+        require(evidence.media.files.isNotEmpty()) { "Evidence must have at least one media file" }
+        evidence.media.files.forEach { file ->
+            require(file.id.isNotBlank()) { "File ID cannot be blank" }
+            require(file.size > 0) { "File size must be positive" }
+            require(file.mimeType.isNotBlank()) { "MIME type cannot be blank" }
+        }
+    }
+    
+    private fun validateISODate(dateString: String, fieldName: String) {
+        require(dateString.isNotBlank()) { "$fieldName cannot be blank" }
+        // Validación básica de formato ISO 8601
+        require(dateString.matches(Regex("\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}.*"))) {
+            "$fieldName must be in ISO 8601 format"
+        }
+    }
+    
     private suspend fun createAssociatedEvidence(project: GalleryProject) {
-        // Crear evidencia base para el proyecto de galería
         val baseEvidence = Evidence(
             id = "evidence_${project.id}",
             projectId = project.projectId ?: project.id,
@@ -207,9 +285,9 @@ class EvidenciaRepository : ProjectRepository {
                 files = listOf(
                     MediaFile(
                         id = "file_${project.id}",
-                        fileName = "${project.name}.jpg",
+                        fileName = "${project.name.replace(" ", "_").lowercase()}.jpg",
                         url = project.imageUrl,
-                        size = 2048000,
+                        size = 2048000L, // 2MB aproximadamente
                         mimeType = "image/jpeg",
                         width = 1920,
                         height = 1080
@@ -223,12 +301,13 @@ class EvidenciaRepository : ProjectRepository {
             ),
             capturedBy = project.architect,
             capturedAt = project.completedDate,
-            tags = listOf(project.style, "completado", "galería"),
+            tags = listOf(project.style.lowercase(), "completado", "galería", "proyecto"),
             status = EvidenceStatus.ACTIVE,
             metadata = EvidenceMetadata(
-                createdAt = project.lastUpdated,
+                createdAt = project.metadata?.createdAt ?: getCurrentTimestamp(),
                 updatedAt = getCurrentTimestamp(),
-                version = 1
+                version = 1,
+                checksum = generateChecksum(project.id)
             )
         )
         
@@ -305,17 +384,22 @@ class EvidenciaRepository : ProjectRepository {
         }
     }
     
+    private fun generateChecksum(projectId: String): String {
+        return "checksum_${projectId}_${System.currentTimeMillis()}"
+    }
+    
     private fun getCurrentTimestamp(): String {
-        return "2024-01-15T${System.currentTimeMillis() % 86400000 / 1000}:00Z"
+        val now = System.currentTimeMillis()
+        // Simulación de formato ISO 8601
+        return "2024-01-15T${String.format("%02d", (now % 86400000) / 3600000)}:${String.format("%02d", (now % 3600000) / 60000)}:${String.format("%02d", (now % 60000) / 1000)}Z"
     }
     
     private fun initializeMockData() {
-        // Inicializar con datos consistentes entre evidencia y galería
         val mockGalleryProjects = mapOf(
             "1" to GalleryProject(
                 id = "1",
                 name = "Casa Contemporánea Tropical",
-                description = "Residencia moderna con elementos naturales y gran iluminación que se integra perfectamente con el entorno tropical",
+                description = "Residencia moderna con elementos naturales y gran iluminación que se integra perfectamente con el entorno tropical de Durango",
                 style = "Contemporáneo",
                 location = "Durango, México",
                 imageUrl = "https://example.com/house1.jpg",
@@ -328,12 +412,22 @@ class EvidenciaRepository : ProjectRepository {
                 projectId = "project_1",
                 evidenceIds = listOf("evidence_1"),
                 lastUpdated = "2023-12-15T10:30:00Z",
-                category = EvidenceCategory.DELIVERY
+                category = EvidenceCategory.DELIVERY,
+                metadata = GalleryProjectMetadata(
+                    createdAt = "2023-12-15T00:00:00Z",
+                    updatedAt = "2023-12-15T10:30:00Z",
+                    version = 1,
+                    tags = listOf("contemporáneo", "tropical", "residencial"),
+                    viewCount = 245,
+                    shareCount = 12,
+                    featured = true,
+                    verified = true
+                )
             ),
             "2" to GalleryProject(
                 id = "2",
-                name = "Villa Minimalista",
-                description = "Diseño limpio y funcional",
+                name = "Villa Minimalista Urbana",
+                description = "Diseño limpio y funcional con líneas puras que maximiza el espacio y la luz natural",
                 style = "Minimalista",
                 location = "Durango, México",
                 imageUrl = "https://example.com/house2.jpg",
@@ -346,18 +440,32 @@ class EvidenciaRepository : ProjectRepository {
                 projectId = "project_2",
                 evidenceIds = listOf("evidence_2"),
                 lastUpdated = "2023-11-20T14:15:00Z",
-                category = EvidenceCategory.DELIVERY
-            ),
-            // Agregar más proyectos...
+                category = EvidenceCategory.DELIVERY,
+                metadata = GalleryProjectMetadata(
+                    createdAt = "2023-11-20T00:00:00Z",
+                    updatedAt = "2023-11-20T14:15:00Z",
+                    version = 1,
+                    tags = listOf("minimalista", "urbano", "funcional"),
+                    viewCount = 189,
+                    shareCount = 8,
+                    featured = false,
+                    verified = true
+                )
+            )
+            // Agregar más proyectos mock...
         )
         
         _galleryProjects.value = mockGalleryProjects
         
-        // Crear evidencia asociada
+        // Crear evidencia asociada de manera segura
         mockGalleryProjects.values.forEach { project ->
-            // Llamar suspend function de manera síncrona en init (no recomendado en producción)
             kotlinx.coroutines.runBlocking {
-                createAssociatedEvidence(project)
+                try {
+                    createAssociatedEvidence(project)
+                } catch (e: Exception) {
+                    // Log error pero continúa con inicialización
+                    println("Error creating evidence for project ${project.id}: ${e.message}")
+                }
             }
         }
     }

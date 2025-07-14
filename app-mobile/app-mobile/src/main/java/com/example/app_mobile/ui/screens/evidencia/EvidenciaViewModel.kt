@@ -158,26 +158,39 @@ class EvidenciaViewModel @Inject constructor(
     ) {
         viewModelScope.launch {
             try {
-                _uiState.value = _uiState.value.copy(isLoading = true)
+                _uiState.value = _uiState.value.copy(isLoading = true, error = null)
+                
+                // Validar entrada antes de crear el proyecto
+                validateProjectInput(name, description, style, location, architect, area)
                 
                 val newProject = GalleryProject(
                     id = generateProjectId(),
-                    name = name,
-                    description = description,
+                    name = name.trim(),
+                    description = description.trim(),
                     style = style,
-                    location = location,
-                    imageUrl = "https://example.com/placeholder.jpg",
+                    location = location.trim(),
+                    imageUrl = generatePlaceholderImageUrl(style),
                     rating = generateRandomRating(),
                     reviewCount = generateRandomReviewCount(),
                     completedDate = getCurrentDate(),
-                    architect = architect,
-                    area = "$area m²",
+                    architect = architect.trim(),
+                    area = formatArea(area),
                     isFavorite = false,
                     cardHeight = generateRandomCardHeight(),
                     projectId = "project_${generateProjectId()}",
                     evidenceIds = emptyList(),
                     lastUpdated = getCurrentDateTime(),
-                    category = EvidenceCategory.DELIVERY
+                    category = EvidenceCategory.DELIVERY,
+                    metadata = GalleryProjectMetadata(
+                        createdAt = getCurrentDateTime(),
+                        updatedAt = getCurrentDateTime(),
+                        version = 1,
+                        tags = generateProjectTags(style, location),
+                        viewCount = 0,
+                        shareCount = 0,
+                        featured = false,
+                        verified = true
+                    )
                 )
                 
                 val result = repository.createGalleryProject(newProject)
@@ -204,63 +217,50 @@ class EvidenciaViewModel @Inject constructor(
         }
     }
     
-    private fun generateProjectId(): String {
-        return "proj_${System.currentTimeMillis()}_${(1000..9999).random()}"
+    private fun validateProjectInput(
+        name: String,
+        description: String,
+        style: String,
+        location: String,
+        architect: String,
+        area: String
+    ) {
+        require(name.trim().length >= 3) { "El nombre del proyecto debe tener al menos 3 caracteres" }
+        require(description.trim().length >= 10) { "La descripción debe tener al menos 10 caracteres" }
+        require(location.trim().length >= 3) { "La ubicación debe tener al menos 3 caracteres" }
+        require(architect.trim().length >= 3) { "El nombre del arquitecto debe tener al menos 3 caracteres" }
+        
+        val areaNumber = area.trim().toDoubleOrNull()
+        require(areaNumber != null && areaNumber > 0) { "El área debe ser un número positivo" }
+        require(areaNumber <= 10000) { "El área no puede ser mayor a 10,000 m²" }
+        
+        val validStyles = listOf("Contemporáneo", "Minimalista", "Industrial", "Moderno", "Clásico", "Rústico", "Colonial")
+        require(style in validStyles) { "Estilo arquitectónico no válido" }
     }
     
-    private fun generateRandomRating(): Double {
-        return (4.0..5.0).random().let { 
-            kotlin.math.round(it * 10) / 10.0 
+    private fun formatArea(area: String): String {
+        val areaNumber = area.trim().toDoubleOrNull() ?: 0.0
+        return "${String.format("%.0f", areaNumber)} m²"
+    }
+    
+    private fun generateProjectTags(style: String, location: String): List<String> {
+        val baseTags = listOf(style.lowercase(), "proyecto", "completado")
+        val locationTag = location.split(",").firstOrNull()?.trim()?.lowercase()
+        return if (locationTag != null) {
+            baseTags + locationTag
+        } else {
+            baseTags
         }
     }
     
-    private fun generateRandomReviewCount(): Int {
-        return (5..50).random()
+    private fun generatePlaceholderImageUrl(style: String): String {
+        // Generar URL de placeholder basada en el estilo
+        val styleParam = style.lowercase().replace(" ", "-")
+        return "https://picsum.photos/800/600?random=${System.currentTimeMillis()}&style=$styleParam"
     }
     
-    private fun generateRandomCardHeight(): Int {
-        return listOf(260, 280, 300, 320).random()
-    }
-    
-    private fun getCurrentDate(): String {
-        return "2024-01-15T00:00:00Z"
-    }
-    
-    private fun getCurrentDateTime(): String {
-        return "2024-01-15T${System.currentTimeMillis() % 86400000 / 1000}:00Z"
-    }
-    
-    fun updateGalleryProject(project: GalleryProject) {
-        viewModelScope.launch {
-            try {
-                val result = repository.updateGalleryProject(project)
-                result.fold(
-                    onSuccess = { updatedProject ->
-                        _uiState.value = _uiState.value.copy(
-                            message = "Proyecto actualizado exitosamente",
-                            selectedProject = if (_uiState.value.selectedProject?.id == updatedProject.id) {
-                                updatedProject
-                            } else {
-                                _uiState.value.selectedProject
-                            }
-                        )
-                    },
-                    onFailure = { error ->
-                        _uiState.value = _uiState.value.copy(
-                            error = "Error al actualizar proyecto: ${error.message}"
-                        )
-                    }
-                )
-            } catch (e: Exception) {
-                _uiState.value = _uiState.value.copy(
-                    error = "Error: ${e.message}"
-                )
-            }
-        }
-    }
-    
-    fun deleteGalleryProject(projectId: String) {
-        viewModelScope.launch {
+    // ...existing code...
+}
             try {
                 val result = repository.deleteGalleryProject(projectId)
                 result.fold(
