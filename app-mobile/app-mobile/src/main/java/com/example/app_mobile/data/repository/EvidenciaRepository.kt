@@ -1,6 +1,7 @@
 package com.example.app_mobile.data.repository
 
 import com.example.shared_domain.model.*
+import com.example.shared_domain.repository.GalleryProject
 import com.example.shared_domain.repository.ProjectRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -34,7 +35,7 @@ class EvidenciaRepository : ProjectRepository {
     override suspend fun getGalleryProjectById(id: String): GalleryProject? {
         return _galleryProjects.value[id]
     }
-    
+
     override suspend fun createGalleryProject(project: GalleryProject): Result<GalleryProject> {
         return try {
             // Validar integridad de datos
