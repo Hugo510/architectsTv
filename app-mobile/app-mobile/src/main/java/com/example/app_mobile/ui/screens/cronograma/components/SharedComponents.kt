@@ -14,6 +14,12 @@ import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Dashboard
 import androidx.compose.material.icons.filled.Schedule
+import androidx.compose.material.icons.filled.Assignment
+import androidx.compose.material.icons.filled.TrendingUp
+import androidx.compose.material.icons.filled.Architecture
+import androidx.compose.material.icons.filled.Construction
+import androidx.compose.material.icons.filled.DeliveryDining
+import androidx.compose.material.icons.filled.RadioButtonUnchecked
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -70,9 +76,9 @@ fun CronogramaHeader(
                         )
                     }
                 }
-                
+
                 Spacer(modifier = Modifier.width(16.dp))
-                
+
                 Column {
                     Text(
                         text = "LOGO EMPRESA",
@@ -88,7 +94,7 @@ fun CronogramaHeader(
                     )
                 }
             }
-            
+
             // Título con gradiente visual
             Text(
                 text = "Cronograma de Proyecto",
@@ -97,7 +103,7 @@ fun CronogramaHeader(
                 color = MaterialTheme.colorScheme.onPrimaryContainer,
                 lineHeight = 36.sp
             )
-            
+
             // Subtítulo mejorado
             Text(
                 text = "Planifica y da seguimiento detallado a las etapas del proyecto",
@@ -120,7 +126,10 @@ fun ScheduleInfoCard(
         animationSpec = tween(durationMillis = 1000, easing = FastOutSlowInEasing),
         label = "progress_animation"
     )
-    
+
+    // Solución al smart cast
+    val scheduleDescription = schedule.description
+
     Card(
         modifier = modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(
@@ -142,9 +151,9 @@ fun ScheduleInfoCard(
                     tint = MaterialTheme.colorScheme.onSecondaryContainer,
                     modifier = Modifier.size(24.dp)
                 )
-                
+
                 Spacer(modifier = Modifier.width(12.dp))
-                
+
                 Text(
                     text = schedule.name,
                     fontSize = 20.sp,
@@ -152,17 +161,17 @@ fun ScheduleInfoCard(
                     color = MaterialTheme.colorScheme.onSecondaryContainer
                 )
             }
-            
-            if (schedule.description != null) {
+
+            if (scheduleDescription != null) {
                 Text(
-                    text = schedule.description,
+                    text = scheduleDescription,
                     fontSize = 14.sp,
                     color = MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.8f),
                     modifier = Modifier.padding(bottom = 20.dp),
                     lineHeight = 18.sp
                 )
             }
-            
+
             // Estadísticas mejoradas con cards
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -187,10 +196,10 @@ fun ScheduleInfoCard(
                     modifier = Modifier.weight(1f)
                 )
             }
-            
+
             // Barra de progreso mejorada
             Spacer(modifier = Modifier.height(20.dp))
-            
+
             Text(
                 text = "Progreso General",
                 fontSize = 14.sp,
@@ -198,7 +207,7 @@ fun ScheduleInfoCard(
                 color = MaterialTheme.colorScheme.onSecondaryContainer,
                 modifier = Modifier.padding(bottom = 8.dp)
             )
-            
+
             LinearProgressIndicator(
                 progress = animatedProgress,
                 modifier = Modifier
@@ -208,7 +217,7 @@ fun ScheduleInfoCard(
                 color = MaterialTheme.colorScheme.primary,
                 trackColor = MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.2f)
             )
-            
+
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -300,7 +309,7 @@ fun ViewSelector(
                 icon = Icons.Default.CalendarMonth,
                 modifier = Modifier.weight(1f)
             )
-            
+
             // Botón Kanban
             ViewSelectorButton(
                 selected = selectedView == ViewType.KANBAN,
@@ -326,18 +335,18 @@ private fun ViewSelectorButton(
         animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy),
         label = "scale_animation"
     )
-    
+
     Button(
         onClick = onClick,
         modifier = modifier.scale(animatedScale),
         colors = ButtonDefaults.buttonColors(
-            containerColor = if (selected) 
-                MaterialTheme.colorScheme.primary 
-            else 
+            containerColor = if (selected)
+                MaterialTheme.colorScheme.primary
+            else
                 MaterialTheme.colorScheme.surface,
-            contentColor = if (selected) 
-                MaterialTheme.colorScheme.onPrimary 
-            else 
+            contentColor = if (selected)
+                MaterialTheme.colorScheme.onPrimary
+            else
                 MaterialTheme.colorScheme.onSurface
         ),
         elevation = ButtonDefaults.buttonElevation(
@@ -394,7 +403,7 @@ fun StatusLegend(
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
-            
+
             LazyRow(
                 horizontalArrangement = Arrangement.spacedBy(16.dp),
                 contentPadding = PaddingValues(horizontal = 4.dp)
@@ -514,7 +523,7 @@ fun MilestonesSection(
                     color = MaterialTheme.colorScheme.onSurface
                 )
             }
-            
+
             if (milestones.isEmpty()) {
                 EmptyMilestonesState()
             } else {
@@ -572,21 +581,21 @@ private fun MilestoneCard(
     onToggle: () -> Unit = {}
 ) {
     val cardColor by animateColorAsState(
-        targetValue = if (milestone.isCompleted) 
+        targetValue = if (milestone.isCompleted)
             MaterialTheme.colorScheme.primaryContainer
-        else 
+        else
             MaterialTheme.colorScheme.surfaceVariant,
         animationSpec = tween(300),
         label = "card_color_animation"
     )
-    
+
     // Agregar la variable faltante
     val iconScale by animateFloatAsState(
         targetValue = if (milestone.isCompleted) 1.1f else 1f,
         animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy),
         label = "icon_scale_animation"
     )
-    
+
     Card(
         onClick = onClick,
         modifier = Modifier.fillMaxWidth(),
@@ -603,21 +612,21 @@ private fun MilestoneCard(
                 modifier = Modifier.size(32.dp)
             ) {
                 Icon(
-                    imageVector = if (milestone.isCompleted) 
-                        Icons.Default.CheckCircle 
-                    else 
+                    imageVector = if (milestone.isCompleted)
+                        Icons.Default.CheckCircle
+                    else
                         Icons.Default.RadioButtonUnchecked,
                     contentDescription = if (milestone.isCompleted) "Completado" else "Pendiente",
-                    tint = if (milestone.isCompleted) 
-                        Color(0xFF4CAF50) 
-                    else 
+                    tint = if (milestone.isCompleted)
+                        Color(0xFF4CAF50)
+                    else
                         MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.size(28.dp)
                 )
             }
-            
+
             Spacer(modifier = Modifier.width(16.dp))
-            
+
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = milestone.name,
@@ -625,7 +634,7 @@ private fun MilestoneCard(
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onSurface
                 )
-                
+
                 milestone.description?.let { description ->
                     Text(
                         text = description,
@@ -635,18 +644,18 @@ private fun MilestoneCard(
                         lineHeight = 16.sp
                     )
                 }
-                
+
                 Text(
-                    text = if (milestone.isCompleted) 
+                    text = if (milestone.isCompleted)
                         "✅ Completado: ${milestone.completedDate ?: "Sin fecha"}"
-                    else 
+                    else
                         "📅 Fecha objetivo: ${milestone.targetDate}",
                     fontSize = 12.sp,
                     color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
                     modifier = Modifier.padding(top = 4.dp)
                 )
             }
-            
+
             // Badge de importancia
             Surface(
                 shape = RoundedCornerShape(12.dp),
