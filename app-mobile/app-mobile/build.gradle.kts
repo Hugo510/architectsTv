@@ -4,7 +4,6 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.kotlin.kapt)
     alias(libs.plugins.hilt.android)
-    // Agregar plugin de serialización
     alias(libs.plugins.kotlin.serialization)
 }
 
@@ -88,68 +87,39 @@ dependencies {
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.kotlinx.coroutines.core)
     
-    // NUEVAS DEPENDENCIAS AGREGADAS:
+    // DEPENDENCIAS CRÍTICAS AGREGADAS:
     
     // Kotlinx Serialization - CRÍTICA para shared-domain
     implementation(libs.kotlinx.serialization.json)
     
-    // Compose Animation - Para las animaciones avanzadas del Kanban/Timeline
+    // Compose Animation - Para las animaciones avanzadas implementadas
     implementation(libs.androidx.compose.animation)
     implementation(libs.androidx.compose.animation.core)
+    implementation(libs.androidx.compose.animation.graphics)
+    implementation(libs.androidx.compose.animation.core.android)
+    
+    // UI Graphics avanzados - Para gradientes y efectos implementados
+    implementation(libs.androidx.compose.ui.graphics.android)
+    implementation(libs.androidx.compose.foundation.layout.staggeredgrid)
     
     // Collections Immutable - Para mejor rendimiento con StateFlow
     implementation(libs.kotlinx.collections.immutable)
     
     // Lifecycle State - Para manejar estados del ciclo de vida
     implementation(libs.androidx.lifecycle.runtime.compose)
+    implementation(libs.androidx.lifecycle.viewmodel.savedstate)
+    
+    // Foundation - Para BorderStroke y efectos de las cards
+    implementation(libs.androidx.compose.foundation)
     
     // Permission handling - Para futuras funcionalidades de evidencia
     implementation(libs.accompanist.permissions)
     
-    // Date/Time support
-    coreLibraryDesugaring(libs.android.desugar.jdk.libs)
-    
-    // Shared Domain Module
-    implementation(project(":shared-domain"))
-    
-    // Testing mejorado
-    testImplementation(libs.junit)
-    testImplementation(libs.kotlinx.coroutines.test)
-    testImplementation(libs.turbine) // Para testing de StateFlow
-    androidTestImplementation(libs.androidx.junit)
-    androidTestImplementation(libs.androidx.espresso.core)
-    androidTestImplementation(platform(libs.androidx.compose.bom))
-    androidTestImplementation(libs.androidx.ui.test.junit4)
-    androidTestImplementation(libs.hilt.android.testing)
-    kaptAndroidTest(libs.hilt.compiler)
-    debugImplementation(libs.androidx.ui.tooling)
-    debugImplementation(libs.androidx.ui.test.manifest)
-    
-    // DEPENDENCIAS FALTANTES IDENTIFICADAS:
-    
-    // BorderStroke - Para los chips modernos con bordes
-    implementation(libs.androidx.compose.foundation)
-    
-    // Animaciones avanzadas - Para las animaciones fluidas implementadas
-    implementation(libs.androidx.compose.animation.graphics)
-    
-    // UI graphics - Para gradientes y efectos visuales avanzados
-    implementation(libs.androidx.compose.ui.graphics)
-    
-    // Brush y efectos gráficos - Para glassmorphism y gradientes
-    implementation(libs.androidx.compose.ui.graphics.android)
-    
-    // Scale animation - Para las micro-interacciones
-    implementation(libs.androidx.compose.animation.core.android)
-    
     // Material3 WindowSizeClass - Para responsive design
     implementation(libs.androidx.compose.material3.window.size)
     
-    // Activity result APIs - Para funcionalidades futuras de la galería
+    // Activity result APIs - Para funcionalidades de la galería
     implementation(libs.androidx.activity.result)
-    
-    // Lifecycle viewmodel savedstate - Para persistir estado en rotaciones
-    implementation(libs.androidx.lifecycle.viewmodel.savedstate)
     
     // Datastore preferences - Para configuraciones de usuario
     implementation(libs.androidx.datastore.preferences)
@@ -160,7 +130,7 @@ dependencies {
     // System UI controller - Para control de barras de estado
     implementation(libs.accompanist.systemuicontroller)
     
-    // Pager support - Para futuras funcionalidades de galería
+    // Pager support - Para funcionalidades de galería
     implementation(libs.accompanist.pager)
     implementation(libs.accompanist.pager.indicators)
     
@@ -179,4 +149,27 @@ dependencies {
     // Insets - Para manejo de padding del sistema
     implementation(libs.accompanist.insets)
     implementation(libs.accompanist.insets.ui)
+    
+    // Koin DI - Para EvidenciaViewModel como se muestra en el código
+    implementation(libs.koin.android)
+    implementation(libs.koin.androidx.compose)
+    
+    // Date/Time support
+    coreLibraryDesugaring(libs.android.desugar.jdk.libs)
+    
+    // Shared Domain Module
+    implementation(project(":shared-domain"))
+    
+    // Testing mejorado
+    testImplementation(libs.junit)
+    testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(libs.turbine)
+    androidTestImplementation(libs.androidx.junit)
+    androidTestImplementation(libs.androidx.espresso.core)
+    androidTestImplementation(platform(libs.androidx.compose.bom))
+    androidTestImplementation(libs.androidx.ui.test.junit4)
+    androidTestImplementation(libs.hilt.android.testing)
+    kaptAndroidTest(libs.hilt.compiler)
+    debugImplementation(libs.androidx.ui.tooling)
+    debugImplementation(libs.androidx.ui.test.manifest)
 }

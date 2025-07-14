@@ -4,13 +4,17 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.animation.*
+import androidx.compose.animation.core.*
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.IntOffset
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -53,34 +57,151 @@ fun MobileApp() {
     
     Scaffold(
         bottomBar = {
-            if (showBottomNav) {
+            AnimatedVisibility(
+                visible = showBottomNav,
+                enter = slideInVertically(
+                    initialOffsetY = { it },
+                    animationSpec = tween(durationMillis = 300, easing = FastOutSlowInEasing)
+                ) + fadeIn(animationSpec = tween(300)),
+                exit = slideOutVertically(
+                    targetOffsetY = { it },
+                    animationSpec = tween(durationMillis = 300, easing = FastOutSlowInEasing)
+                ) + fadeOut(animationSpec = tween(300))
+            ) {
                 BottomNavigationBar(navController = navController)
             }
         }
     ) { paddingValues ->
         NavHost(
             navController = navController,
-            startDestination = "home", // Cambiar inicio a home
+            startDestination = "home",
             modifier = Modifier.padding(
                 bottom = if (showBottomNav) paddingValues.calculateBottomPadding() else 0.dp
             )
         ) {
-            composable("home") {
-                HomeScreen(
-                    onNavigateToProjects = { navController.navigate("management") },
-                    onNavigateToManagement = { navController.navigate("management") },
-                    onNavigateToCast = { /* TODO: Implementar cast */ }
-                )
+            composable(
+                "home",
+                enterTransition = {
+                    slideInHorizontally(
+                        initialOffsetX = { -it },
+                        animationSpec = tween(durationMillis = 400, easing = FastOutSlowInEasing)
+                    ) + fadeIn(animationSpec = tween(400))
+                },
+                exitTransition = {
+                    slideOutHorizontally(
+                        targetOffsetX = { -it },
+                        animationSpec = tween(durationMillis = 400, easing = FastOutSlowInEasing)
+                    ) + fadeOut(animationSpec = tween(400))
+                }
+            ) {
+                AnimatedContent(
+                    targetState = "home",
+                    transitionSpec = {
+                        scaleIn(
+                            initialScale = 0.9f,
+                            animationSpec = tween(300, easing = FastOutSlowInEasing)
+                        ) togetherWith scaleOut(
+                            targetScale = 1.1f,
+                            animationSpec = tween(300, easing = FastOutSlowInEasing)
+                        )
+                    },
+                    label = "home_animation"
+                ) {
+                    HomeScreen(
+                        onNavigateToProjects = { 
+                            navController.navigate("management") {
+                                launchSingleTop = true
+                            }
+                        },
+                        onNavigateToManagement = { 
+                            navController.navigate("management") {
+                                launchSingleTop = true
+                            }
+                        },
+                        onNavigateToCast = { /* TODO: Implementar cast */ }
+                    )
+                }
             }
             
-            composable("management") {
-                ManagementScreen(
-                    onNavigateToHome = { navController.navigate("home") },
-                    onNavigateToCreateProject = { navController.navigate("create_project") }
-                )
+            composable(
+                "management",
+                enterTransition = {
+                    when (initialState.destination.route) {
+                        "home" -> slideInHorizontally(
+                            initialOffsetX = { it },
+                            animationSpec = tween(400, easing = FastOutSlowInEasing)
+                        )
+                        "cronograma" -> slideInHorizontally(
+                            initialOffsetX = { -it },
+                            animationSpec = tween(400, easing = FastOutSlowInEasing)
+                        )
+                        else -> slideInVertically(
+                            initialOffsetY = { it },
+                            animationSpec = tween(400, easing = FastOutSlowInEasing)
+                        )
+                    } + fadeIn(animationSpec = tween(400))
+                },
+                exitTransition = {
+                    when (targetState.destination.route) {
+                        "home" -> slideOutHorizontally(
+                            targetOffsetX = { it },
+                            animationSpec = tween(400, easing = FastOutSlowInEasing)
+                        )
+                        "cronograma" -> slideOutHorizontally(
+                            targetOffsetX = { -it },
+                            animationSpec = tween(400, easing = FastOutSlowInEasing)
+                        )
+                        else -> slideOutVertically(
+                            targetOffsetY = { it },
+                            animationSpec = tween(400, easing = FastOutSlowInEasing)
+                        )
+                    } + fadeOut(animationSpec = tween(400))
+                }
+            ) {
+                AnimatedContent(
+                    targetState = "management",
+                    transitionSpec = {
+                        slideInVertically(
+                            initialOffsetY = { it / 3 },
+                            animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy)
+                        ) + fadeIn() togetherWith slideOutVertically(
+                            targetOffsetY = { -it / 3 },
+                            animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy)
+                        ) + fadeOut()
+                    },
+                    label = "management_animation"
+                ) {
+                    ManagementScreen(
+                        onNavigateToHome = { 
+                            navController.navigate("home") {
+                                launchSingleTop = true
+                            }
+                        },
+                        onNavigateToCreateProject = { 
+                            navController.navigate("create_project") 
+                        }
+                    )
+                }
             }
             
-            composable("create_project") {
+            composable(
+                "create_project",
+                enterTransition = {
+                    slideInVertically(
+                        initialOffsetY = { it },
+                        animationSpec = spring(
+                            dampingRatio = Spring.DampingRatioMediumBouncy,
+                            stiffness = Spring.StiffnessLow
+                        )
+                    ) + fadeIn(animationSpec = tween(500))
+                },
+                exitTransition = {
+                    slideOutVertically(
+                        targetOffsetY = { it },
+                        animationSpec = tween(400, easing = FastOutSlowInEasing)
+                    ) + fadeOut(animationSpec = tween(400))
+                }
+            ) {
                 CreateProjectScreen(
                     onNavigateBack = { navController.popBackStack() },
                     onSaveProject = { project ->
@@ -90,38 +211,172 @@ fun MobileApp() {
                 )
             }
             
-            composable("cronograma") {
-                CronogramaScreen(
-                    onNavigateToTaskDetail = { taskId ->
-                        // TODO: Navegar a detalle de tarea
+            composable(
+                "cronograma",
+                enterTransition = {
+                    when (initialState.destination.route) {
+                        "management" -> slideInHorizontally(
+                            initialOffsetX = { it },
+                            animationSpec = tween(400, easing = FastOutSlowInEasing)
+                        )
+                        "planos" -> slideInHorizontally(
+                            initialOffsetX = { -it },
+                            animationSpec = tween(400, easing = FastOutSlowInEasing)
+                        )
+                        else -> slideInVertically(
+                            initialOffsetY = { it },
+                            animationSpec = tween(400, easing = FastOutSlowInEasing)
+                        )
+                    } + fadeIn(animationSpec = tween(400))
+                },
+                exitTransition = {
+                    when (targetState.destination.route) {
+                        "management" -> slideOutHorizontally(
+                            targetOffsetX = { it },
+                            animationSpec = tween(400, easing = FastOutSlowInEasing)
+                        )
+                        "planos" -> slideOutHorizontally(
+                            targetOffsetX = { -it },
+                            animationSpec = tween(400, easing = FastOutSlowInEasing)
+                        )
+                        else -> slideOutVertically(
+                            targetOffsetY = { it },
+                            animationSpec = tween(400, easing = FastOutSlowInEasing)
+                        )
+                    } + fadeOut(animationSpec = tween(400))
+                }
+            ) {
+                AnimatedContent(
+                    targetState = "cronograma",
+                    transitionSpec = {
+                        scaleIn(
+                            initialScale = 0.8f,
+                            animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy)
+                        ) + fadeIn() togetherWith scaleOut(
+                            targetScale = 1.2f,
+                            animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy)
+                        ) + fadeOut()
                     },
-                    onNavigateToCreateTask = {
-                        // TODO: Navegar a crear tarea
-                    },
-                    onNavigateToMilestoneDetail = { milestoneId ->
-                        // TODO: Navegar a detalle de hito
-                    },
-                    onNavigateToScheduleSettings = {
-                        // TODO: Navegar a configuración de cronograma
-                    }
-                )
+                    label = "cronograma_animation"
+                ) {
+                    CronogramaScreen(
+                        onNavigateToTaskDetail = { taskId ->
+                            // TODO: Navegar a detalle de tarea
+                        },
+                        onNavigateToCreateTask = {
+                            // TODO: Navegar a crear tarea
+                        },
+                        onNavigateToMilestoneDetail = { milestoneId ->
+                            // TODO: Navegar a detalle de hito
+                        },
+                        onNavigateToScheduleSettings = {
+                            // TODO: Navegar a configuración de cronograma
+                        }
+                    )
+                }
             }
             
-            composable("planos") {
-                PlanosScreen(
-                    onNavigateToHome = { navController.navigate("home") }
-                )
+            composable(
+                "planos",
+                enterTransition = {
+                    when (initialState.destination.route) {
+                        "cronograma" -> slideInHorizontally(
+                            initialOffsetX = { it },
+                            animationSpec = tween(400, easing = FastOutSlowInEasing)
+                        )
+                        "evidencia" -> slideInHorizontally(
+                            initialOffsetX = { -it },
+                            animationSpec = tween(400, easing = FastOutSlowInEasing)
+                        )
+                        else -> slideInVertically(
+                            initialOffsetY = { it },
+                            animationSpec = tween(400, easing = FastOutSlowInEasing)
+                        )
+                    } + fadeIn(animationSpec = tween(400))
+                },
+                exitTransition = {
+                    when (targetState.destination.route) {
+                        "cronograma" -> slideOutHorizontally(
+                            targetOffsetX = { it },
+                            animationSpec = tween(400, easing = FastOutSlowInEasing)
+                        )
+                        "evidencia" -> slideOutHorizontally(
+                            targetOffsetX = { -it },
+                            animationSpec = tween(400, easing = FastOutSlowInEasing)
+                        )
+                        else -> slideOutVertically(
+                            targetOffsetY = { it },
+                            animationSpec = tween(400, easing = FastOutSlowInEasing)
+                        )
+                    } + fadeOut(animationSpec = tween(400))
+                }
+            ) {
+                AnimatedContent(
+                    targetState = "planos",
+                    transitionSpec = {
+                        slideInHorizontally(
+                            initialOffsetX = { it / 2 },
+                            animationSpec = spring(dampingRatio = Spring.DampingRatioLowBouncy)
+                        ) + fadeIn() togetherWith slideOutHorizontally(
+                            targetOffsetX = { -it / 2 },
+                            animationSpec = spring(dampingRatio = Spring.DampingRatioLowBouncy)
+                        ) + fadeOut()
+                    },
+                    label = "planos_animation"
+                ) {
+                    PlanosScreen(
+                        onNavigateToHome = { 
+                            navController.navigate("home") {
+                                launchSingleTop = true
+                            }
+                        }
+                    )
+                }
             }
             
-            composable("evidencia") {
-                EvidenciaScreen(
-                    onNavigateToProjectDetail = { projectId ->
-                        // TODO: Navegar a detalle de proyecto
+            composable(
+                "evidencia",
+                enterTransition = {
+                    slideInHorizontally(
+                        initialOffsetX = { it },
+                        animationSpec = tween(400, easing = FastOutSlowInEasing)
+                    ) + fadeIn(animationSpec = tween(400))
+                },
+                exitTransition = {
+                    slideOutHorizontally(
+                        targetOffsetX = { it },
+                        animationSpec = tween(400, easing = FastOutSlowInEasing)
+                    ) + fadeOut(animationSpec = tween(400))
+                }
+            ) {
+                AnimatedContent(
+                    targetState = "evidencia",
+                    transitionSpec = {
+                        slideInVertically(
+                            initialOffsetY = { it / 4 },
+                            animationSpec = spring(
+                                dampingRatio = Spring.DampingRatioMediumBouncy,
+                                stiffness = Spring.StiffnessMedium
+                            )
+                        ) + fadeIn() togetherWith slideOutVertically(
+                            targetOffsetY = { -it / 4 },
+                            animationSpec = spring(
+                                dampingRatio = Spring.DampingRatioMediumBouncy,
+                                stiffness = Spring.StiffnessMedium
+                            )
+                        ) + fadeOut()
                     },
-                    onNavigateToAddProject = {
-                        // TODO: Navegar a agregar proyecto a galería
-                    }
-                )
+                    label = "evidencia_animation"
+                ) {
+                    EvidenciaScreen(
+                        onNavigateToProjectDetail = { projectId ->
+                            // TODO: Navegar a detalle de proyecto
+                        },
+                        onNavigateToAddProject = {
+                            // TODO: Navegar a agregar proyecto a galería
+                        }
+                    )
+                }
             }
         }
     }

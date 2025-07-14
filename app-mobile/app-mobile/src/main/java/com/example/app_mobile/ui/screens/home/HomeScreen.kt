@@ -1,5 +1,7 @@
 package com.example.app_mobile.ui.screens.home
 
+import androidx.compose.animation.*
+import androidx.compose.animation.core.*
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -21,6 +23,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.shared_domain.model.*
+import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -32,6 +35,13 @@ fun HomeScreen(
     var searchQuery by remember { mutableStateOf("") }
     var selectedStatus by remember { mutableStateOf("Todos") }
     var isStatusDropdownExpanded by remember { mutableStateOf(false) }
+    var isVisible by remember { mutableStateOf(false) }
+    
+    // Activar animaciones de entrada después de un breve delay
+    LaunchedEffect(Unit) {
+        delay(100)
+        isVisible = true
+    }
     
     val statusOptions = listOf("Todos", "Diseño", "Revisión de Permisos", "Construcción", "Entrega")
     
@@ -107,11 +117,25 @@ fun HomeScreen(
     
     Scaffold(
         floatingActionButton = {
-            FloatingActionButton(
-                onClick = onNavigateToCast,
-                containerColor = MaterialTheme.colorScheme.primary
+            AnimatedVisibility(
+                visible = isVisible,
+                enter = scaleIn(
+                    initialScale = 0f,
+                    animationSpec = spring(
+                        dampingRatio = Spring.DampingRatioMediumBouncy,
+                        stiffness = Spring.StiffnessMedium,
+                        delayMillis = 800
+                    )
+                ) + fadeIn(animationSpec = tween(400, delayMillis = 800)),
+                exit = scaleOut() + fadeOut()
             ) {
-                Icon(Icons.Default.Cast, contentDescription = "Transmitir a TV")
+                FloatingActionButton(
+                    onClick = onNavigateToCast,
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.animateContentSize()
+                ) {
+                    Icon(Icons.Default.Cast, contentDescription = "Transmitir a TV")
+                }
             }
         }
     ) { paddingValues ->
@@ -122,53 +146,106 @@ fun HomeScreen(
                 .padding(horizontal = 16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            // Header con logo y bienvenida
+            // Header con animación de entrada
             item {
-                Spacer(modifier = Modifier.height(8.dp))
-                CompanyHeader()
-            }
-            
-            // Buscador y filtro
-            item {
-                SearchAndFilterSection(
-                    searchQuery = searchQuery,
-                    onSearchQueryChange = { searchQuery = it },
-                    selectedStatus = selectedStatus,
-                    onStatusChange = { selectedStatus = it },
-                    statusOptions = statusOptions,
-                    isDropdownExpanded = isStatusDropdownExpanded,
-                    onDropdownExpandedChange = { isStatusDropdownExpanded = it }
-                )
-            }
-            
-            // Sección de últimas actualizaciones
-            item {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = "Últimas Actualizaciones",
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.onBackground
-                    )
-                    TextButton(onClick = onNavigateToProjects) {
-                        Text(
-                            text = "Ver todos",
-                            color = MaterialTheme.colorScheme.primary
+                AnimatedVisibility(
+                    visible = isVisible,
+                    enter = slideInVertically(
+                        initialOffsetY = { -it },
+                        animationSpec = spring(
+                            dampingRatio = Spring.DampingRatioMediumBouncy,
+                            stiffness = Spring.StiffnessMedium
                         )
+                    ) + fadeIn(animationSpec = tween(600)),
+                    exit = slideOutVertically() + fadeOut()
+                ) {
+                    Column {
+                        Spacer(modifier = Modifier.height(8.dp))
+                        CompanyHeader()
                     }
                 }
             }
             
-            // Lista de proyectos recientes
-            items(recentProjects) { project ->
-                ProjectCard(
-                    project = project,
-                    onClick = { /* Navigate to project detail */ }
-                )
+            // Buscador y filtro con animación retardada
+            item {
+                AnimatedVisibility(
+                    visible = isVisible,
+                    enter = slideInVertically(
+                        initialOffsetY = { it / 2 },
+                        animationSpec = spring(
+                            dampingRatio = Spring.DampingRatioMediumBouncy,
+                            stiffness = Spring.StiffnessMedium,
+                            delayMillis = 200
+                        )
+                    ) + fadeIn(animationSpec = tween(600, delayMillis = 200)),
+                    exit = slideOutVertically() + fadeOut()
+                ) {
+                    SearchAndFilterSection(
+                        searchQuery = searchQuery,
+                        onSearchQueryChange = { searchQuery = it },
+                        selectedStatus = selectedStatus,
+                        onStatusChange = { selectedStatus = it },
+                        statusOptions = statusOptions,
+                        isDropdownExpanded = isStatusDropdownExpanded,
+                        onDropdownExpandedChange = { isStatusDropdownExpanded = it }
+                    )
+                }
+            }
+            
+            // Sección de últimas actualizaciones
+            item {
+                AnimatedVisibility(
+                    visible = isVisible,
+                    enter = slideInHorizontally(
+                        initialOffsetX = { -it },
+                        animationSpec = spring(
+                            dampingRatio = Spring.DampingRatioMediumBouncy,
+                            stiffness = Spring.StiffnessMedium,
+                            delayMillis = 400
+                        )
+                    ) + fadeIn(animationSpec = tween(600, delayMillis = 400)),
+                    exit = slideOutHorizontally() + fadeOut()
+                ) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "Últimas Actualizaciones",
+                            fontSize = 20.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.onBackground
+                        )
+                        TextButton(onClick = onNavigateToProjects) {
+                            Text(
+                                text = "Ver todos",
+                                color = MaterialTheme.colorScheme.primary
+                            )
+                        }
+                    }
+                }
+            }
+            
+            // Lista de proyectos recientes con animación escalonada
+            itemsIndexed(recentProjects) { index, project ->
+                AnimatedVisibility(
+                    visible = isVisible,
+                    enter = slideInVertically(
+                        initialOffsetY = { it },
+                        animationSpec = spring(
+                            dampingRatio = Spring.DampingRatioMediumBouncy,
+                            stiffness = Spring.StiffnessMedium,
+                            delayMillis = 600 + (index * 150)
+                        )
+                    ) + fadeIn(animationSpec = tween(600, delayMillis = 600 + (index * 150))),
+                    exit = slideOutVertically() + fadeOut()
+                ) {
+                    ProjectCard(
+                        project = project,
+                        onClick = { /* Navigate to project detail */ }
+                    )
+                }
             }
             
             // Spacer para el FAB
