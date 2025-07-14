@@ -22,13 +22,13 @@ fun PlanosScreen(
     onNavigateToHome: () -> Unit
 ) {
     var isVisible by remember { mutableStateOf(false) }
-    
+
     // Activar animaciones de entrada
     LaunchedEffect(Unit) {
         delay(100)
         isVisible = true
     }
-    
+
     Scaffold(
         topBar = {
             AnimatedVisibility(
@@ -40,11 +40,11 @@ fun PlanosScreen(
                 exit = slideOutVertically() + fadeOut()
             ) {
                 TopAppBar(
-                    title = { 
+                    title = {
                         Text(
                             "Planos",
                             fontWeight = FontWeight.Bold
-                        ) 
+                        )
                     }
                 )
             }
@@ -55,8 +55,7 @@ fun PlanosScreen(
                 enter = scaleIn(
                     initialScale = 0f,
                     animationSpec = spring(
-                        dampingRatio = Spring.DampingRatioMediumBouncy,
-                        delayMillis = 600
+                        dampingRatio = Spring.DampingRatioMediumBouncy
                     )
                 ) + fadeIn(animationSpec = tween(400, delayMillis = 600)),
                 exit = scaleOut() + fadeOut()
@@ -83,8 +82,7 @@ fun PlanosScreen(
                     enter = scaleIn(
                         initialScale = 0.8f,
                         animationSpec = spring(
-                            dampingRatio = Spring.DampingRatioMediumBouncy,
-                            delayMillis = 200
+                            dampingRatio = Spring.DampingRatioMediumBouncy
                         )
                     ) + fadeIn(animationSpec = tween(600, delayMillis = 200)),
                     exit = scaleOut() + fadeOut()
@@ -117,7 +115,7 @@ fun PlanosScreen(
                     }
                 }
             }
-            
+
             // Lista de planos con animación escalonada
             items(4) { index ->
                 AnimatedVisibility(
@@ -125,8 +123,7 @@ fun PlanosScreen(
                     enter = slideInVertically(
                         initialOffsetY = { it },
                         animationSpec = spring(
-                            dampingRatio = Spring.DampingRatioMediumBouncy,
-                            delayMillis = 400 + (index * 100)
+                            dampingRatio = Spring.DampingRatioMediumBouncy
                         )
                     ) + fadeIn(animationSpec = tween(500, delayMillis = 400 + (index * 100))),
                     exit = slideOutVertically() + fadeOut()
@@ -162,4 +159,3 @@ fun PlanosScreen(
         }
     }
 }
-
