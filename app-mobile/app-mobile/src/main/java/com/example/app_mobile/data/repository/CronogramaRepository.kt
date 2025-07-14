@@ -1,6 +1,7 @@
 package com.example.app_mobile.data.repository
 
 import com.example.shared_domain.model.*
+import com.example.shared_domain.repository.GalleryProject
 import com.example.shared_domain.repository.ProjectRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -9,24 +10,24 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.flowOf
 
 class CronogramaRepository : ProjectRepository {
-    
+
     // Estado centralizado para cronogramas
     private val _schedules = MutableStateFlow<Map<String, ProjectSchedule>>(emptyMap())
     val schedules: StateFlow<Map<String, ProjectSchedule>> = _schedules.asStateFlow()
-    
+
     // Estado para tareas
     private val _tasks = MutableStateFlow<Map<String, ScheduleTask>>(emptyMap())
     val tasks: StateFlow<Map<String, ScheduleTask>> = _tasks.asStateFlow()
-    
+
     // Estado para hitos
     private val _milestones = MutableStateFlow<Map<String, Milestone>>(emptyMap())
     val milestones: StateFlow<Map<String, Milestone>> = _milestones.asStateFlow()
-    
+
     init {
         // Inicializar con datos mock
         initializeMockData()
     }
-    
+
     // Project operations (implementación básica)
     override suspend fun getAllProjects(): Flow<List<Project>> = TODO("Not implemented in this scope")
     override suspend fun getProjectById(id: String): Project? = TODO("Not implemented in this scope")
@@ -35,59 +36,59 @@ class CronogramaRepository : ProjectRepository {
     override suspend fun deleteProject(id: String): Result<Unit> = TODO("Not implemented in this scope")
     override suspend fun searchProjects(query: String): Flow<List<Project>> = TODO("Not implemented in this scope")
     override suspend fun getProjectsByStatus(status: ProjectStatus): Flow<List<Project>> = TODO("Not implemented in this scope")
-    
+
     // Schedule operations
     override suspend fun getScheduleByProjectId(projectId: String): ProjectSchedule? {
         return _schedules.value.values.find { it.projectId == projectId }
     }
-    
+
     override suspend fun createSchedule(schedule: ProjectSchedule): Result<ProjectSchedule> {
         return try {
             val updatedSchedules = _schedules.value.toMutableMap()
             updatedSchedules[schedule.id] = schedule
             _schedules.value = updatedSchedules
-            
+
             // Actualizar también las tareas
             updateTasksFromSchedule(schedule)
-            
+
             Result.success(schedule)
         } catch (e: Exception) {
             Result.failure(e)
         }
     }
-    
+
     override suspend fun updateSchedule(schedule: ProjectSchedule): Result<ProjectSchedule> {
         return try {
             val updatedSchedules = _schedules.value.toMutableMap()
             updatedSchedules[schedule.id] = schedule
             _schedules.value = updatedSchedules
-            
+
             // Actualizar también las tareas
             updateTasksFromSchedule(schedule)
-            
+
             Result.success(schedule)
         } catch (e: Exception) {
             Result.failure(e)
         }
     }
-    
+
     override suspend fun deleteSchedule(id: String): Result<Unit> {
         return try {
             val updatedSchedules = _schedules.value.toMutableMap()
             val schedule = updatedSchedules.remove(id)
             _schedules.value = updatedSchedules
-            
+
             // Remover tareas asociadas
             if (schedule != null) {
                 removeTasksFromSchedule(schedule)
             }
-            
+
             Result.success(Unit)
         } catch (e: Exception) {
             Result.failure(e)
         }
     }
-    
+
     override suspend fun updateTaskProgress(taskId: String, progress: Double): Result<Unit> {
         return try {
             updateTask(taskId) { task ->
@@ -98,70 +99,70 @@ class CronogramaRepository : ProjectRepository {
             Result.failure(e)
         }
     }
-    
+
     // Task operations
     suspend fun getTaskById(taskId: String): ScheduleTask? {
         return _tasks.value[taskId]
     }
-    
+
     suspend fun createTask(task: ScheduleTask): Result<ScheduleTask> {
         return try {
             val updatedTasks = _tasks.value.toMutableMap()
             updatedTasks[task.id] = task
             _tasks.value = updatedTasks
-            
+
             // Actualizar el cronograma correspondiente
             updateScheduleWithNewTask(task)
-            
+
             Result.success(task)
         } catch (e: Exception) {
             Result.failure(e)
         }
     }
-    
+
     suspend fun updateTask(taskId: String, updateFn: (ScheduleTask) -> ScheduleTask): Result<ScheduleTask> {
         return try {
-            val currentTask = _tasks.value[taskId] 
+            val currentTask = _tasks.value[taskId]
                 ?: return Result.failure(IllegalArgumentException("Task not found"))
-            
+
             val updatedTask = updateFn(currentTask)
             val updatedTasks = _tasks.value.toMutableMap()
             updatedTasks[taskId] = updatedTask
             _tasks.value = updatedTasks
-            
+
             // Actualizar el cronograma correspondiente
             updateScheduleWithUpdatedTask(updatedTask)
-            
+
             Result.success(updatedTask)
         } catch (e: Exception) {
             Result.failure(e)
         }
     }
-    
+
     suspend fun deleteTask(taskId: String): Result<Unit> {
         return try {
             val task = _tasks.value[taskId]
             val updatedTasks = _tasks.value.toMutableMap()
             updatedTasks.remove(taskId)
             _tasks.value = updatedTasks
-            
+
             // Actualizar el cronograma correspondiente
             if (task != null) {
                 removeTaskFromSchedule(task)
             }
-            
+
             Result.success(Unit)
         } catch (e: Exception) {
             Result.failure(e)
         }
     }
-    
+
     suspend fun moveTaskToPhase(taskId: String, newPhase: ProjectStatus): Result<ScheduleTask> {
         return updateTask(taskId) { task ->
             task.copy(category = mapProjectStatusToTaskCategory(newPhase))
         }
     }
-    
+
     suspend fun updateTaskStatus(taskId: String, status: TaskStatus): Result<ScheduleTask> {
         return updateTask(taskId) { task ->
             val progress = when (status) {
@@ -172,27 +173,27 @@ class CronogramaRepository : ProjectRepository {
             task.copy(status = status, progress = progress)
         }
     }
-    
+
     // Milestone operations
     suspend fun getMilestoneById(milestoneId: String): Milestone? {
         return _milestones.value[milestoneId]
     }
-    
+
     suspend fun updateMilestone(milestone: Milestone): Result<Milestone> {
         return try {
             val updatedMilestones = _milestones.value.toMutableMap()
             updatedMilestones[milestone.id] = milestone
             _milestones.value = updatedMilestones
-            
+
             // Actualizar el cronograma correspondiente
             updateScheduleWithUpdatedMilestone(milestone)
-            
+
             Result.success(milestone)
         } catch (e: Exception) {
             Result.failure(e)
         }
     }
-    
+
     // Helper methods
     private fun updateTasksFromSchedule(schedule: ProjectSchedule) {
         val updatedTasks = _tasks.value.toMutableMap()
@@ -200,28 +201,28 @@ class CronogramaRepository : ProjectRepository {
             updatedTasks[task.id] = task
         }
         _tasks.value = updatedTasks
-        
+
         val updatedMilestones = _milestones.value.toMutableMap()
         schedule.milestones.forEach { milestone ->
             updatedMilestones[milestone.id] = milestone
         }
         _milestones.value = updatedMilestones
     }
-    
+
     private fun removeTasksFromSchedule(schedule: ProjectSchedule) {
         val updatedTasks = _tasks.value.toMutableMap()
         schedule.tasks.forEach { task ->
             updatedTasks.remove(task.id)
         }
         _tasks.value = updatedTasks
-        
+
         val updatedMilestones = _milestones.value.toMutableMap()
         schedule.milestones.forEach { milestone ->
             updatedMilestones.remove(milestone.id)
         }
         _milestones.value = updatedMilestones
     }
-    
+
     private suspend fun updateScheduleWithNewTask(task: ScheduleTask) {
         val schedule = findScheduleContainingTask(task.id)
         if (schedule != null) {
@@ -230,7 +231,7 @@ class CronogramaRepository : ProjectRepository {
             updateSchedule(updatedSchedule)
         }
     }
-    
+
     private suspend fun updateScheduleWithUpdatedTask(task: ScheduleTask) {
         val schedule = findScheduleContainingTask(task.id)
         if (schedule != null) {
@@ -245,7 +246,7 @@ class CronogramaRepository : ProjectRepository {
             updateSchedule(updatedSchedule)
         }
     }
-    
+
     private suspend fun removeTaskFromSchedule(task: ScheduleTask) {
         val schedule = findScheduleContainingTask(task.id)
         if (schedule != null) {
@@ -254,34 +255,34 @@ class CronogramaRepository : ProjectRepository {
             updateSchedule(updatedSchedule)
         }
     }
-    
+
     private suspend fun updateScheduleWithUpdatedMilestone(milestone: Milestone) {
         val schedule = findScheduleContainingMilestone(milestone.id)
         if (schedule != null) {
-            val updatedMilestones = schedule.milestones.map { 
-                if (it.id == milestone.id) milestone else it 
+            val updatedMilestones = schedule.milestones.map {
+                if (it.id == milestone.id) milestone else it
             }
             val updatedSchedule = schedule.copy(milestones = updatedMilestones)
             updateSchedule(updatedSchedule)
         }
     }
-    
+
     private fun findScheduleContainingTask(taskId: String): ProjectSchedule? {
         return _schedules.value.values.find { schedule ->
             schedule.tasks.any { it.id == taskId }
         }
     }
-    
+
     private fun findScheduleContainingMilestone(milestoneId: String): ProjectSchedule? {
         return _schedules.value.values.find { schedule ->
             schedule.milestones.any { it.id == milestoneId }
         }
     }
-    
+
     private fun getCurrentTimestamp(): String {
         return "2024-01-15T${System.currentTimeMillis() % 86400000 / 1000}:00Z"
     }
-    
+
     private fun mapProjectStatusToTaskCategory(status: ProjectStatus): TaskCategory {
         return when (status) {
             ProjectStatus.DESIGN -> TaskCategory.DESIGN
@@ -290,7 +291,7 @@ class CronogramaRepository : ProjectRepository {
             ProjectStatus.DELIVERY -> TaskCategory.DELIVERY
         }
     }
-    
+
     private fun initializeMockData() {
         val mockSchedule = ProjectSchedule(
             id = "schedule_1",
@@ -385,11 +386,11 @@ class CronogramaRepository : ProjectRepository {
             endDate = "2024-06-30",
             status = ProjectStatus.CONSTRUCTION
         )
-        
+
         _schedules.value = mapOf(mockSchedule.id to mockSchedule)
         updateTasksFromSchedule(mockSchedule)
     }
-    
+
     // Blueprint operations (not implemented in this scope)
     override suspend fun getBlueprintsByProjectId(projectId: String): Flow<List<Blueprint>> = TODO()
     override suspend fun getBlueprintById(id: String): Blueprint? = TODO()
@@ -397,7 +398,7 @@ class CronogramaRepository : ProjectRepository {
     override suspend fun updateBlueprint(blueprint: Blueprint): Result<Blueprint> = TODO()
     override suspend fun deleteBlueprint(id: String): Result<Unit> = TODO()
     override suspend fun addBlueprintRevision(blueprintId: String, revision: BlueprintRevision): Result<Blueprint> = TODO()
-    
+
     // Evidence operations (not implemented in this scope)
     override suspend fun getEvidenceByProjectId(projectId: String): Flow<List<Evidence>> = TODO()
     override suspend fun getEvidenceById(id: String): Evidence? = TODO()
@@ -410,8 +411,15 @@ class CronogramaRepository : ProjectRepository {
     // Métodos de galería requeridos por ProjectRepository (no implementados en este repositorio)
     override suspend fun getAllGalleryProjects(): Flow<List<GalleryProject>> = flowOf(emptyList())
     override suspend fun getGalleryProjectById(id: String): GalleryProject? = null
-    override suspend fun createGalleryProject(project: GalleryProject): Result<GalleryProject> =
-        Result.failure(UnsupportedOperationException("Use EvidenciaRepository for gallery operations"))
+
+    // Elimina las siguientes dos funciones duplicadas:
+    // override suspend fun createGalleryProject(project: GalleryProject): Result<GalleryProject> { ... }
+    // override suspend fun updateGalleryProject(project: GalleryProject): Result<GalleryProject> { ... }
+
+    // Deja solo estas implementaciones:
+    override suspend fun createGalleryProject(galleryProject: GalleryProject): Result<GalleryProject> {
+        return Result.failure(UnsupportedOperationException("Use EvidenciaRepository for gallery operations"))
+    }
     override suspend fun updateGalleryProject(project: GalleryProject): Result<GalleryProject> =
         Result.failure(UnsupportedOperationException("Use EvidenciaRepository for gallery operations"))
     override suspend fun deleteGalleryProject(id: String): Result<Unit> =
@@ -420,4 +428,5 @@ class CronogramaRepository : ProjectRepository {
         Result.failure(UnsupportedOperationException("Use EvidenciaRepository for gallery operations"))
     override suspend fun searchGalleryProjects(query: String): Flow<List<GalleryProject>> = flowOf(emptyList())
     override suspend fun getGalleryProjectsByStyle(style: String): Flow<List<GalleryProject>> = flowOf(emptyList())
+
 }
