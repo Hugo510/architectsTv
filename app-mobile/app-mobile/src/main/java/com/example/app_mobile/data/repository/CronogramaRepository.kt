@@ -378,7 +378,11 @@ class CronogramaRepository : ProjectRepository {
                 updatedAt = "2024-01-15T10:30:00Z",
                 version = 1,
                 lastModifiedBy = "arq_steve"
-            )
+            ),
+            // NUEVOS CAMPOS
+            startDate = "2024-01-15",
+            endDate = "2024-06-30",
+            status = ProjectStatus.CONSTRUCTION
         )
         
         _schedules.value = mapOf(mockSchedule.id to mockSchedule)

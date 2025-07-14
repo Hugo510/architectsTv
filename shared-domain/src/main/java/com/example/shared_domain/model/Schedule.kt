@@ -10,11 +10,17 @@ data class ProjectSchedule(
     val description: String? = null,
     val tasks: List<ScheduleTask>,
     val milestones: List<Milestone> = emptyList(),
-    val metadata: ScheduleMetadata
+    val metadata: ScheduleMetadata,
+    // NUEVOS CAMPOS PARA INTEGRACIÓN CON UI
+    val startDate: String, // ISO 8601
+    val endDate: String,   // ISO 8601
+    val status: ProjectStatus
 ) {
     init {
         require(name.isNotBlank()) { "Schedule name cannot be blank" }
         require(projectId.isNotBlank()) { "Project ID cannot be blank" }
+        require(startDate.isNotBlank()) { "Schedule startDate cannot be blank" }
+        require(endDate.isNotBlank()) { "Schedule endDate cannot be blank" }
     }
     
     val totalProgress: Double get() {
@@ -114,3 +120,12 @@ data class ScheduleMetadata(
     val version: Int = 1,
     val lastModifiedBy: String? = null
 )
+
+@Serializable
+enum class ProjectStatus {
+    NOT_STARTED,
+    IN_PROGRESS,
+    COMPLETED,
+    ON_HOLD,
+    CANCELLED
+}
