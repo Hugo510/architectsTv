@@ -35,16 +35,16 @@ fun TaskDetailScreen(
 ) {
     val task by viewModel.getTaskById(taskId).collectAsState()
     val uiState by viewModel.uiState.collectAsState()
-    
+
     task?.let { currentTask ->
         Scaffold(
             topBar = {
                 TopAppBar(
-                    title = { 
+                    title = {
                         Text(
                             "Detalle de Tarea",
                             fontWeight = FontWeight.Bold
-                        ) 
+                        )
                     },
                     navigationIcon = {
                         IconButton(onClick = onNavigateBack) {
@@ -58,36 +58,34 @@ fun TaskDetailScreen(
                     }
                 )
             },
-            floatingActionButton = if (currentTask.status != TaskStatus.COMPLETED) {
-                {
-                    ExtendedFloatingActionButton(
-                        onClick = { 
-                            val newStatus = when (currentTask.status) {
-                                TaskStatus.NOT_STARTED -> TaskStatus.IN_PROGRESS
-                                TaskStatus.ON_HOLD -> TaskStatus.IN_PROGRESS
-                                else -> TaskStatus.IN_PROGRESS
-                            }
-                            viewModel.updateTaskStatus(taskId, newStatus)
-                        },
-                        icon = { 
-                            Icon(
-                                Icons.Default.PlayArrow, 
-                                contentDescription = null
-                            ) 
-                        },
-                        text = { 
-                            Text(
-                                when (currentTask.status) {
-                                    TaskStatus.NOT_STARTED -> "Iniciar Tarea"
-                                    TaskStatus.IN_PROGRESS -> "Continuar"
-                                    TaskStatus.ON_HOLD -> "Reanudar"
-                                    else -> "Actualizar"
-                                }
-                            ) 
+            floatingActionButton = if (currentTask.status != TaskStatus.COMPLETED) ({
+                ExtendedFloatingActionButton(
+                    onClick = {
+                        val newStatus = when (currentTask.status) {
+                            TaskStatus.NOT_STARTED -> TaskStatus.IN_PROGRESS
+                            TaskStatus.ON_HOLD -> TaskStatus.IN_PROGRESS
+                            else -> TaskStatus.IN_PROGRESS
                         }
-                    )
-                }
-            } else null
+                        viewModel.updateTaskStatus(taskId, newStatus)
+                    },
+                    icon = {
+                        Icon(
+                            Icons.Default.PlayArrow,
+                            contentDescription = null
+                        )
+                    },
+                    text = {
+                        Text(
+                            when (currentTask.status) {
+                                TaskStatus.NOT_STARTED -> "Iniciar Tarea"
+                                TaskStatus.IN_PROGRESS -> "Continuar"
+                                TaskStatus.ON_HOLD -> "Reanudar"
+                                else -> "Actualizar"
+                            }
+                        )
+                    }
+                )
+            }) else ({})
         ) { paddingValues ->
             if (uiState.isLoading) {
                 Box(
@@ -109,10 +107,10 @@ fun TaskDetailScreen(
                 ) {
                     // Header de la tarea
                     TaskDetailHeader(task = currentTask)
-                    
+
                     // Información general
                     TaskGeneralInfo(task = currentTask)
-                    
+
                     // Progreso y tiempo
                     TaskProgressInfo(
                         task = currentTask,
@@ -120,10 +118,10 @@ fun TaskDetailScreen(
                             viewModel.updateTaskProgress(taskId, progress)
                         }
                     )
-                    
+
                     // Equipo asignado
                     TaskTeamInfo(task = currentTask)
-                    
+
                     // Controles de estado
                     TaskStatusControls(
                         task = currentTask,
@@ -131,7 +129,7 @@ fun TaskDetailScreen(
                             viewModel.updateTaskStatus(taskId, status)
                         }
                     )
-                    
+
                     // Actividad reciente
                     TaskActivitySection()
                 }
@@ -171,17 +169,18 @@ private fun TaskDetailHeader(task: ScheduleTask) {
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.onPrimaryContainer
                     )
-                    
-                    if (task.description != null) {
+
+                    val desc = task.description
+                    if (desc != null) {
                         Text(
-                            text = task.description,
+                            text = desc,
                             fontSize = 14.sp,
                             color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.8f),
                             modifier = Modifier.padding(top = 8.dp)
                         )
                     }
                 }
-                
+
                 // Estado y prioridad
                 Column(
                     horizontalAlignment = Alignment.End,
@@ -199,7 +198,7 @@ private fun TaskDetailHeader(task: ScheduleTask) {
                             fontWeight = FontWeight.Bold
                         )
                     }
-                    
+
                     Surface(
                         shape = RoundedCornerShape(12.dp),
                         color = getPriorityColor(task.priority)
@@ -230,25 +229,25 @@ private fun TaskGeneralInfo(task: ScheduleTask) {
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Bold
             )
-            
+
             InfoRow(
                 label = "Fecha de Inicio",
                 value = task.startDate,
                 icon = "📅"
             )
-            
+
             InfoRow(
                 label = "Fecha de Fin",
                 value = task.endDate,
                 icon = "🏁"
             )
-            
+
             InfoRow(
                 label = "Categoría",
                 value = getCategoryDisplayName(task.category),
                 icon = "📋"
             )
-            
+
             if (task.dependencies.isNotEmpty()) {
                 InfoRow(
                     label = "Dependencias",
@@ -275,7 +274,7 @@ private fun TaskProgressInfo(
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Bold
             )
-            
+
             // Progreso visual con botones de actualización
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 Row(
@@ -294,7 +293,7 @@ private fun TaskProgressInfo(
                         color = MaterialTheme.colorScheme.primary
                     )
                 }
-                
+
                 LinearProgressIndicator(
                     progress = { task.progress.toFloat() },
                     modifier = Modifier
@@ -303,7 +302,7 @@ private fun TaskProgressInfo(
                         .clip(RoundedCornerShape(4.dp)),
                     color = getTaskStatusColor(task.status)
                 )
-                
+
                 // Botones de progreso rápido
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -320,7 +319,7 @@ private fun TaskProgressInfo(
                     }
                 }
             }
-            
+
             // Información de horas
             if (task.estimatedHours != null) {
                 Row(
@@ -332,17 +331,17 @@ private fun TaskProgressInfo(
                         value = "${task.estimatedHours}h",
                         modifier = Modifier.weight(1f)
                     )
-                    
+
                     Spacer(modifier = Modifier.width(8.dp))
-                    
+
                     TimeInfoCard(
                         label = "Actual",
                         value = "${task.actualHours ?: 0}h",
                         modifier = Modifier.weight(1f)
                     )
-                    
+
                     Spacer(modifier = Modifier.width(8.dp))
-                    
+
                     TimeInfoCard(
                         label = "Restante",
                         value = "${(task.estimatedHours ?: 0) - (task.actualHours ?: 0)}h",
@@ -367,7 +366,7 @@ private fun TaskTeamInfo(task: ScheduleTask) {
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold
                 )
-                
+
                 task.assignedTo.forEach { memberId ->
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
@@ -387,9 +386,9 @@ private fun TaskTeamInfo(task: ScheduleTask) {
                                 fontWeight = FontWeight.Bold
                             )
                         }
-                        
+
                         Spacer(modifier = Modifier.width(12.dp))
-                        
+
                         Column {
                             Text(
                                 text = memberId.replace("_", " ").replaceFirstChar { it.uppercase() },
@@ -424,7 +423,7 @@ private fun TaskStatusControls(
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Bold
             )
-            
+
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -456,7 +455,7 @@ private fun TaskActivitySection() {
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Bold
             )
-            
+
             // Lista de actividades mockeadas
             listOf(
                 "Tarea iniciada por Arq. Steve" to "Hace 2 horas",
