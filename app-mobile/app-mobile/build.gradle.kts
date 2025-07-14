@@ -225,7 +225,7 @@ dependencies {
     implementation(libs.androidx.compose.foundation)
 
     //Layout Staggered Grid - Para layouts avanzados
-    implementation(libs.androidx.compose.foundation.layout)
+    implementation(libs.androidx.compose.foundation.layout.staggeredgrid)
 
     //Accompanist específicos para funcionalidades detectadas
     implementation(libs.accompanist.placeholder.material)

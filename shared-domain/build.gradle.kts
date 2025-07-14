@@ -1,3 +1,8 @@
+repositories {
+    mavenCentral()
+    google()
+}
+
 plugins {
     id("org.jetbrains.kotlin.jvm")
     alias(libs.plugins.kotlin.serialization)
