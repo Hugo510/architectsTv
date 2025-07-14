@@ -32,6 +32,8 @@ import com.example.app_mobile.ui.screens.management.ManagementViewModel
 import com.example.app_mobile.ui.screens.evidencia.EvidenciaViewModel
 import com.example.app_mobile.ui.screens.evidencia.GalleryProjectDetailScreen
 import com.example.app_mobile.ui.screens.evidencia.AddGalleryProjectScreen
+import com.example.app_mobile.data.repository.ManagementRepository
+import androidx.compose.runtime.remember
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -56,8 +58,13 @@ fun MobileApp() {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
     
-    // ViewModels compartidos
-    val managementViewModel: ManagementViewModel = viewModel()
+    // Repository compartido para integridad de datos
+    val managementRepository = remember { ManagementRepository() }
+    
+    // ViewModels compartidos que usan el mismo repository
+    val managementViewModel: ManagementViewModel = viewModel {
+        ManagementViewModel(managementRepository)
+    }
     val evidenciaViewModel: EvidenciaViewModel = viewModel()
     
     // Lista de rutas principales que muestran el bottom navigation
@@ -117,6 +124,7 @@ fun MobileApp() {
                     label = "home_animation"
                 ) {
                     HomeScreen(
+                        repository = managementRepository, // Inyectar repository compartido
                         onNavigateToProjects = { 
                             navController.navigate("management") {
                                 launchSingleTop = true

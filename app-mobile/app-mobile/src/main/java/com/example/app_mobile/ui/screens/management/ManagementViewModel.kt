@@ -21,7 +21,7 @@ data class ManagementUiState(
 )
 
 class ManagementViewModel(
-    private val repository: ProjectRepository = ManagementRepository()
+    private val repository: ProjectRepository // Ahora acepta inyección
 ) : ViewModel() {
     
     private val _uiState = MutableStateFlow(ManagementUiState())
@@ -33,28 +33,16 @@ class ManagementViewModel(
     
     fun loadProjects() {
         viewModelScope.launch {
-            _uiState.value = _uiState.value.copy(isLoading = true, errorMessage = null)
-            
-            try {
-                repository.getAllProjects().collect { projects ->
-                    _uiState.value = _uiState.value.copy(
-                        projects = projects,
-                        isLoading = false
-                    )
-                    applyFilters()
-                }
-            } catch (e: Exception) {
-                _uiState.value = _uiState.value.copy(
-                    isLoading = false,
-                    errorMessage = "Error al cargar proyectos: ${e.message}"
-                )
+            repository.getAllProjects().collect { projects ->
+                _uiState.value = _uiState.value.copy(projects = projects)
+                applyFilters() // ← Aplica filtros automáticamente
             }
         }
     }
     
     fun updateSearchQuery(query: String) {
         _uiState.value = _uiState.value.copy(searchQuery = query)
-        applyFilters()
+        applyFilters() // ← Reaplica filtros en tiempo real
     }
     
     fun updateSelectedStatus(status: String) {
@@ -205,6 +193,18 @@ class ManagementViewModel(
         }
         
         _uiState.value = currentState.copy(filteredProjects = filtered)
+    }
+    
+    // Usar función de mapeo compatible con shared_domain
+    private fun mapProjectStatusToDisplayName(status: ProjectStatus): String {
+        return when (status) {
+            ProjectStatus.DESIGN -> "Diseño"
+            ProjectStatus.PERMITS_REVIEW -> "Revisión de Permisos"
+            ProjectStatus.CONSTRUCTION -> "Construcción"
+            ProjectStatus.DELIVERY -> "Entrega"
+        }
+    }
+}
     }
     
     // Usar función de mapeo compatible con shared_domain

@@ -23,19 +23,29 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.shared_domain.model.*
+import com.example.app_mobile.data.repository.ManagementRepository
 import kotlinx.coroutines.delay
+import androidx.lifecycle.viewmodel.compose.viewModel
+import kotlinx.coroutines.flow.map
+import com.example.app_mobile.ui.components.ProjectCard
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
     onNavigateToProjects: () -> Unit,
     onNavigateToManagement: () -> Unit,
-    onNavigateToCast: () -> Unit
+    onNavigateToCast: () -> Unit,
+    repository: ManagementRepository = ManagementRepository() // ← Repository inyectado
 ) {
     var searchQuery by remember { mutableStateOf("") }
     var selectedStatus by remember { mutableStateOf("Todos") }
     var isStatusDropdownExpanded by remember { mutableStateOf(false) }
     var isVisible by remember { mutableStateOf(false) }
+    
+    // Obtener últimos 2 proyectos del repository compartido
+    val recentProjects by repository.getAllProjects()
+        .map { projects -> projects.take(2) } // ← Solo últimos 2 proyectos
+        .collectAsState(initial = emptyList())
     
     // Activar animaciones de entrada después de un breve delay
     LaunchedEffect(Unit) {
@@ -44,76 +54,6 @@ fun HomeScreen(
     }
     
     val statusOptions = listOf("Todos", "Diseño", "Revisión de Permisos", "Construcción", "Entrega")
-    
-    // Datos mockeados usando el dominio compartido
-    val recentProjects = remember {
-        listOf(
-            Project(
-                id = "1",
-                name = "Proyecto 1",
-                description = "Casa residencial moderna",
-                status = ProjectStatus.DESIGN,
-                location = ProjectLocation(
-                    address = "Calle Ejemplo #123",
-                    city = "Durango",
-                    state = "Durango"
-                ),
-                budget = Money(2250000.0),
-                client = Client(
-                    id = "client1",
-                    name = "Juan Pérez",
-                    email = "juan@example.com"
-                ),
-                projectManager = ProjectManager(
-                    id = "pm1",
-                    name = "Arq. Steve",
-                    title = "Arquitecto Senior"
-                ),
-                timeline = ProjectTimeline(
-                    startDate = "2024-01-15",
-                    endDate = "2024-12-15",
-                    estimatedDuration = 300
-                ),
-                metadata = ProjectMetadata(
-                    createdAt = "2024-01-01T00:00:00Z",
-                    updatedAt = "2024-01-10T12:00:00Z"
-                ),
-                progress = 0.15
-            ),
-            Project(
-                id = "2",
-                name = "Proyecto 2",
-                description = "Edificio comercial",
-                status = ProjectStatus.CONSTRUCTION,
-                location = ProjectLocation(
-                    address = "Av. Principal #456",
-                    city = "Durango",
-                    state = "Durango"
-                ),
-                budget = Money(5500000.0),
-                client = Client(
-                    id = "client2",
-                    name = "María González",
-                    company = "Empresa ABC"
-                ),
-                projectManager = ProjectManager(
-                    id = "pm2",
-                    name = "Arq. Alex",
-                    title = "Director de Proyecto"
-                ),
-                timeline = ProjectTimeline(
-                    startDate = "2023-08-01",
-                    endDate = "2024-08-01",
-                    estimatedDuration = 365
-                ),
-                metadata = ProjectMetadata(
-                    createdAt = "2023-07-15T00:00:00Z",
-                    updatedAt = "2024-01-09T10:30:00Z"
-                ),
-                progress = 0.65
-            )
-        )
-    }
     
     Scaffold(
         floatingActionButton = {
@@ -130,7 +70,7 @@ fun HomeScreen(
                 exit = scaleOut() + fadeOut()
             ) {
                 FloatingActionButton(
-                    onClick = onNavigateToCast,
+                    onClick = { /* Accion del FAB */ },
                     containerColor = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.animateContentSize()
                 ) {
@@ -217,7 +157,7 @@ fun HomeScreen(
                             fontWeight = FontWeight.Bold,
                             color = MaterialTheme.colorScheme.onBackground
                         )
-                        TextButton(onClick = onNavigateToProjects) {
+                        TextButton(onClick = onNavigateToManagement) {
                             Text(
                                 text = "Ver todos",
                                 color = MaterialTheme.colorScheme.primary
@@ -383,128 +323,6 @@ private fun SearchAndFilterSection(
                             onStatusChange(status)
                             onDropdownExpandedChange(false)
                         }
-                    )
-                }
-            }
-        }
-    }
-}
-
-@Composable
-private fun ProjectCard(
-    project: Project,
-    onClick: () -> Unit
-) {
-    Card(
-        onClick = onClick,
-        modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surface
-        ),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
-    ) {
-        Row(
-            modifier = Modifier.padding(16.dp)
-        ) {
-            // Icono del proyecto en lugar de emoji
-            Box(
-                modifier = Modifier
-                    .size(80.dp)
-                    .clip(RoundedCornerShape(8.dp))
-                    .background(MaterialTheme.colorScheme.surfaceVariant),
-                contentAlignment = Alignment.Center
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Construction,
-                    contentDescription = "Proyecto",
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.size(32.dp)
-                )
-            }
-            
-            Spacer(modifier = Modifier.width(16.dp))
-            
-            // Información del proyecto
-            Column(
-                modifier = Modifier.weight(1f)
-            ) {
-                // Nombre y estado
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = project.name,
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.onSurface
-                    )
-                    
-                    // Chip de estado
-                    Surface(
-                        shape = RoundedCornerShape(12.dp),
-                        color = when (project.status) {
-                            ProjectStatus.DESIGN -> Color(0xFF9CA3FF)
-                            ProjectStatus.PERMITS_REVIEW -> Color(0xFFFBB6CE)
-                            ProjectStatus.CONSTRUCTION -> Color(0xFF68D391)
-                            ProjectStatus.DELIVERY -> Color(0xFFA0AEC0)
-                        }
-                    ) {
-                        Text(
-                            text = when (project.status) {
-                                ProjectStatus.DESIGN -> "Diseño"
-                                ProjectStatus.PERMITS_REVIEW -> "Revisión de Permisos"
-                                ProjectStatus.CONSTRUCTION -> "Construcción"
-                                ProjectStatus.DELIVERY -> "Entrega"
-                            },
-                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
-                            fontSize = 12.sp,
-                            color = Color.White,
-                            fontWeight = FontWeight.Medium
-                        )
-                    }
-                }
-                
-                // Actividad reciente
-                Text(
-                    text = project.description ?: "Sin descripción",
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.Medium,
-                    color = MaterialTheme.colorScheme.onSurface,
-                    modifier = Modifier.padding(top = 4.dp)
-                )
-                
-                Text(
-                    text = "Última actualización por: ${project.projectManager.name}",
-                    fontSize = 12.sp,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.padding(top = 2.dp)
-                )
-                
-                // Barra de progreso
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 8.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    if (project.progressPercentage > 0) {
-                        LinearProgressIndicator(
-                            progress = { project.progress.toFloat() },
-                            modifier = Modifier.weight(1f),
-                            color = when (project.status) {
-                                ProjectStatus.DELIVERY -> Color(0xFF4CAF50)
-                                ProjectStatus.CONSTRUCTION -> Color(0xFF2196F3)
-                                else -> MaterialTheme.colorScheme.primary
-                            }
-                        )
-                        Spacer(modifier = Modifier.width(8.dp))
-                    }
-                    Text(
-                        text = "Progreso - ${project.progressPercentage}%",
-                        fontSize = 12.sp,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
             }

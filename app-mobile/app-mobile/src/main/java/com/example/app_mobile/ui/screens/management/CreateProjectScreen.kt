@@ -31,6 +31,7 @@ fun CreateProjectScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
     
+    // Estados locales para el formulario
     var projectName by remember { mutableStateOf("") }
     var projectDescription by remember { mutableStateOf("") }
     var selectedStatus by remember { mutableStateOf(ProjectStatus.DESIGN) }

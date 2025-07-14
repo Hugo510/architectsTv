@@ -26,6 +26,7 @@ import coil.compose.AsyncImage
 import com.example.shared_domain.model.*
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.compose.runtime.collectAsState
+import com.example.app_mobile.ui.components.ProjectCard
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -35,6 +36,7 @@ fun ManagementScreen(
     onNavigateToCreateProject: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    var isDropdownExpanded by remember { mutableStateOf(false) }
     
     val statusOptions = listOf("Estado", "Diseño", "Revisión de Permisos", "Construcción", "Entrega")
     
@@ -69,20 +71,20 @@ fun ManagementScreen(
             item {
                 SearchAndFilterSection(
                     searchQuery = uiState.searchQuery,
-                    onSearchQueryChange = viewModel::updateSearchQuery,
+                    onSearchQueryChange = viewModel::updateSearchQuery, // Actualiza filtros
                     selectedStatus = uiState.selectedStatus,
                     onStatusChange = viewModel::updateSelectedStatus,
                     statusOptions = statusOptions,
-                    isDropdownExpanded = false, // Mantener estado local para dropdown
-                    onDropdownExpandedChange = { }
+                    isDropdownExpanded = isDropdownExpanded,
+                    onDropdownExpandedChange = { isDropdownExpanded = it }
                 )
             }
             
-            // Lista de todos los proyectos
-            items(uiState.filteredProjects) { project ->
+            // Lista completa de proyectos filtrados
+            items(uiState.filteredProjects) { project -> // Proyectos filtrados
                 ProjectCard(
-                    project = project,
-                    onClick = { /* TODO: Navigate to project detail */ }
+                    project = project, // Mismo componente que HomeScreen
+                    onClick = { /* Navigate to project detail */ }
                 )
             }
             
@@ -229,7 +231,7 @@ private fun SearchAndFilterSection(
 }
 
 @Composable
-private fun ProjectCard(
+fun ProjectCard(
     project: Project,
     onClick: () -> Unit
 ) {
@@ -371,16 +373,6 @@ private fun getStatusDisplayName(status: ProjectStatus): String {
         ProjectStatus.DELIVERY -> "Entrega"
     }
 }
-    onClick: () -> Unit
-) {
-    Card(
-        onClick = onClick,
-        modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surface
-        ),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
-    ) {
         Row(
             modifier = Modifier.padding(16.dp)
         ) {
