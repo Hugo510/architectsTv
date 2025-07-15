@@ -1,9 +1,8 @@
 [versions]
 agp = "8.10.1"
 coilCompose = "2.4.0"
-hiltAndroid = "2.56.2"
-hiltNavigationComposeVersion = "1.2.0"
 kotlin = "2.1.21"
+composeCompiler = "2.1.21"
 coreKtx = "1.16.0"
 junit = "4.13.2"
 junitVersion = "1.2.1"
@@ -26,7 +25,7 @@ materialIcons = "1.7.8"
 lifecycleViewModelKtx = "2.9.1"
 desugar = "2.1.5"
 desugar_jdk_libs = "2.1.5"
-hilt               = "2.44"
+hilt = "2.56.2"
 castFramework      = "21.1.0"
 hiltNavigationCompose = "1.2.0"
 #kotlinx-serialization = "1.8.1"
@@ -77,7 +76,7 @@ androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = 
 androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigationCompose" }
 androidx-navigation-tv = { module = "androidx.tv:navigation-tv", version.ref = "navigationTv" }
 coil-compose = { group = "io.coil-kt", name = "coil-compose", version.ref = "coilCompose" }
-hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "hiltAndroid" }
+hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "hilt" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
@@ -105,7 +104,6 @@ hilt-navigation-compose = { group = "androidx.hilt", name  = "hilt-navigation-co
 androidx-material-icons-extended = { group = "androidx.compose.material", name  = "material-icons-extended", version.ref = "materialIcons" }
 androidx-lifecycle-viewmodel-ktx = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-ktx", version.ref = "lifecycleViewModelKtx" }
 android-desugar-jdk-libs = { module = "com.android.tools:desugar_jdk_libs", version.ref = "desugar_jdk_libs" }
-androidx-hilt-navigation-compose-v120 = { module = "androidx.hilt:hilt-navigation-compose", version.ref = "hiltNavigationComposeVersion" }
 #kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "serialization-json", version.ref = "kotlinx-serialization" }
 androidx-compose-animation = { group = "androidx.compose.animation", name = "animation", version.ref = "compose-animation" }
 androidx-compose-animation-core = { group = "androidx.compose.animation", name = "animation-core", version.ref = "compose-animation" }
@@ -239,8 +237,6 @@ android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 android-library = { id = "com.android.library", version.ref = "agp" }
-hilt = { id = "com.google.dagger.hilt.android", version.ref = "hiltAndroid" }
-hilt-android = { id = "com.google.dagger.hilt.android",         version.ref = "hilt" }
-hilt-android-compiler = { id = "com.google.dagger.hilt.android.plugin", version.ref = "hilt" }
-
+hilt-android = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
+composeCompiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "composeCompiler" }
 ksp = { id = "com.google.devtools.ksp", version = "2.1.21-2.0.1" }

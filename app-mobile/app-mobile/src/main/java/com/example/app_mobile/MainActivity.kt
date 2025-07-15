@@ -37,7 +37,9 @@ import com.example.app_mobile.data.repository.ManagementRepository
 import androidx.compose.runtime.remember
 import com.example.app_mobile.ui.screens.cronograma.TaskDetailScreen
 import com.example.app_mobile.ui.screens.cronograma.CreateTaskScreen
-
+import androidx.hilt.navigation.compose.hiltViewModel
+import dagger.hilt.android.AndroidEntryPoint
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -68,7 +70,7 @@ fun MobileApp() {
     val managementViewModel: ManagementViewModel = viewModel {
         ManagementViewModel(managementRepository)
     }
-    val evidenciaViewModel: EvidenciaViewModel = viewModel()
+    val evidenciaViewModel: EvidenciaViewModel = hiltViewModel()
     
     // Lista de rutas principales que muestran el bottom navigation
     val bottomNavRoutes = listOf("home", "management", "cronograma", "planos", "evidencia")
