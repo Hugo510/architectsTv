@@ -38,6 +38,7 @@ import androidx.compose.runtime.remember
 import com.example.app_mobile.ui.screens.cronograma.TaskDetailScreen
 import com.example.app_mobile.ui.screens.cronograma.CreateTaskScreen
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.shared_domain.model.Project
 import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {

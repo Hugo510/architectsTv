@@ -7,30 +7,22 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Architecture
-import androidx.compose.material.icons.filled.Engineering
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.PhotoCamera
-import androidx.compose.material.icons.filled.Schedule
-import androidx.compose.material.icons.outlined.Architecture
-import androidx.compose.material.icons.outlined.Engineering
-import androidx.compose.material.icons.outlined.Home
-import androidx.compose.material.icons.outlined.PhotoCamera
-import androidx.compose.material.icons.outlined.Schedule
+import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.outlined.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.modifier.modifierLocalOf
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.draw.scale
+
 
 data class BottomNavItem(
     val route: String,
@@ -50,26 +42,26 @@ object BottomNavItems {
         BottomNavItem(
             route = "management",
             title = "Gestión",
-            selectedIcon = Icons.Filled.Engineering,
-            unselectedIcon = Icons.Outlined.Engineering
+            selectedIcon = Icons.Filled.Settings,
+            unselectedIcon = Icons.Outlined.Settings
         ),
         BottomNavItem(
             route = "cronograma",
             title = "Cronograma",
-            selectedIcon = Icons.Filled.Schedule,
-            unselectedIcon = Icons.Outlined.Schedule
+            selectedIcon = Icons.Filled.List,
+            unselectedIcon = Icons.Outlined.List
         ),
         BottomNavItem(
             route = "planos",
             title = "Planos",
-            selectedIcon = Icons.Filled.Architecture,
-            unselectedIcon = Icons.Outlined.Architecture
+            selectedIcon = Icons.Filled.Info,
+            unselectedIcon = Icons.Outlined.Info
         ),
         BottomNavItem(
             route = "evidencia",
             title = "Galería",
-            selectedIcon = Icons.Filled.PhotoCamera,
-            unselectedIcon = Icons.Outlined.PhotoCamera
+            selectedIcon = Icons.Filled.Star,
+            unselectedIcon = Icons.Outlined.Star
         )
     )
 }

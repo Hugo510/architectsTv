@@ -22,7 +22,6 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import coil.compose.AsyncImage
 import com.example.shared_domain.model.*
 import com.example.app_mobile.data.repository.ManagementRepository
 import kotlinx.coroutines.delay
@@ -76,7 +75,7 @@ fun HomeScreen(
                     containerColor = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.animateContentSize()
                 ) {
-                    Icon(Icons.Default.Cast, contentDescription = "Transmitir a TV")
+                    Icon(Icons.Default.Star, contentDescription = "Transmitir a TV")
                 }
             }
         }

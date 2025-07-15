@@ -31,6 +31,8 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
+
+        isCoreLibraryDesugaringEnabled = true
     }
 
     kotlinOptions {
@@ -48,6 +50,7 @@ dependencies {
     // Compose UI
     implementation(libs.androidx.ui)
     implementation(libs.androidx.ui.tooling.preview)
+    implementation(project(":shared-domain"))
     debugImplementation(libs.androidx.ui.tooling)
 
     // Hilt
@@ -57,7 +60,7 @@ dependencies {
     // Navigation
     implementation(libs.androidx.navigation.compose)
     implementation(libs.hilt.navigation.compose)
-
+    coreLibraryDesugaring(libs.android.desugar.jdk.libs)
     // Test
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

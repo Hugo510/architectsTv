@@ -16,10 +16,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ExpandLess
-import androidx.compose.material.icons.filled.ExpandMore
-import androidx.compose.material.icons.filled.FilterList
-import androidx.compose.material.icons.filled.Sort
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -115,7 +112,7 @@ private fun CronogramaViewHeader() {
                         .size(36.dp)
                 ) {
                     Icon(
-                        imageVector = Icons.Default.Sort,
+                        imageVector = Icons.Default.Menu,
                         contentDescription = "Ordenar",
                         tint = MaterialTheme.colorScheme.onSurface,
                         modifier = Modifier.size(18.dp)
@@ -131,7 +128,7 @@ private fun CronogramaViewHeader() {
                         .size(36.dp)
                 ) {
                     Icon(
-                        imageVector = Icons.Default.FilterList,
+                        imageVector = Icons.Default.List,
                         contentDescription = "Filtros",
                         tint = MaterialTheme.colorScheme.onSurface,
                         modifier = Modifier.size(18.dp)
@@ -317,7 +314,7 @@ private fun PhaseHeader(
                 modifier = Modifier.fillMaxSize()
             ) {
                 Icon(
-                    imageVector = if (isExpanded) Icons.Default.ExpandLess else Icons.Default.ExpandMore,
+                    imageVector = if (isExpanded) Icons.Default.ArrowDropDown else Icons.Default.KeyboardArrowUp,
                     contentDescription = if (isExpanded) "Contraer" else "Expandir",
                     tint = MaterialTheme.colorScheme.onSurface
                 )

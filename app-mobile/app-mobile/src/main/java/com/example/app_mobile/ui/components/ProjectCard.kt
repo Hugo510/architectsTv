@@ -159,10 +159,10 @@ fun getStatusColor(status: ProjectStatus): Color {
 
 fun getStatusIcon(status: ProjectStatus): ImageVector {
     return when (status) {
-        ProjectStatus.DESIGN -> Icons.Default.Architecture
-        ProjectStatus.PERMITS_REVIEW -> Icons.Default.Assignment
-        ProjectStatus.CONSTRUCTION -> Icons.Default.Construction
-        ProjectStatus.DELIVERY -> Icons.Default.DeliveryDining
+        ProjectStatus.DESIGN -> Icons.Default.Info
+        ProjectStatus.PERMITS_REVIEW -> Icons.Default.List
+        ProjectStatus.CONSTRUCTION -> Icons.Default.Settings
+        ProjectStatus.DELIVERY -> Icons.Default.Star
     }
 }
 

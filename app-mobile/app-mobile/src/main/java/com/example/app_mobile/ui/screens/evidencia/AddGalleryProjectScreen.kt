@@ -132,7 +132,7 @@ fun AddGalleryProjectScreen(
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Icon(
-                                Icons.Default.Assignment,
+                                Icons.Default.DateRange,
                                 contentDescription = null,
                                 modifier = Modifier.size(16.dp),
                                 tint = MaterialTheme.colorScheme.primary
@@ -422,7 +422,7 @@ private fun EnhancedAddProjectHeader() {
                     contentAlignment = Alignment.Center
                 ) {
                     Icon(
-                        imageVector = Icons.Default.AddHome,
+                        imageVector = Icons.Default.Home,
                         contentDescription = null,
                         tint = MaterialTheme.colorScheme.primary,
                         modifier = Modifier.size(56.dp)
@@ -548,7 +548,7 @@ private fun EnhancedProjectBasicInfoForm(
                 minLines = 3,
                 maxLines = 5,
                 leadingIcon = {
-                    Icon(Icons.Default.Description, contentDescription = null)
+                    Icon(Icons.Default.Menu, contentDescription = null)
                 },
                 supportingText = {
                     Text(
@@ -628,7 +628,7 @@ private fun EnhancedStyleSelectionSection(
                 modifier = Modifier.padding(bottom = 20.dp)
             ) {
                 Icon(
-                    imageVector = Icons.Default.Palette,
+                    imageVector = Icons.Default.AccountBox,
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.size(24.dp)
@@ -731,13 +731,13 @@ private fun EnhancedStyleChip(
                 Icon(
                     imageVector = when (style) {
                         "Contemporáneo" -> Icons.Default.Home
-                        "Minimalista" -> Icons.Default.Business
-                        "Industrial" -> Icons.Default.Factory
-                        "Moderno" -> Icons.Default.Apartment
-                        "Clásico" -> Icons.Default.AccountBalance
-                        "Rústico" -> Icons.Default.Cottage
-                        "Colonial" -> Icons.Default.AccountBalance // Cambiado de Temple a AccountBalance
-                        else -> Icons.Default.Construction
+                        "Minimalista" -> Icons.Default.Person
+                        "Industrial" -> Icons.Default.Share
+                        "Moderno" -> Icons.Default.Settings
+                        "Clásico" -> Icons.Default.ArrowBack
+                        "Rústico" -> Icons.Default.AccountCircle
+                        "Colonial" -> Icons.Default.AccountBox // Cambiado de Temple a AccountBalance
+                        else -> Icons.Default.AccountCircle
                     },
                     contentDescription = style,
                     tint = if (isSelected) Color.White else backgroundColor,
@@ -837,7 +837,7 @@ private fun EnhancedProjectDetailsForm(
                     shape = RoundedCornerShape(16.dp),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     leadingIcon = {
-                        Icon(Icons.Default.SquareFoot, contentDescription = null)
+                        Icon(Icons.Default.Star, contentDescription = null)
                     },
                     colors = OutlinedTextFieldDefaults.colors(
                         focusedBorderColor = MaterialTheme.colorScheme.primary,
@@ -872,7 +872,7 @@ private fun EnhancedProjectPreview(
                 modifier = Modifier.padding(bottom = 20.dp)
             ) {
                 Icon(
-                    imageVector = Icons.Default.Visibility,
+                    imageVector = Icons.Default.Warning,
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.size(24.dp)
@@ -920,13 +920,13 @@ private fun EnhancedProjectPreview(
                         Icon(
                             imageVector = when (style) {
                                 "Contemporáneo" -> Icons.Default.Home
-                                "Minimalista" -> Icons.Default.Business
-                                "Industrial" -> Icons.Default.Factory
-                                "Moderno" -> Icons.Default.Apartment
-                                "Clásico" -> Icons.Default.AccountBalance
-                                "Rústico" -> Icons.Default.Cottage
-                                "Colonial" -> Icons.Default.AccountBalance // Cambiado de Temple a AccountBalance
-                                else -> Icons.Default.Construction
+                                "Minimalista" -> Icons.Default.ArrowBack
+                                "Industrial" -> Icons.Default.CheckCircle
+                                "Moderno" -> Icons.Default.Settings
+                                "Clásico" -> Icons.Default.Person
+                                "Rústico" -> Icons.Default.Info
+                                "Colonial" -> Icons.Default.AccountCircle // Cambiado de Temple a AccountBalance
+                                else -> Icons.Default.Place
                             },
                             contentDescription = style,
                             tint = Color.White.copy(alpha = 0.8f),
@@ -1040,7 +1040,7 @@ private fun EnhancedActionButtons(
             shape = RoundedCornerShape(16.dp)
         ) {
             Icon(
-                Icons.Default.Save,
+                Icons.Default.Check,
                 contentDescription = null,
                 modifier = Modifier.size(18.dp)
             )
@@ -1180,7 +1180,7 @@ private fun EnhancedSuccessDialog(
                                 .padding(16.dp),
                             horizontalArrangement = Arrangement.SpaceEvenly
                         ) {
-                            StatItem(icon = Icons.Default.Visibility, value = "+1", label = "En Galería")
+                            StatItem(icon = Icons.Default.Search, value = "+1", label = "En Galería")
                             StatItem(icon = Icons.Default.Star, value = "5.0", label = "Rating Inicial")
                             StatItem(icon = Icons.Default.Share, value = "∞", label = "Alcance")
                         }

@@ -66,13 +66,13 @@ fun GalleryProjectDetailScreen(
 
         val placeholderImages = listOf(
             "Fachada Principal" to Icons.Default.Home,
-            "Sala de Estar" to Icons.Default.Chair,
-            "Cocina Moderna" to Icons.Default.Kitchen,
-            "Dormitorio Principal" to Icons.Default.Bed,
-            "Baño Principal" to Icons.Default.Bathtub,
-            "Jardín Posterior" to Icons.Default.Grass,
-            "Vista Nocturna" to Icons.Default.NightsStay,
-            "Planos Arquitectónicos" to Icons.Default.Architecture
+            "Sala de Estar" to Icons.Default.Person,
+            "Cocina Moderna" to Icons.Default.Add,
+            "Dormitorio Principal" to Icons.Default.Check,
+            "Baño Principal" to Icons.Default.LocationOn,
+            "Jardín Posterior" to Icons.Default.Warning,
+            "Vista Nocturna" to Icons.Default.Check,
+            "Planos Arquitectónicos" to Icons.Default.Search
         )
 
         if (evidenceImages.isNotEmpty()) {
@@ -312,12 +312,12 @@ private fun ModernProjectMainImage(project: GalleryProject) {
                     Icon(
                         imageVector = when (project.style) {
                             "Contemporáneo" -> Icons.Default.Home
-                            "Minimalista" -> Icons.Default.Business
-                            "Industrial" -> Icons.Default.Factory
-                            "Moderno" -> Icons.Default.Apartment
-                            "Clásico" -> Icons.Default.AccountBalance
-                            "Rústico" -> Icons.Default.Cottage
-                            else -> Icons.Default.Construction
+                            "Minimalista" -> Icons.Default.CheckCircle
+                            "Industrial" -> Icons.Default.Add
+                            "Moderno" -> Icons.Default.Search
+                            "Clásico" -> Icons.Default.AccountCircle
+                            "Rústico" -> Icons.Default.CheckCircle
+                            else -> Icons.Default.AccountCircle
                         },
                         contentDescription = project.style,
                         tint = Color.White,
@@ -462,12 +462,12 @@ private fun ModernProjectBasicInfo(project: GalleryProject) {
             ) {
                 ModernInfoChip(
                     label = project.style,
-                    icon = Icons.Default.Palette,
+                    icon = Icons.Default.Menu,
                     color = Color(0xFF667EEA)
                 )
                 ModernInfoChip(
                     label = project.area,
-                    icon = Icons.Default.SquareFoot,
+                    icon = Icons.Default.Refresh,
                     color = Color(0xFF81ECEC)
                 )
                 ModernInfoChip(
@@ -500,7 +500,7 @@ private fun ModernProjectImageGallery(
                 modifier = Modifier.padding(bottom = 20.dp)
             ) {
                 Icon(
-                    imageVector = Icons.Default.PhotoLibrary,
+                    imageVector = Icons.Default.Phone,
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.size(24.dp)
@@ -655,7 +655,7 @@ private fun ModernProjectSpecifications(project: GalleryProject) {
                 modifier = Modifier.padding(bottom = 20.dp)
             ) {
                 Icon(
-                    imageVector = Icons.Default.Assessment,
+                    imageVector = Icons.Default.MoreVert,
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.size(24.dp)
@@ -1134,7 +1134,7 @@ private fun ImageInfoFooter(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Icon(
-                    imageVector = Icons.Default.Image,
+                    imageVector = Icons.Default.AccountBox,
                     contentDescription = null,
                     tint = Color.White.copy(alpha = 0.7f),
                     modifier = Modifier.size(16.dp)
@@ -1152,7 +1152,7 @@ private fun ImageInfoFooter(
                 modifier = Modifier.padding(top = 4.dp)
             ) {
                 Icon(
-                    imageVector = Icons.Default.ZoomIn,
+                    imageVector = Icons.Default.Warning,
                     contentDescription = null,
                     tint = Color.White.copy(alpha = 0.7f),
                     modifier = Modifier.size(16.dp)
@@ -1191,21 +1191,21 @@ private fun getEvidenceEmoji(category: EvidenceCategory): String {
 
 private fun getEvidenceIcon(category: EvidenceCategory): ImageVector {
     return when (category) {
-        EvidenceCategory.FOUNDATION -> Icons.Default.Foundation
-        EvidenceCategory.STRUCTURE -> Icons.Default.Business
-        EvidenceCategory.WALLS -> Icons.Default.Dashboard // Cambiado de Wall a Dashboard
-        EvidenceCategory.ROOFING -> Icons.Default.Roofing
-        EvidenceCategory.ELECTRICAL -> Icons.Default.ElectricalServices
-        EvidenceCategory.PLUMBING -> Icons.Default.Plumbing
-        EvidenceCategory.HVAC -> Icons.Default.AcUnit
-        EvidenceCategory.FINISHES -> Icons.Default.Palette
+        EvidenceCategory.FOUNDATION -> Icons.Default.Add
+        EvidenceCategory.STRUCTURE -> Icons.Default.ArrowBack
+        EvidenceCategory.WALLS -> Icons.Default.CheckCircle // Cambiado de Wall a Dashboard
+        EvidenceCategory.ROOFING -> Icons.Default.Settings
+        EvidenceCategory.ELECTRICAL -> Icons.Default.ArrowBack
+        EvidenceCategory.PLUMBING -> Icons.Default.CheckCircle
+        EvidenceCategory.HVAC -> Icons.Default.Face
+        EvidenceCategory.FINISHES -> Icons.Default.Add
         EvidenceCategory.EXTERIOR -> Icons.Default.Home
-        EvidenceCategory.INTERIOR -> Icons.Default.Chair
-        EvidenceCategory.SAFETY -> Icons.Default.Security
-        EvidenceCategory.QUALITY_CONTROL -> Icons.Default.VerifiedUser
-        EvidenceCategory.PROGRESS -> Icons.Default.Timeline
+        EvidenceCategory.INTERIOR -> Icons.Default.Face
+        EvidenceCategory.SAFETY -> Icons.Default.CheckCircle
+        EvidenceCategory.QUALITY_CONTROL -> Icons.Default.ThumbUp
+        EvidenceCategory.PROGRESS -> Icons.Default.DateRange
         EvidenceCategory.ISSUE -> Icons.Default.Warning
-        EvidenceCategory.DELIVERY -> Icons.Default.DeliveryDining
-        EvidenceCategory.OTHER -> Icons.Default.PhotoCamera
+        EvidenceCategory.DELIVERY -> Icons.Default.ShoppingCart
+        EvidenceCategory.OTHER -> Icons.Default.Phone
     }
 }

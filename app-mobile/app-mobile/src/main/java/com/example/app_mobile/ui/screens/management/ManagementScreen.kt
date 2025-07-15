@@ -6,11 +6,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Architecture
-import androidx.compose.material.icons.filled.Assignment
-import androidx.compose.material.icons.filled.Construction
-import androidx.compose.material.icons.filled.DeliveryDining
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -22,7 +18,6 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import coil.compose.AsyncImage
 import com.example.shared_domain.model.*
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.compose.runtime.collectAsState
@@ -263,10 +258,10 @@ fun ProjectCard(
             ) {
                 Icon(
                     imageVector = when (project.status) {
-                        ProjectStatus.DESIGN -> Icons.Default.Architecture
-                        ProjectStatus.PERMITS_REVIEW -> Icons.Default.Assignment
-                        ProjectStatus.CONSTRUCTION -> Icons.Default.Construction
-                        ProjectStatus.DELIVERY -> Icons.Default.DeliveryDining
+                        ProjectStatus.DESIGN -> Icons.Default.Search
+                        ProjectStatus.PERMITS_REVIEW -> Icons.Default.CheckCircle
+                        ProjectStatus.CONSTRUCTION -> Icons.Default.AccountBox
+                        ProjectStatus.DELIVERY -> Icons.Default.CheckCircle
                     },
                     contentDescription = "Proyecto",
                     tint = when (project.status) {

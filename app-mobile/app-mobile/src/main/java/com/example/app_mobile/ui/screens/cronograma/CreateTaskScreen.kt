@@ -7,7 +7,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Save
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -123,7 +123,7 @@ fun CreateTaskScreen(
                     )
                 } else {
                     Icon(
-                        imageVector = Icons.Default.Save, 
+                        imageVector = Icons.Default.Send,
                         contentDescription = "Guardar tarea"
                     )
                 }

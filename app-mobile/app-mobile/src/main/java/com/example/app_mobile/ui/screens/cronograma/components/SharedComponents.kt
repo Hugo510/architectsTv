@@ -10,16 +10,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.CalendarMonth
-import androidx.compose.material.icons.filled.CheckCircle
-import androidx.compose.material.icons.filled.Dashboard
-import androidx.compose.material.icons.filled.Schedule
-import androidx.compose.material.icons.filled.Assignment
-import androidx.compose.material.icons.filled.TrendingUp
-import androidx.compose.material.icons.filled.Architecture
-import androidx.compose.material.icons.filled.Construction
-import androidx.compose.material.icons.filled.DeliveryDining
-import androidx.compose.material.icons.filled.RadioButtonUnchecked
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -146,7 +137,7 @@ fun ScheduleInfoCard(
                 modifier = Modifier.padding(bottom = 16.dp)
             ) {
                 Icon(
-                    imageVector = Icons.Default.Schedule,
+                    imageVector = Icons.Default.List,
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.onSecondaryContainer,
                     modifier = Modifier.size(24.dp)
@@ -180,7 +171,7 @@ fun ScheduleInfoCard(
                 ScheduleStatCard(
                     label = "Total Tareas",
                     value = schedule.totalTasks.toString(),
-                    icon = Icons.Default.Assignment,
+                    icon = Icons.Default.ThumbUp,
                     modifier = Modifier.weight(1f)
                 )
                 ScheduleStatCard(
@@ -192,7 +183,7 @@ fun ScheduleInfoCard(
                 ScheduleStatCard(
                     label = "Progreso",
                     value = "${(schedule.totalProgress * 100).toInt()}%",
-                    icon = Icons.Default.TrendingUp,
+                    icon = Icons.Default.Refresh,
                     modifier = Modifier.weight(1f)
                 )
             }
@@ -306,7 +297,7 @@ fun ViewSelector(
                 selected = selectedView == ViewType.CRONOGRAMA,
                 onClick = { onViewChange(ViewType.CRONOGRAMA) },
                 label = "Cronograma",
-                icon = Icons.Default.CalendarMonth,
+                icon = Icons.Default.DateRange,
                 modifier = Modifier.weight(1f)
             )
 
@@ -315,7 +306,7 @@ fun ViewSelector(
                 selected = selectedView == ViewType.KANBAN,
                 onClick = { onViewChange(ViewType.KANBAN) },
                 label = "Kanban",
-                icon = Icons.Default.Dashboard,
+                icon = Icons.Default.AccountBox,
                 modifier = Modifier.weight(1f)
             )
         }
@@ -413,7 +404,7 @@ fun StatusLegend(
                         status = ProjectStatus.DESIGN,
                         label = "Diseño",
                         color = Color(0xFF9CA3FF),
-                        icon = Icons.Default.Architecture
+                        icon = Icons.Default.Person
                     )
                 }
                 item {
@@ -421,7 +412,7 @@ fun StatusLegend(
                         status = ProjectStatus.PERMITS_REVIEW,
                         label = "Permisos",
                         color = Color(0xFFFBB6CE),
-                        icon = Icons.Default.Assignment
+                        icon = Icons.Default.Lock
                     )
                 }
                 item {
@@ -429,7 +420,7 @@ fun StatusLegend(
                         status = ProjectStatus.CONSTRUCTION,
                         label = "Construcción",
                         color = Color(0xFF68D391),
-                        icon = Icons.Default.Construction
+                        icon = Icons.Default.Build
                     )
                 }
                 item {
@@ -437,7 +428,7 @@ fun StatusLegend(
                         status = ProjectStatus.DELIVERY,
                         label = "Entrega",
                         color = Color(0xFFA0AEC0),
-                        icon = Icons.Default.DeliveryDining
+                        icon = Icons.Default.ShoppingCart
                     )
                 }
             }
@@ -615,7 +606,7 @@ private fun MilestoneCard(
                     imageVector = if (milestone.isCompleted)
                         Icons.Default.CheckCircle
                     else
-                        Icons.Default.RadioButtonUnchecked,
+                        Icons.Default.Clear,
                     contentDescription = if (milestone.isCompleted) "Completado" else "Pendiente",
                     tint = if (milestone.isCompleted)
                         Color(0xFF4CAF50)
