@@ -27,11 +27,12 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.shared_domain.repository.GalleryProject
+import androidx.hilt.navigation.compose.hiltViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EvidenciaScreen(
-    viewModel: EvidenciaViewModel, // Recibir ViewModel como parámetro
+    viewModel: EvidenciaViewModel = hiltViewModel(), // Inyección automática con Hilt/KSP
     onNavigateToProjectDetail: (String) -> Unit = {},
     onNavigateToAddProject: () -> Unit = {}, // Nueva función de navegación
 ) {
@@ -478,9 +479,3 @@ private fun ModernGalleryProjectCard(
     }
 }
 
-// Verifica que no existan líneas como estas fuera de los ciclos:
-// project.style
-// o
-// style (fuera de forEach/items)
-
-// Si encuentras alguna, elimínala o comenta la línea.
