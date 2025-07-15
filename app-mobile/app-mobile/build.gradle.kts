@@ -3,7 +3,6 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.ksp) // KSP plugin para procesamiento de anotaciones
-    alias(libs.plugins.hilt.android) // Hilt plugin para DI
     kotlin("plugin.serialization") version libs.versions.kotlin.get()
 }
 
