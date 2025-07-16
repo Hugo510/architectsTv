@@ -29,6 +29,7 @@ import androidx.compose.ui.unit.sp
 import com.example.shared_domain.repository.GalleryProject
 import androidx.hilt.navigation.compose.hiltViewModel
 
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EvidenciaScreen(
@@ -180,38 +181,37 @@ private fun GalleryHeader() {
             .padding(bottom = 8.dp),
         shape = RoundedCornerShape(24.dp),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f)
+            containerColor = Color.Transparent // SIN fondo opaco ni borroso
         ),
-        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp) // Sin sombra exagerada
     ) {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .background(
-                    Brush.linearGradient(
+                    Brush.verticalGradient( // Gradiente vertical moderno
                         colors = listOf(
-                            MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
-                            MaterialTheme.colorScheme.secondary.copy(alpha = 0.1f)
+                            MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.6f),
+                            MaterialTheme.colorScheme.surface.copy(alpha = 0.6f)
                         )
                     )
                 )
                 .padding(24.dp)
         ) {
-            Column(
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                // Logo y nombre empresa modernizado
+            Column(modifier = Modifier.fillMaxWidth()) {
+
+                // Logo + nombre empresa
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.padding(bottom = 16.dp)
+                    modifier = Modifier.padding(bottom = 20.dp)
                 ) {
                     Card(
-                        modifier = Modifier.size(48.dp),
-                        shape = RoundedCornerShape(16.dp),
+                        modifier = Modifier.size(56.dp),
+                        shape = RoundedCornerShape(18.dp),
                         colors = CardDefaults.cardColors(
                             containerColor = MaterialTheme.colorScheme.primary
                         ),
-                        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+                        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
                     ) {
                         Box(
                             contentAlignment = Alignment.Center,
@@ -220,8 +220,8 @@ private fun GalleryHeader() {
                             Text(
                                 text = "L",
                                 color = Color.White,
-                                fontSize = 24.sp,
-                                fontWeight = FontWeight.ExtraBold
+                                fontSize = 28.sp,
+                                fontWeight = FontWeight.Bold
                             )
                         }
                     }
@@ -231,30 +231,32 @@ private fun GalleryHeader() {
                     Column {
                         Text(
                             text = "LOGO EMPRESA",
-                            fontSize = 20.sp,
-                            fontWeight = FontWeight.ExtraBold,
+                            fontSize = 18.sp,
+                            fontWeight = FontWeight.Bold,
                             color = MaterialTheme.colorScheme.onBackground,
                             letterSpacing = 1.sp
                         )
+                        Spacer(modifier = Modifier.height(2.dp))
                         Text(
                             text = "Arquitectura & Construcción",
-                            fontSize = 12.sp,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            fontWeight = FontWeight.Medium
+                            fontSize = 13.sp,
+                            fontWeight = FontWeight.Medium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
                 }
 
-                // Título principal con efecto gradiente
+                // Título principal
                 Text(
                     text = "Galería",
-                    fontSize = 36.sp,
-                    fontWeight = FontWeight.ExtraBold,
-                    color = MaterialTheme.colorScheme.onBackground,
-                    letterSpacing = 0.5.sp
+                    style = MaterialTheme.typography.headlineMedium.copy(
+                        fontWeight = FontWeight.ExtraBold,
+                        color = MaterialTheme.colorScheme.onBackground,
+                        letterSpacing = 0.5.sp
+                    )
                 )
 
-                // Subtítulo mejorado
+                // Subtítulo
                 Text(
                     text = "Explora nuestra colección de proyectos exitosamente completados",
                     fontSize = 16.sp,
@@ -268,9 +270,11 @@ private fun GalleryHeader() {
     }
 }
 
+
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun SearchAndStyleFilter(
+fun SearchAndStyleFilter(
     searchQuery: String,
     onSearchQueryChange: (String) -> Unit,
     selectedStyle: String,
@@ -282,7 +286,10 @@ private fun SearchAndStyleFilter(
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(20.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+        elevation = CardDefaults.cardElevation(4.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surface
+        )
     ) {
         Row(
             modifier = Modifier
@@ -290,20 +297,22 @@ private fun SearchAndStyleFilter(
                 .padding(16.dp),
             horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            // Buscador modernizado
+            // ✅ Campo de búsqueda
             OutlinedTextField(
                 value = searchQuery,
                 onValueChange = onSearchQueryChange,
                 placeholder = {
                     Text(
                         "Buscar proyectos...",
-                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
+                        style = MaterialTheme.typography.bodyMedium.copy(
+                            color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
+                        )
                     )
                 },
                 leadingIcon = {
                     Icon(
                         Icons.Outlined.Search,
-                        contentDescription = "Buscar",
+                        contentDescription = "Icono de búsqueda",
                         tint = MaterialTheme.colorScheme.primary
                     )
                 },
@@ -312,36 +321,36 @@ private fun SearchAndStyleFilter(
                 shape = RoundedCornerShape(16.dp),
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedBorderColor = MaterialTheme.colorScheme.primary,
-                    unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f),
+                    unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.4f),
                     focusedContainerColor = MaterialTheme.colorScheme.surface,
-                    unfocusedContainerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
+                    unfocusedContainerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.2f)
                 )
             )
 
-            // Filtro modernizado
+            // ✅ Filtro de estilos con dropdown
             ExposedDropdownMenuBox(
                 expanded = isDropdownExpanded,
                 onExpandedChange = onDropdownExpandedChange
             ) {
                 OutlinedTextField(
-                    value = selectedStyle,
+                    value = selectedStyle.ifBlank { "Estilos" },
                     onValueChange = {},
                     readOnly = true,
                     trailingIcon = {
                         ExposedDropdownMenuDefaults.TrailingIcon(
-                            expanded = isDropdownExpanded,
-                            modifier = Modifier.scale(1.2f)
+                            expanded = isDropdownExpanded
                         )
                     },
                     modifier = Modifier
                         .menuAnchor()
-                        .width(130.dp),
+                        .widthIn(min = 120.dp)
+                        .heightIn(min = 56.dp),
                     shape = RoundedCornerShape(16.dp),
                     colors = OutlinedTextFieldDefaults.colors(
                         focusedBorderColor = MaterialTheme.colorScheme.primary,
-                        unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f),
+                        unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.4f),
                         focusedContainerColor = MaterialTheme.colorScheme.surface,
-                        unfocusedContainerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
+                        unfocusedContainerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.2f)
                     )
                 )
 
@@ -351,7 +360,12 @@ private fun SearchAndStyleFilter(
                 ) {
                     styleOptions.forEach { style ->
                         DropdownMenuItem(
-                            text = { Text(style) },
+                            text = {
+                                Text(
+                                    style,
+                                    style = MaterialTheme.typography.bodyMedium
+                                )
+                            },
                             onClick = {
                                 onStyleChange(style)
                                 onDropdownExpandedChange(false)
@@ -441,41 +455,61 @@ private fun ModernGalleryProjectCard(
         onClick = onClick,
         modifier = Modifier
             .fillMaxWidth()
-            .height(200.dp),
+            .height(220.dp),  // un poco más alto para dar espacio
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surface
         ),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
         shape = RoundedCornerShape(20.dp)
     ) {
         Column(
             modifier = Modifier.fillMaxSize()
         ) {
-            // Imagen/placeholder simple
+            // Placeholder mejorado con gradiente y texto/ícono
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
                     .weight(1f)
-                    .background(Color.Gray)
+                    .background(
+                        brush = Brush.linearGradient(
+                            colors = listOf(
+                                MaterialTheme.colorScheme.primary.copy(alpha = 0.3f),
+                                MaterialTheme.colorScheme.primary.copy(alpha = 0.15f)
+                            )
+                        ),
+                        shape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp)
+                    ),
+                contentAlignment = Alignment.Center
             ) {
-                // Aquí se eliminan overlays y badges que dependían de datos no implementados
+                Text(
+                    text = "\uD83C\uDFE1", // Emoji de casa 🏡
+                    fontSize = 48.sp
+                )
             }
+
             // Información básica del proyecto
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(16.dp)
+                    .padding(horizontal = 16.dp, vertical = 12.dp)
             ) {
                 Text(
-                    text = "Proyecto",
-                    fontSize = 16.sp,
+                    text = "Proyecto", // Aquí luego puedes usar project.name si tienes
+                    fontSize = 18.sp,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onSurface,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = "Finalizado: Enero 2024", // También simulado
+                    fontSize = 14.sp,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
             }
         }
     }
 }
+
 
