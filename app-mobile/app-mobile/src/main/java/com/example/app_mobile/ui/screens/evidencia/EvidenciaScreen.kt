@@ -487,7 +487,7 @@ private fun ModernGalleryProjectCard(
                 )
             }
 
-            // Información básica del proyecto ya casi listo para las images
+            // Información básica del proyecto ya casi listo para la images
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
