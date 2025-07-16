@@ -503,7 +503,7 @@ private fun ModernGalleryProjectCard(
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
-                    text = "Finalizado: Enero 2024", // También simulado
+                    text = "Finalizado: Enero 2024", // Tambiénbb simulado
                     fontSize = 14.sp,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
