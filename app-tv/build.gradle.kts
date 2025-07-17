@@ -51,6 +51,7 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
 
+
     // Asegurar que tenemos las dependencias de animación
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.material3)

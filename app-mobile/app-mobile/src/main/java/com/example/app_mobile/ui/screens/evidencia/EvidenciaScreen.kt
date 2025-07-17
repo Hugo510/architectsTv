@@ -30,6 +30,8 @@ import com.example.shared_domain.repository.GalleryProject
 import androidx.hilt.navigation.compose.hiltViewModel
 
 
+
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EvidenciaScreen(
@@ -482,7 +484,7 @@ private fun ModernGalleryProjectCard(
                 contentAlignment = Alignment.Center
             ) {
                 Text(
-                    text = "\uD83C\uDFE1", // Emoji de casa 🏡
+                    text = "\uD83C\uDFE1", // Emoji de casa 🏡 sustituir por una casita real de google
                     fontSize = 48.sp
                 )
             }
