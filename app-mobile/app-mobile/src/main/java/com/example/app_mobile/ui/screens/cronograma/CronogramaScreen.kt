@@ -83,7 +83,6 @@ fun CronogramaScreen(
                     .fillMaxSize()
                     .padding(paddingValues)
                     .padding(16.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 // Header empresarial mejorado
                 item {

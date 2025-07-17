@@ -44,33 +44,37 @@ fun CronogramaTimelineView(
     }
 
     Card(
-        modifier = modifier.fillMaxWidth()
+        modifier = modifier
+            .fillMaxWidth()
+            .heightIn(max = 500.dp) // Limita el alto del Card
     ) {
-        Column(
-            modifier = Modifier.padding(16.dp)
+        // Usa LazyColumn como raíz del contenido scrollable
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            CronogramaViewHeader()
+            item {
+                CronogramaViewHeader()
+            }
 
-            Spacer(modifier = Modifier.height(16.dp))
-
-            LazyColumn(
-                verticalArrangement = Arrangement.spacedBy(16.dp)
-            ) {
-                tasksByPhase.forEach { (phase, phaseTasks) ->
-                    item(key = phase.name) {
-                        ProjectPhaseSection(
-                            phase = phase,
-                            tasks = phaseTasks,
-                            onTaskClick = onTaskClick,
-                            onTaskStatusUpdate = onTaskStatusUpdate, // Pasar función
-                            onTaskProgressUpdate = onTaskProgressUpdate // Pasar función
-                        )
-                    }
+            tasksByPhase.forEach { (phase, phaseTasks) ->
+                item(key = phase.name) {
+                    ProjectPhaseSection(
+                        phase = phase,
+                        tasks = phaseTasks,
+                        onTaskClick = onTaskClick,
+                        onTaskStatusUpdate = onTaskStatusUpdate,
+                        onTaskProgressUpdate = onTaskProgressUpdate
+                    )
                 }
             }
         }
     }
+
 }
+
 
 @Composable
 private fun CronogramaViewHeader() {

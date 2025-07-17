@@ -4,10 +4,17 @@
     <selectionStates>
       <SelectionState runConfigName="app-mobile.app-mobile">
         <option name="selectionMode" value="DROPDOWN" />
+<<<<<<< HEAD
         <DropdownSelection timestamp="2025-07-17T06:13:28.809086956Z">
           <Target type="DEFAULT_BOOT">
             <handle>
               <DeviceId pluginId="LocalEmulator" identifier="path=/home/user/.android/avd/Pixel_9.avd" />
+=======
+        <DropdownSelection timestamp="2025-07-17T19:22:30.435611877Z">
+          <Target type="DEFAULT_BOOT">
+            <handle>
+              <DeviceId pluginId="LocalEmulator" identifier="path=/home/user/.android/avd/Pixel_8a_API_35.avd" />
+>>>>>>> 2e5998f (feat(CronogramaScreen): Arreglar error de cmponente de Cronograma)
             </handle>
           </Target>
         </DropdownSelection>
