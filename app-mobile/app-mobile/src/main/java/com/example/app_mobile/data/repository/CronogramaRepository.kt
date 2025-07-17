@@ -28,6 +28,7 @@ class CronogramaRepository : ProjectRepository {
         initializeMockData()
     }
 
+
     // Project operations (implementación básica)
     override suspend fun getAllProjects(): Flow<List<Project>> = TODO("Not implemented in this scope")
     override suspend fun getProjectById(id: String): Project? = TODO("Not implemented in this scope")

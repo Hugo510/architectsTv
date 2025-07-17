@@ -30,6 +30,7 @@ import com.example.app_mobile.ui.screens.planos.PlanosScreen
 import com.example.app_mobile.ui.screens.evidencia.EvidenciaScreen
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.app_mobile.ui.screens.management.ManagementViewModel
+import com.example.app_mobile.ui.screens.cronograma.CronogramaViewModel
 import com.example.app_mobile.ui.screens.evidencia.EvidenciaViewModel
 import com.example.app_mobile.ui.screens.evidencia.GalleryProjectDetailScreen
 import com.example.app_mobile.ui.screens.evidencia.AddGalleryProjectScreen
@@ -72,7 +73,10 @@ fun MobileApp() {
         ManagementViewModel(managementRepository)
     }
     val evidenciaViewModel: EvidenciaViewModel = hiltViewModel()
-    
+    // ViewModel para cronograma
+    val cronogramaViewModel: CronogramaViewModel = viewModel {
+        CronogramaViewModel()
+    }
     // Lista de rutas principales que muestran el bottom navigation
     val bottomNavRoutes = listOf("home", "management", "cronograma", "planos", "evidencia")
     val showBottomNav = currentRoute in bottomNavRoutes
@@ -128,6 +132,7 @@ fun MobileApp() {
             }
             composable("cronograma") {
                 CronogramaScreen(
+                    viewModel = cronogramaViewModel,
                     onNavigateToTaskDetail = { taskId -> navController.navigate("task_detail/$taskId") },
                     onNavigateToCreateTask = { navController.navigate("create_task") }
                 )
