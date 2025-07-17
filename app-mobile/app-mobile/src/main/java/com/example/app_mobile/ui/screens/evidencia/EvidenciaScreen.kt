@@ -28,6 +28,16 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.shared_domain.repository.GalleryProject
 import androidx.hilt.navigation.compose.hiltViewModel
+// NUEVOS - Agrega estos si vas a usar imágenes por URL
+import androidx.compose.foundation.Image
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
+import coil.compose.rememberAsyncImagePainter
+
+// Opcional - Solo si usas imágenes locales desde drawable
+import androidx.compose.ui.res.painterResource
+import com.example.app_mobile.R
+
 
 
 
@@ -457,7 +467,7 @@ private fun ModernGalleryProjectCard(
         onClick = onClick,
         modifier = Modifier
             .fillMaxWidth()
-            .height(220.dp),  // un poco más alto para dar espacio
+            .height(250.dp), // un poco más alto
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surface
         ),
@@ -467,36 +477,32 @@ private fun ModernGalleryProjectCard(
         Column(
             modifier = Modifier.fillMaxSize()
         ) {
-            // Placeholder mejorado con gradiente y texto/ícono
+            // Imagen superior
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
                     .weight(1f)
-                    .background(
-                        brush = Brush.linearGradient(
-                            colors = listOf(
-                                MaterialTheme.colorScheme.primary.copy(alpha = 0.3f),
-                                MaterialTheme.colorScheme.primary.copy(alpha = 0.15f)
-                            )
-                        ),
-                        shape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp)
-                    ),
+                    .clip(RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp))
+                    .background(Color.LightGray),
                 contentAlignment = Alignment.Center
             ) {
-                Text(
-                    text = "\uD83C\uDFE1", // Emoji de casa 🏡 sustituir por una casita real de google
-                    fontSize = 48.sp
+                Image(
+                    painter = rememberAsyncImagePainter("https://images.homify.com/v1443654352/p/photo/image/960352/Imativa_Casa_Carrasco_0013.jpg"),
+                    contentDescription = "Imagen del proyecto",
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier.fillMaxSize()
                 )
+
             }
 
-            // Información básica del proyecto ya casi listo para la images
+            // Info del proyecto (descripción y precio)
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp, vertical = 12.dp)
             ) {
                 Text(
-                    text = "Proyecto", // Aquí luego puedes usar project.name si tienes
+                    text = "Casa Moderna", // project.name si tienes un modelo real
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onSurface,
@@ -505,13 +511,24 @@ private fun ModernGalleryProjectCard(
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
-                    text = "Finalizado: Enero 2024", // Tambiénbb simulado
+                    text = "Hermosa casa minimalista con jardín y terraza.",
                     fontSize = 14.sp,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis
+                )
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = "$2,500,000 MXN",
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    color = MaterialTheme.colorScheme.primary
                 )
             }
         }
     }
 }
+
+
 
 
