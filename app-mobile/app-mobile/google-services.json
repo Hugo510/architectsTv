@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1001594122794",
+    "project_id": "architectstv-56fff",
+    "storage_bucket": "architectstv-56fff.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1001594122794:android:059545355642505393c953",
+        "android_client_info": {
+          "package_name": "com.company.archtectsTv"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAE8A0Qv09uPjw_Qmk2tjqabpG0YRYoNXE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
